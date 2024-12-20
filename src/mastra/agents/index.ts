@@ -3,6 +3,20 @@ import {
   knowledgeManagerInstructions,
   podcastGeneratorInstructions,
 } from "../prompts";
+import {
+  chunkText,
+  createSynthesis,
+  createTalkingPoints,
+  extractMainPoints,
+  generateEmbeddings,
+  generateEpisodeOutline,
+  generatePodcastScript,
+  organizeSources,
+  parseAndChunkFile,
+  queryEmbeddings,
+  searchVectorContent,
+  storeEmbeddings,
+} from "../tools";
 
 export const podcastGenerator = new Agent({
   name: "podcastGenerator",
@@ -12,7 +26,15 @@ export const podcastGenerator = new Agent({
     provider: "ANTHROPIC",
     toolChoice: "auto",
   },
-  tools: {},
+  tools: {
+    searchVectorContent,
+    organizeSources,
+    createSynthesis,
+    extractMainPoints,
+    generateEpisodeOutline,
+    createTalkingPoints,
+    generatePodcastScript,
+  },
 });
 
 export const knowledgeManager = new Agent({
@@ -23,5 +45,12 @@ export const knowledgeManager = new Agent({
     provider: "ANTHROPIC",
     toolChoice: "auto",
   },
-  tools: {},
+  tools: {
+    chunkText,
+    parseAndChunkFile,
+    generateEmbeddings,
+    storeEmbeddings,
+    queryEmbeddings,
+    searchVectorContent,
+  },
 });
