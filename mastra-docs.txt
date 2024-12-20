@@ -1,0 +1,3155 @@
+Index  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageIntroductionQuestion? Give us feedback Edit this pageScroll to topDocsIntroductionIntroduction
+Mastra is an opinionated Typescript framework that helps you build AI applications and features quickly. It gives you the set of primitives you need: workflows, agents, RAG, integrations, syncs and evals. You can run Mastra on your local machine, or deploy to a serverless cloud.
+The main Mastra features are:
+FeaturesDescriptionLLM ModelsMastra supports a variety of LLM providers, including OpenAI, Anthropic, Google Gemini.AgentsAgents are systems where the language model chooses a sequence of actions.ToolsTools are typed functions that can be executed by agents or workflows, with built-in integration access and parameter validation.WorkflowsWorkflows are durable graph-based state machines with built-in tracing. They can execute complex sequences of LLM operations.RAGRetrieval-augemented generation (RAG) lets you construct a knowledge base for your agents.Integrations & SyncsIn Mastra, syncs are async functions that can be deployed as background tasks. Integrations are auto-generated, type-safe API clients for third-party services.EvalsEvals are automated tests that evaluate LLM outputs using model-graded, rule-based, and statistical methods.InstallationLightMIT 2024  Nextra.
+The Typescript AI framework - MastraOpen main menuDocsBlog1.1kGet started1.1kGet startedThe TypescriptAI frameworkPrototype and productionize AI features
+
+with a modern JS/TS stack.npm install @mastra/core@alphaPress to copyAgentAgent that uses toolsToolsLanguage ModelSystem PromptYou are a helpful assistantAgentMastra AssistantChatAssemble AgentsCreate agents that can chat, email, or complete tasks.DocsExamplemastra/agents/ticketHelper.tsexport const ticketHelper = new Agent({ name: "Ticket Helper", instructions: "You are helping to sort Linear ticket model: { provider: "OPEN_AI", name: "gpt-4o", }, tools: { // Define any tools the agent can use },mastra/tools/memory.tsconst memory = new MemoryManager({ type: "conversation", maxTokens: 1000, storageType: "volatile", });Ticket Helper AgentHelp my team to manage incoming ticketsSystem PromptsLLMMemoryKnowledge BaseToolsWorkflowsAgent coordinationRequestTriggerContextKnowledge BaseThis is what your agent knowsMemoryLLMAgentSystem Prompt"You are a ..."ToolsWorkflowsAgencyAgent CoordinationThis is what your agent can doResponseAction(S)Build a know-ledge baseSync data from SaaS tools. Scrape the web. Pipe it into a vector store and RAG away.DocsExamplemastra.config.tsRetrieval pipelineRequestHow can I use Mastra in my Next.JS app?UserPromptEmbedBm25CosineRetrieveDocumentsSimilarity searchRerankInstall Mastra via npm installSynthesizeResponseResponseEmbedding pipelineSaaSQueryVECTOR DB10 00 11 0110 00 11 0110 00 11 0110 00 11 0110 00 11 01EmbedYOUR DBSyncmastra knowledge baseWEB SCRAPERSCreate WorkflowsConnect steps together with code or in a graph. See inputs and outputs for each step. Debug visually with replay capability.mastra.config.tscategorizeProblem.connect(createSupportTicket, { condition: (data) => !data.requriesTechnicalSupport });categorizeProblem.connect(createSupportTicket, { condition: (data) => !data.requriesTechnicalSupport });Conversational AgentWorkflowParse DataConvert Data into plain text following a specified templateTemplate{text}DataTextInputOutputPromptCreate a prompt template with dynamic variables.Template{context}--- given the context above, answer...ContextQuestionPrompt MessageInputOutputYou will write the most engaging summary posts, but you'll write as a technical writer, without using any big words. You must output 1000 characters. These posts should summarize the most important topic from the article, while also following the guidelines, feedback, chat history and examples that are provided to you. A good summary post covers the most important topic from the article, and is educational/ informational but also teases a part of the article. You must have a great hook at the beginning of the post: a question or an interesting thought provoking statement. You can only use emojis in a bullet list and not at the beginning of the post.OpenAIGenerates text using OpenAI LLMs.InputModelgpt-4oOpenAI API Keyapi key...Temperature0.6TextLanguage ModelInputOutputChat OutputDisplay a chat message in the Playground.TextText...MessageInputOutputBacked by founders
+The default Typescript AI frameworkGet startedmastraPrivacyPolicy 2024 Kepler Software Inc.AboutDocsGithub
+Showcase  MastraShowcaseDocsGitHubGitHubLightShowcaseCheck out these applications built with Mastra.AudiofeedAudiofeed repurposes your content into audio and video.Bird CheckerBird Checker is a bird identification app.OpenAPI Spec WriterGenerate an open api spec from your documentation url.Crypto ChatbotYou can ask about current crypto prices and trends in the cryptocurrency market.LightMIT 2024  Nextra.
+Installation  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageSystem RequirementsGet an LLM Provider API KeyAutomatic InstallationInstall the Mastra CLIInitialize Your ProjectSet Up Your API KeyManual InstallationCreate a New ProjectSet Up Your API KeyCreate the AgentStart the Mastra ServerTest the EndpointRun from the command lineQuestion? Give us feedback Edit this pageScroll to topDocsGetting StartedInstallationInstallation
+System Requirements
+
+Node.js v20.0+
+
+Get an LLM Provider API Key
+If you dont have an API key for an LLM provider, you can get one from the following services:
+
+OpenAI
+Anthropic
+Google Gemini
+
+If you dont have an account with these providers, you can sign up and get an API key. OpenAI and Anthropic require a credit card to get an API key. Google Gemini does not and has a generous free tier for its API.
+Automatic Installation
+
+We recommend starting a new Mastra project using the Mastra CLI, which sets up everything automatically for you.Install the Mastra CLITo install the Mastra CLI globally, run:npmi-gmastraInitialize Your ProjectCreate a new project directory and navigate into it:mkdirhello-mastra
+cdhello-mastraRun themastra initcommand:mastrainitOn initialization, youll be guided through the following prompts:
+Choose a directory for Mastra files: Specify where you want the Mastra files to be placed (default issrc/mastra).
+Select components to install: Choose which components you want to include in your project:
+
+Agents
+Tools
+Workflows
+
+Select a default LLM provider: Choose from supported providers like OpenAI, Anthropic, or Google Gemini.
+Include example code:SelectYesto include example code.This will add sample agents, tools, and workflows to your project, allowing you to test and runmastra serveimmediately.
+Set Up Your API KeyCreate a.envfile in your project root directory and add your API key:OPENAI_API_KEY=your_openai_api_keyReplaceyour_openai_api_keywith your actual API key.Note:If you prefer to run the command with flags (non-interactive mode) and include the example code, you can use:mastrainit--dirsrc/mastra--componentsagents,tools--llmopenai--exampleThis allows you to specify your preferences upfront without being prompted.
+Manual Installation
+
+If you prefer to set up your Mastra project manually, follow these steps:Create a New ProjectCreate a project directory and navigate into it:mkdirhello-mastra
+cdhello-mastraThen, initialize a TypeScript project including the@mastra/corepackage:npmpnpmyarnbunnpminit-y
+npminstalltypescripttsx@types/nodezod--save-dev
+npminstall@mastra/core@alpha
+npxtsc--initnpminit-y
+npminstalltypescripttsx@types/nodezod--save-dev
+npminstall@mastra/core@alpha
+pnpmdlxtsc--initnpminit-y
+npminstalltypescripttsx@types/nodezod--save-dev
+npminstall@mastra/core@alpha
+yarndlxtsc--initnpminit-y
+npminstalltypescripttsx@types/nodezod--save-dev
+npminstall@mastra/core@alpha
+bunxtsc--initCreate directories for Mastra and add an index file in thesrcdirectory:mkdir-psrc/mastra/agents
+touchsrc/mastra/index.tsSet Up Your API KeyCreate a.envfile in your project root directory and add your API key:OPENAI_API_KEY=your_openai_api_keyReplaceyour_openai_api_keywith your actual API key.Create the AgentFirst, create thestory-writeragent file:touchsrc/mastra/agents/story-writer.tsThen, add the following code tosrc/mastra/agents/story-writer.ts:src/mastra/agents/story-writer.tsimport{ Agent }from"@mastra/core";
+
+exportconststoryWriterAgent=newAgent({
+name:"story-writer",
+maxSteps:3,
+model: {
+provider:"OPEN_AI",
+name:"gpt-4o",
+toolChoice:"auto",
+},
+instructions:`You are a helpful assistant who writes creative stories.`,
+tools: {},
+});Finally, create the Mastra entry point insrc/mastra/index.ts:src/mastra/index.tsimport{ Mastra }from"@mastra/core";
+import{ storyWriterAgent }from"./agents/story-writer";
+
+exportconstmastra=newMastra({
+agents: { storyWriter: storyWriterAgent },
+});This registers your agent with Mastra so thatmastra servecan discover and serve it.If youre using Anthropic, set theANTHROPIC_API_KEY. If youre using Google Gemini, set theGOOGLE_GENERATIVE_AI_API_KEY.
+Start the Mastra Server
+Mastra provides commands to serve your agents via REST endpoints. Run the following command to start the Mastra server:
+OPENAI_API_KEY=<your-openai-api-key>mastraserve
+This command creates REST API endpoints for your agents.
+Test the Endpoint
+You can test the agents endpoint usingcurlorfetch:
+curlfetchcurl-XPOSThttp://localhost:4111/agent/story-writer/text\
+-H"Content-Type: application/json"\
+-d'{"messages": ["Tell me a story about a courageous astronaut."]}'fetch('http://localhost:4111/agent/story-writer/text', {
+method:'POST',
+headers: {
+'Content-Type':'application/json',
+},
+body:JSON.stringify({
+messages: ['Tell me a story about a courageous astronaut.'],
+}),
+})
+.then(response=>response.json())
+.then(data=>{
+console.log('Agent response:', data.text);
+})
+.catch(error=>{
+console.error('Error:', error);
+});
+Run from the command line
+If youd like to directly call agents from the command line, you can create a script to get an agent and call it:
+src/index.tsimport{ mastra }from"./mastra";
+
+asyncfunctionmain() {
+constagent=mastra.getAgent("storyWriter");
+
+constresult=awaitagent.generate(
+"Write a short story about a robot learning to paint.",
+);
+
+console.log("Agent response:", result.text);
+}
+
+main();
+Then, run the script to test that everything is set up correctly:
+npxbunsrc/index.ts
+This should output the agents response to your console.
+
+Note:Be sure to replace<your-openai-api-key>with your actual API key in the commands. If youre using a different LLM provider, replace the environment variable accordingly (e.g.,ANTHROPIC_API_KEYorGOOGLE_GENERATIVE_AI_API_KEY).IntroductionProject StructureLightMIT 2024  Nextra.
+Project Structure and Organization  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageUsing the CLIExample Project StructureTop-level FoldersTop-level FilesQuestion? Give us feedback Edit this pageScroll to topDocsGetting StartedProject StructureProject Structure and Organization
+This page provides a guide for organizing folders and files in Mastra. Mastra is a modular framework, and you can use any of the modules separately or together.
+You could write everything in a single file (as we showed in the quick start), or separate each agent, tool, and workflow into their own files.
+We dont enforce a specific folder structure, but we do recommend some best practices, and the CLI will scaffold a project with a sensible structure.
+Using the CLI
+mastra initis an interactive CLI that allows you to:
+
+Choose a directory for Mastra files: Specify where you want the Mastra files to be placed (default issrc/mastra).
+Select components to install: Choose which components you want to include in your project:
+
+Agents
+Tools
+Workflows
+
+Select a default LLM provider: Choose from supported providers like OpenAI, Anthropic, or Groq.
+Include example code: Decide whether to include example code to help you get started.
+
+Example Project Structure
+Assuming you select all components and include example code, your project structure will look like this:
+rootsrcmastraagentsindex.tstoolsindex.tsworkflowsindex.tsindex.ts.env
+
+Top-level Folders
+FolderDescriptionsrc/mastraCore application foldersrc/mastra/agentsAgent configurations and definitionssrc/mastra/toolsCustom tool definitionssrc/mastra/workflowsWorkflow definitions
+Top-level Files
+FileDescriptionsrc/mastra/index.tsMain configuration file for Mastra.envEnvironment variablesInstallationOverviewLightMIT 2024  Nextra.
+LLM Class Overview  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageInitializing the LLM ClassSupported Models and ProvidersMost Popular Providers and ModelsThegenerateFunctionMessage Formats ingenerate1. Simple String2. Array of Strings3. Detailed Message ObjectsOutput Formats ingenerate1. Simple Text Generation2. Structured Output3. Streaming Text4. Streaming Structured OutputAdditional NotesQuestion? Give us feedback Edit this pageScroll to topDocsLLM ModelsOverviewLLM Class Overview
+Mastra provides direct support for Large Language Models (LLMs) through theLLMclass. TheLLMclass allows you to interact with various language models seamlessly, enabling you to generate text, handle conversations, and more. This guide covers:
+
+How to initialize the LLM class.
+Supported models and providers.
+Using thegeneratefunction.
+Message formats ingenerate.
+Output formats ingenerate.
+
+Initializing the LLM Class
+To start using theLLMclass, you need to initialize it with the desired model configuration. Heres how you can do it:
+import{ Mastra }from'@mastra/core';
+
+constmastra=newMastra();
+
+constllm=mastra.LLM({
+provider:'OPEN_AI',
+name:'gpt-4o',
+});
+This initialization allows telemetry to pass through to the LLM, providing insights into model usage and performance.
+Note:You can find more details about the model configuration options in theModelConfig class reference.
+
+Supported Models and Providers
+Mastra supports major LLM providers out of the box, plus additional providers through AI SDK integrations. Custom providers can also be added via the Portkey service.
+Most Popular Providers and Models
+ProviderSupported ModelsOpenAIgpt-4,gpt-4-turbo,gpt-3.5-turbo,gpt-4o,gpt-4o-miniAnthropicclaude-3-5-sonnet-20241022,claude-3-5-sonnet-20240620,claude-3-5-haiku-20241022,claude-3-opus-20240229,claude-3-sonnet-20240229,claude-3-haiku-20240307Google Geminigemini-1.5-pro-latest,gemini-1.5-pro,gemini-1.5-flash-latest,gemini-1.5-flash
+A full list of supported models can be foundhere.
+
+ThegenerateFunction
+The main function youll use with theLLMclass isgenerate. It allows you to send messages to the language model and receive responses. Thegeneratefunction takes:
+
+messages: The first parameter, which can be a string, an array of strings, or an array of message objects.
+options: The second parameter, which includes additional configurations like streaming, schemas for structured output, etc.
+
+This design covers all potential use cases and is extensible to multi-modal interactions in the future.
+
+Message Formats ingenerate
+Thegeneratefunction supports three types of message formats:
+1. Simple String
+You can pass a single string as the message:
+constresponse=awaitllm.generate('Tell me a joke.');
+2. Array of Strings
+You can provide an array of strings, which will be converted into user messages:
+constresponse=awaitllm.generate([
+'Hello!',
+'Can you explain quantum mechanics?',
+]);
+3. Detailed Message Objects
+For finer control, you can pass an array of message objects, specifying the role and content:
+constresponse=awaitllm.generate([
+{ role:'system', content:'You are a helpful assistant.'},
+{ role:'user', content:'What is the meaning of life?'},
+]);
+
+Output Formats ingenerate
+Thegeneratefunction supports four types of output formats:
+1. Simple Text Generation
+Receive a basic text response from the model:
+constresponse=awaitllm.generate('What is AI?');
+
+console.log(response.text);
+2. Structured Output
+Request a structured response by providing a schema. This is useful when you need the output in a specific format:
+import{ z }from'zod';
+
+constmySchema=z.object({
+definition: z.string(),
+examples: z.array(z.string()),
+});
+
+constresponse=awaitllm.generate('Define machine learning and give examples.', {
+schema: mySchema,
+});
+
+console.log(response.object);
+3. Streaming Text
+Stream the response in real-time, which is useful for handling longer outputs or providing immediate feedback to users:
+conststream=awaitllm.generate('Tell me a story about a brave knight.', {
+stream:true,
+});
+
+forawait(constchunkofstream.textStream) {
+process.stdout.write(chunk);
+}
+4. Streaming Structured Output
+Stream a structured response using a schema:
+conststream=awaitllm.generate('Provide live weather data.', {
+schema: mySchema,
+stream:true,
+});
+
+forawait(constchunkofstream.textStream) {
+console.log(chunk);
+}
+
+Additional Notes
+
+Telemetry: Initializing theLLMclass through Mastra allows telemetry data to pass through, enabling better monitoring and debugging.
+Extensibility: The design of thegeneratefunction and message formats makes it future-proof and extensible for multi-modal interactions.
+Project StructureGuide: Harry PotterLightMIT 2024  Nextra.
+Guide: Harry Potter  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageSetup1. Create a Model2. Give It a Prompt3. Test the Response4. Alter the System MessageAs Harry PotterAs Draco Malfoy5. Stream the ResponseEnvironment SetupQuestion? Give us feedback Edit this pageScroll to topDocsLLM ModelsGuide: Harry PotterGuide: Harry Potter
+Mastra provides direct support for Large Language Models (LLMs) through theLLMclass. It supports a variety of LLM providers, including OpenAI, Anthropic, and Google Gemini. You can choose the specific model and provider, set system and user prompts, and decide whether to stream the response.
+Well use a Harry Potter-themed example where we ask about the models favorite room in Hogwarts, demonstrating how changing the system message affects the response.
+In this guide, well walk through:
+
+Creating a model
+Giving it a prompt
+Testing the response
+Altering the system message
+Streaming the response
+
+Setup
+Ensure you have the Mastra core package installed:
+npminstall@mastra/core
+Set your API key for the LLM provider you intend to use. For OpenAI, set theOPENAI_API_KEYenvironment variable.
+1. Create a Model
+Well start by creating a model configuration and initializing the Mastra instance.
+import{ Mastra,typeModelConfig }from'@mastra/core';
+
+constmastra=newMastra();
+
+constmodelConfig:ModelConfig={
+provider:'OPEN_AI',
+name:'gpt-4',
+};
+
+constllm=mastra.LLM(modelConfig);
+2. Give It a Prompt
+Next, well prepare our prompt. Well ask:
+constprompt='What is your favorite room in Hogwarts?';
+3. Test the Response
+Well use thegeneratemethod to get the response from the model.
+constresponse=awaitllm.generate(prompt);
+
+console.log('Response:', response.text);
+We cant run top-levelawaitthough, so lets wrap our code in anasyncmain function.
+src/mastra/index.tsasyncfunctionmain() {
+constmastra=newMastra();
+
+constmodelConfig:ModelConfig={
+provider:'OPEN_AI',
+name:'gpt-4',
+};
+
+constllm=mastra.LLM(modelConfig);
+constprompt='What is your favorite room in Hogwarts?';
+
+constresponse=awaitllm.generate(prompt);
+
+console.log('Response:', response.text);
+}
+
+main();
+Run the script:
+OPENAI_API_KEY=<your-openai-api-key>npxtsxsrc/mastra/index.ts
+Example Output:
+Response: As an AI language model developed by OpenAI, I don't possess consciousness or experiences.
+The model defaults to its own perspective. To get a more engaging response, well alter the system message.
+4. Alter the System Message
+To change the perspective, well add a system message to specify the persona of the model. First, well have the model respond as Harry Potter.
+As Harry Potter
+constmessages=[
+{
+role:'system',
+content:'You are Harry Potter.',
+},
+{
+role:'user',
+content:'What is your favorite room in Hogwarts?',
+},
+];
+
+constresponseHarry=awaitllm.generate(messages);
+
+console.log('Response as Harry Potter:', responseHarry.text);
+Example Output:
+Response as Harry Potter: My favorite room in Hogwarts is definitely the Gryffindor Common Room. It's where I feel most at home, surrounded by my friends, the warm fireplace, and the cozy chairs. It's a place filled with great memories.
+As Draco Malfoy
+Now, lets change the system message to have the model respond as Draco Malfoy.
+messages[0].content='You are Draco Malfoy.';
+
+constresponseDraco=awaitllm.generate(messages);
+
+console.log('Response as Draco Malfoy:', responseDraco.text);
+Example Output:
+Response as Draco Malfoy: My favorite room in Hogwarts is the Slytherin Common Room. It's located in the dungeons, adorned with green and silver decor, and has a magnificent view of the Black Lake's depths. It's exclusive and befitting of those with true ambition.
+5. Stream the Response
+Finally, well demonstrate how to stream the response from the model. Streaming is useful for handling longer outputs or providing real-time feedback.
+conststream=awaitllm.stream({
+messages,
+});
+
+console.log('Streaming response as Draco Malfoy:');
+
+forawait(constchunkofstream.textStream) {
+process.stdout.write(chunk);
+}
+
+console.log('\n');
+}
+
+main();
+Run the script again:
+OPENAI_API_KEY=<your-openai-api-key>npxtsxsrc/mastra/index.ts
+Example Output:
+Streaming response as Draco Malfoy: My favorite room in Hogwarts is the Slytherin Common Room. Situated in the dungeons, it's an elegant space with greenish lights and serpentine motifs...
+Environment Setup
+Ensure you have set your API keys for the LLM provider you are using:
+
+OpenAI:OPENAI_API_KEY
+Anthropic:ANTHROPIC_API_KEY
+Google Gemini:GOOGLE_GENERATIVE_AI_API_KEY
+
+If you dont have an account with these providers, you can sign up and get an API key:
+
+OpenAI
+Anthropic
+Google Gemini
+
+By following this guide, youve learned how to:
+
+Create and configure an LLM model in Mastra
+Provide prompts and receive responses
+Use system messages to change the models perspective
+Stream responses from the model
+
+Feel free to experiment with different system messages and prompts to explore the capabilities of Mastras LLM support.OverviewOverviewLightMIT 2024  Nextra.
+Agents Overview  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This Page1. Creating an AgentRegistering the Agent2. Generating and streaming textGenerating textStreaming responses3. Structured OutputUsing JSON SchemaUsing Zod4. Saving MemoryExample**5. Running AgentsStarting the ServerInteracting with the AgentNext StepsQuestion? Give us feedback Edit this pageScroll to topDocsAgentsOverviewAgents Overview
+Agents in Mastra are systems where the language model can autonomously decide on a sequence of actions to perform tasks. They have access to tools, workflows, and synced data, enabling them to perform complex tasks and interact with external systems. Agents can invoke your custom functions, utilize third-party APIs through integrations, and access knowledge bases you have built.
+While theLLMclass is similar to a contractor you might hire for a one-off task, agents are like employees who can be used for ongoing projects. They have names, persistent memory, consistent model configurations, and instructions across calls, as well as a set of enabled tools.
+1. Creating an Agent
+To create an agent in Mastra, you use theAgentclass and define its properties:
+src/mastra/agents/index.tsimport{ Agent }from"@mastra/core";
+
+constmyAgent=newAgent({
+name:"My Agent",
+instructions:"You are a helpful assistant.",
+model: {
+provider:"openai",
+name:"gpt-4",// Or "gpt-3.5-turbo"
+},
+});
+Note:Ensure that you have set the necessary environment variables, such as your OpenAI API key, in your.envfile:
+.envOPENAI_API_KEY=your_openai_api_key
+Also, make sure you have the@mastra/corepackage installed:
+npmpnpmyarnbunnpminstall@mastra/corepnpmadd@mastra/coreyarnadd@mastra/corebunadd@mastra/core
+Registering the Agent
+Register your agent with Mastra to enable logging and access to configured tools and integrations:
+src/mastra/index.tsimport{ Mastra }from"@mastra/core";
+import{ myAgent }from"./agents";
+
+exportconstmastra=newMastra({
+agents: { myAgent },
+});
+2. Generating and streaming text
+Generating text
+Use the.generate()method to have your agent produce text responses:
+src/mastra/index.tsconstresponse=awaitmyAgent.generate({
+messages: [{ role:"user", content:"Hello, how can you assist me today?"}],
+});
+
+console.log("Agent:", response.text);
+Streaming responses
+For more real-time responses, you can stream the agents response:
+src/mastra/index.tsconststream=awaitmyAgent.generate({
+messages: [{ role:"user", content:"Tell me a story."}],
+stream:true,
+});
+
+console.log("Agent:");
+
+forawait(constchunkofstream.textStream) {
+process.stdout.write(chunk);
+}
+3. Structured Output
+Agents can return structured data by providing a JSON Schema or using a Zod schema.
+Using JSON Schema
+constschema={
+type:"object",
+properties: {
+summary: { type:"string"},
+keywords: { type:"array", items: { type:"string"} },
+},
+required: ["summary","keywords"],
+};
+
+constresponse=awaitmyAgent.generate({
+messages: [
+{
+role:"user",
+content:
+"Please provide a summary and keywords for the following text: ...",
+},
+],
+schema: schema,
+});
+
+console.log("Structured Output:", response.object);
+Using Zod
+You can also use Zod schemas for type-safe structured outputs.
+First, install Zod:
+npmpnpmyarnbunnpminstallzodpnpmaddzodyarnaddzodbunaddzod
+Then, define a Zod schema and use it with the agent:
+src/mastra/index.tsimport{ z }from"zod";
+
+// Define the Zod schema
+constschema=z.object({
+summary: z.string(),
+keywords: z.array(z.string()),
+});
+
+// Use the schema with the agent
+constresponse=awaitmyAgent.generate({
+messages: [
+{
+role:"user",
+content:
+"Please provide a summary and keywords for the following text: ...",
+},
+],
+schema: schema,
+});
+
+console.log("Structured Output:", response.object);
+This allows you to have strong typing and validation for the structured data returned by the agent.
+4. Saving Memory
+Agents have a memory that can be persisted between sessions. Memory can be accessed by the agentsmemoryproperty, and can be saved, retrieved, and cleared using thesave(),getMessages(), andload()methods.
+Example
+src/mastra/index.tsconstresponse1=awaitmyAgent.generate("Which LLM model are you?", {
+threadId:"thread_1",
+});
+
+awaitmyAgent.memory.save("thread_1");
+constmemoryMessages=awaitmyAgent.memory.getMessages({
+threadId:"thread_1",
+});
+console.log("Agent Memory:", memoryMessages);
+**5. Running Agents
+Mastra provides a CLI commandmastra serveto run your agents behind an API. By default, this looks for exported agents in files in thesrc/mastra/agentsdirectory.
+Starting the Server
+mastraserve
+This will start the server and make your agent available athttp://localhost:3000/agents/my-agent/generate.
+Interacting with the Agent
+You can interact with the agent usingcurlfrom the command line:
+curl-XPOSThttp://localhost:3000/agents/my-agent/generate\
+-H"Content-Type: application/json"\
+-d'{
+"messages": [
+{ "role": "user", "content": "Hello, how can you assist me today?" }
+]
+}'
+Next Steps
+
+See more about Agent Memory in theAgent Memoryguide.
+See an example agent in theChef Michelexample.
+Guide: Harry PotterMemoryLightMIT 2024  Nextra.
+Agent Memory  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This Page1. Default In-Memory Storage2. Using Mastra EngineSetting Up Mastra Engine for Agent Memory3. Using External StorageUsing Redis for Agent MemoryUsing PostgreSQL for Agent MemoryManaging Agent MemorySaving the Agents MemoryLoading the Agents MemoryClearing the Agents MemoryQuestion? Give us feedback Edit this pageScroll to topDocsAgentsMemoryAgent Memory
+Agents in Mastra have a memory that stores conversation history and contextual information. This memory allows agents to maintain state across interactions, enabling more coherent and context-aware responses.
+There are three main ways to implement agent memory in Mastra:
+
+In-Memory Storage(Default)
+Using Mastra Engine
+Using External Storage (Redis or PostgreSQL)
+
+1. Default In-Memory Storage
+Lets start by revisiting the example from theoverviewpage.
+src/mastra/index.tsconstresponse1=awaitmyAgent.generate("Which LLM model are you?", {
+threadId:"thread_1",
+});
+
+awaitmyAgent.memory.save("thread_1");
+constmemoryMessages=awaitmyAgent.memory.getMessages({
+threadId:"thread_1",
+});
+console.log("Agent Memory:", memoryMessages);
+This is the simplest way to use agent memory  with the default in-memory storage. Its suitable for local development, testing, or backend processes outside the context of a user session and request/response cycle.
+Especially if youre usingmastra serveor otherwise running agents behind an API, youll want to use a more persistent memory backend.
+2. Using Mastra Engine
+The Mastra engine is a Postgres database that you can install locally using the Mastra CLI. Its a helpful backend for agent memory during development because you can inspect agent memory more easily.
+Setting Up Mastra Engine for Agent Memory
+
+Install Mastra Engine:
+
+npmpnpmyarnbunnpminstall@mastra/enginepnpmadd@mastra/engineyarnadd@mastra/enginebunadd@mastra/engine
+
+Configure Mastra:
+
+// src/mastra/index.ts
+import{ Mastra }from"@mastra/core";
+import{ mastraEngine }from"@mastra/engine";
+
+import{ myAgent }from"./agents";
+
+exportconstmastra=newMastra({
+engine: mastraEngine,
+agents: { myAgent },
+});
+
+Run Mastra Engine:
+
+mastraengineup
+This command sets up the necessary infrastructure for Mastra Engine.
+3. Using External Storage
+For production environments where you need persistent memory across restarts and scalability, you can use external storage backends like Redis or PostgreSQL.
+Using Redis for Agent Memory
+First, install the necessary packages:
+npminstall@mastra/memoryredis
+Then, configure your agent to use Redis for memory storage:
+// src/mastra/index.ts
+import{ Mastra }from"@mastra/core";
+import{ RedisMemory }from"@mastra/memory";
+import{ createClient }from"redis";
+
+import{ myAgent }from"./agents";
+
+// Create a Redis client
+constredisClient=createClient({
+url: process.env.REDIS_URL,// e.g., "redis://localhost:6379"
+});
+
+redisClient.connect();
+
+constredisMemory=newRedisMemory({
+client: redisClient,
+});
+
+exportconstmastra=newMastra({
+memory: redisMemory,
+agents: { myAgent },
+});
+Ensure you have your Redis URL set in your environment variables:
+# .env
+REDIS_URL=redis://your_redis_server_url
+Using PostgreSQL for Agent Memory
+First, install the necessary packages:
+npminstall@mastra/memorypg
+Then, configure your agent to use PostgreSQL for memory storage:
+// src/mastra/index.ts
+import{ Mastra }from"@mastra/core";
+import{ PostgresMemory }from"@mastra/memory";
+import{ Pool }from"pg";
+
+import{ myAgent }from"./agents";
+
+// Create a PostgreSQL pool
+constpgPool=newPool({
+connectionString: process.env.POSTGRES_CONNECTION_STRING,
+});
+
+constpgMemory=newPostgresMemory({
+pool: pgPool,
+});
+
+exportconstmastra=newMastra({
+memory: pgMemory,
+agents: { myAgent },
+});
+Ensure you have your PostgreSQL connection string set in your environment variables:
+# .env
+POSTGRES_CONNECTION_STRING=postgresql://user:password@localhost:5432/your_database
+Managing Agent Memory
+Once your agent is configured with a memory backend, you can manage its memory using the following methods.
+Saving the Agents Memory
+Save the agents memory state with a unique identifier:
+awaitmyAgent.memory.save("memory_id");
+This persists the current memory state, allowing you to reload it later.
+Loading the Agents Memory
+Load a previously saved memory state:
+awaitmyAgent.memory.load("memory_id");
+This replaces the agents current memory with the saved state associated withmemory_id.
+Clearing the Agents Memory
+To clear the agents memory, removing all stored messages and context:
+awaitmyAgent.memory.clear();
+This resets the agents memory to an empty state.OverviewToolsLightMIT 2024  Nextra.
+Adding Tools  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageCreating ToolsExample Tool: Weather Informationsrc/mastra/tools/weatherInfo.tsAdding Tools to an Agentsrc/mastra/agents/weatherAgent.tsSetting Up Mastrasrc/index.tsDebugging ToolsCalling an Agent with a ToolExample: Interacting with the AgentTool ConfigurationQuestion? Give us feedback Edit this pageScroll to topDocsAgentsToolsAdding Tools
+Tools are typed functions that can be executed by agents or workflows, with built-in integration access and parameter validation. Each tool has a schema that defines its inputs, an executor function that implements its logic, and access to configured integrations.
+Creating Tools
+In this section, well walk through the process of creating a tool that can be used by your agents. Lets create a simple tool that fetches current weather information for a given city.
+Example Tool: Weather Information
+First, lets define a tool that retrieves weather data using a public API.
+src/mastra/tools/weatherInfo.ts
+import { createTool } from "@mastra/core";
+import { z } from "zod";
+
+const getWeatherInfo = async (city: string) => {
+// Replace with an actual API call to a weather service
+const data = await fetch(`https://api.example.com/weather?city=${city}`).then((r) =>
+r.json(),
+);
+return data;
+};
+
+export const weatherInfo = createTool({
+label: "Get Weather Information",
+inputSchema: z.object({
+city: z.string(),
+}),
+description: `Fetches the current weather information for a given city`,
+execute: async ({ context: { city } }) => {
+console.log("Using tool to fetch weather information for", city);
+return await getWeatherInfo(city);
+},
+});
+In this code:
+
+label: A human-readable name for the tool.
+inputSchema: A Zod schema defining the expected input parameters.
+description: A description of what the tool does.
+execute: An asynchronous function that performs the tools main logic.
+
+Adding Tools to an Agent
+Now well add the tool to an agent. Well create an agent that can answer questions about the weather and configure it to use ourweatherInfotool.
+src/mastra/agents/weatherAgent.ts
+import { Agent } from "@mastra/core";
+import { weatherInfo } from "../tools";
+
+export const weatherAgent = new Agent<typeof tools>({
+name: "Weather Agent",
+instructions:
+"You are a helpful assistant that provides current weather information. When asked about the weather, use the weather information tool to fetch the data.",
+model: {
+provider: "OPEN_AI",
+name: "gpt-4",
+toolChoice: "required",
+},
+tools: {
+weatherInfo,
+}
+});
+In this agent configuration:
+
+name: A unique name for the agent.
+instructions: Guidance provided to the agent to define its behavior.
+model: Specifies the AI model to use.
+tools: Specifies which tools the agent has access to.
+
+Setting Up Mastra
+We need to initialize Mastra with our agent.
+src/index.ts
+import { Mastra } from "@mastra/core";
+import { weatherAgent } from "./agents/weatherAgent";
+
+export const mastra = new Mastra({
+agents: { weatherAgent },
+});
+This registers your agent with Mastra, making it available for use.
+Debugging Tools
+You can test tools using Jest or any other testing framework. Writing unit tests for your tools ensures they behave as expected and helps catch errors early.
+Calling an Agent with a Tool
+Now we can call the agent, and it will use the tool to fetch the weather information.
+Example: Interacting with the Agent
+import{ mastra }from"./index";
+
+asyncfunctionmain() {
+constagent=mastra.getAgent("weatherAgent");
+constresponse=awaitagent.generate({
+messages: ["What's the weather like in New York City today?"],
+});
+
+console.log(response.text);
+}
+
+main();
+The agent will use theweatherInfotool to get the current weather in New York City and respond accordingly.
+Tool Configuration
+A tool requires:
+
+label: Name of the tool (e.g., Get Weather Information).
+inputSchema: Zod schema for validating inputs like city names.
+description: Clear explanation of what the tool does.
+execute: Async function that performs the tools logic.
+
+The executor receives:
+
+data: Contains the validated input parameters for your tool.
+runId: Unique identifier for the current execution (optional).
+agents: Access to all registered agents in the system.
+engine: Reference to the Mastra engine instance (optional).
+llm: Access to the Language Model instance.
+MemoryGuide: Chef MichelLightMIT 2024  Nextra.
+Agents Guide: Building a Chef Assistant  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PagePrerequisitesStep 1: Create the AgentDefine the AgentStep 2: Set Up Environment VariablesStep 3: Register the Agent with MastraStep 4: Interacting with the AgentExample 1: Generating Text ResponsesExample 2: Streaming ResponsesStep 5: Structured OutputExample: Generating a Recipe with Structured DataStep 6: Saving and Displaying Agent MemorySaving the Agents MemoryLoading the Agents MemoryDisplaying the Agents MemoryClearing the Agents MemoryStep 7: Running the Agent ServerUsingmastra serveAccessing the Chef Assistant APIInteracting with the Agent viacurlFinal NotesQuestion? Give us feedback Edit this pageScroll to topDocsAgentsGuide: Chef MichelAgents Guide: Building a Chef Assistant
+In this guide, well walk through creating a Chef Assistant agent that helps users cook meals with available ingredients.
+Prerequisites
+
+Node.js installed
+Mastra installed:npm install @mastra/core
+
+Step 1: Create the Agent
+Define the Agent
+Create a new filesrc/mastra/agents/chefAgent.tsand define your agent:
+// src/mastra/agents/chefAgent.ts
+import{ Agent }from"@mastra/core";
+
+exportconstchefAgent=newAgent({
+name:"chef-assistant",
+instructions:
+"You are Michel, a practical and experienced home chef who helps people cook great meals with whatever ingredients they have available. Your first priority is understanding what ingredients and equipment the user has access to, then suggesting achievable recipes. You explain cooking steps clearly and offer substitutions when needed, maintaining a friendly and encouraging tone throughout.",
+model: {
+provider:"OPEN_AI",
+name:"gpt-4o",
+toolChoice:"auto",
+},
+});
+
+Step 2: Set Up Environment Variables
+Create a.envfile in your project root and add your OpenAI API key:
+# .env
+OPENAI_API_KEY=your_openai_api_key
+
+Step 3: Register the Agent with Mastra
+In your main file, register the agent:
+// src/mastra/index.ts
+import{ Mastra }from"@mastra/core";
+import{ chefAgent }from"./agents/chefAgent";
+
+exportconstmastra=newMastra({
+agents: { chefAgent },
+});
+
+Step 4: Interacting with the Agent
+Example 1: Generating Text Responses
+// src/mastra/index.ts
+asyncfunctionmain() {
+constquery=
+"In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?";
+console.log(`Query: ${query}`);
+
+constresponse=awaitchefAgent.generate({
+messages: [{ role:"user", content: query }],
+});
+
+console.log("\n Chef Michel:", response.text);
+}
+
+main();
+Output:
+Query: In my kitchen I have: pasta, canned tomatoes, garlic, olive oil, and some dried herbs (basil and oregano). What can I make?
+
+ Chef Michel: You can make a delicious pasta al pomodoro! Here's how...
+
+Example 2: Streaming Responses
+// src/mastra/index.ts
+asyncfunctionmain() {
+constquery=
+"Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder.";
+console.log(`Query: ${query}`);
+
+conststream=awaitchefAgent.generate({
+messages: [{ role:"user", content: query }],
+stream:true,
+});
+
+console.log("\nChef Michel: ");
+
+forawait(constchunkofstream.textStream) {
+process.stdout.write(chunk);
+}
+
+console.log("\n\n Recipe complete!");
+}
+
+main();
+Output:
+Query: Now I'm over at my friend's house, and they have: chicken thighs, coconut milk, sweet potatoes, and some curry powder.
+
+ Chef Michel:
+Great! You can make a comforting chicken curry...
+
+ Recipe complete!
+
+Step 5: Structured Output
+Example: Generating a Recipe with Structured Data
+// src/mastra/index.ts
+import{ z }from"zod";
+
+asyncfunctionmain() {
+constquery="I want to make lasagna, can you generate a lasagna recipe for me?";
+console.log(`Query: ${query}`);
+
+// Define the Zod schema
+constschema=z.object({
+ingredients: z.array(
+z.object({
+name: z.string(),
+amount: z.string(),
+})
+),
+steps: z.array(z.string()),
+});
+
+constresponse=awaitchefAgent.generate({
+messages: [{ role:"user", content: query }],
+schema: schema,
+});
+
+console.log("\n Chef Michel:", response.object);
+}
+
+main();
+Output:
+Query: I want to make lasagna, can you generate a lasagna recipe for me?
+
+ Chef Michel: {
+ingredients: [
+{ name: "Lasagna noodles", amount: "12 sheets" },
+{ name: "Ground beef", amount: "1 pound" },
+// ...
+],
+steps: [
+"Preheat oven to 375F (190C).",
+"Cook the lasagna noodles according to package instructions.",
+// ...
+]
+}
+
+Step 6: Saving and Displaying Agent Memory
+Saving the Agents Memory
+After interacting with the agent, save its memory state:
+awaitchefAgent.memory.save("chef_memory");
+Loading the Agents Memory
+Later, you can load the saved memory state:
+awaitchefAgent.memory.load("chef_memory");
+Displaying the Agents Memory
+To view the agents memory, you can retrieve and log the stored messages:
+constmemoryMessages=awaitchefAgent.memory.getMessages({
+threadId:"chef_memory",
+});
+
+console.log("Agent Memory:", memoryMessages);
+This will output the stored conversation history and context associated withchef_memory.
+Example Output:
+Agent Memory: {
+threadId: "chef_memory",
+messages: [
+{ role: "user", content: "I have eggs, flour, and milk. What can I make?" },
+{ role: "assistant", content: "You can make delicious pancakes! Here's how..." },
+// ...other messages
+]
+}
+Clearing the Agents Memory
+To clear the agents memory:
+awaitchefAgent.memory.clear();
+This resets the agents memory to an empty state.
+Step 7: Running the Agent Server
+Usingmastra serve
+You can run your agent as a service using themastra servecommand:
+mastraserve
+This will start a server exposing endpoints to interact with your registered agents.
+Accessing the Chef Assistant API
+By default,mastra serveruns onhttp://localhost:3000. Your Chef Assistant agent will be available at:
+POST http://localhost:3000/agents/chef-assistant/generate
+Interacting with the Agent viacurl
+You can interact with the agent usingcurlfrom the command line:
+curl-XPOSThttp://localhost:3000/agents/chef-assistant/generate\
+-H"Content-Type: application/json"\
+-d'{
+"messages": [
+{
+"role": "user",
+"content": "I have eggs, flour, and milk. What can I make?"
+}
+]
+}'
+Sample Response:
+{
+"text":"You can make delicious pancakes! Here's a simple recipe..."
+}
+
+Final Notes
+
+Extending Functionality: You can add tools and integrations to your agent to enhance its capabilities.
+Error Handling: Ensure you handle errors, especially when dealing with external APIs and streaming.
+ToolsGuide: Stock AgentLightMIT 2024  Nextra.
+Stock Agent  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageProject Structure1. Initialize the Project and Install Dependencies2. Create the Stock Price Tool3. Add the Tool to an Agent4. Set Up the Mastra Instance5. Serve the Application6. Test the Agent with cURLQuestion? Give us feedback Edit this pageScroll to topDocsAgentsGuide: Stock AgentStock Agent
+Were going to create a simple agent that fetches the last days closing stock price for a given symbol. This example will show you how to create a tool, add it to an agent, and use the agent to fetch stock prices.
+Project Structure
+stock-price-agent/
+ src/
+  agents/
+   stockAgent.ts
+  tools/
+   stockPrices.ts
+  index.ts
+ package.json
+ tsconfig.json
+ .env
+
+1. Initialize the Project and Install Dependencies
+First, create a new directory for your project and navigate into it:
+mkdirstock-price-agent
+cdstock-price-agent
+Initialize a new Node.js project and install the required dependencies:
+npminit-y
+npminstall@mastra/corezod
+Set Up Environment Variables**
+Create a.envfile at the root of your project to store your OpenAI API key.
+OPENAI_API_KEY=your_openai_api_key
+Create the necessary directories and files:
+mkdir-psrc/agentssrc/tools
+touchsrc/agents/stockAgent.tssrc/tools/stockPrices.tssrc/index.ts
+
+2. Create the Stock Price Tool
+Next, well create a tool that fetches the last days closing stock price for a given symbol.
+src/tools/stockPrices.tsimport{ createTool }from'@mastra/core';
+import{ z }from'zod';
+
+constgetStockPrice=async(symbol:string)=>{
+constdata=awaitfetch(`https://mastra-stock-data.vercel.app/api/stock-data?symbol=${symbol}`).then(r=>r.json());
+returndata.prices['4. close'];
+};
+
+exportconststockPrices=createTool({
+label:'Get Stock Price',
+schema: z.object({
+symbol: z.string(),
+}),
+description:`Fetches the last day's closing stock price for a given symbol`,
+execute:async({context: {symbol} })=>{
+console.log("Using tool to fetch stock price for", symbol);
+return{
+symbol,
+currentPrice:awaitgetStockPrice(symbol),
+};
+},
+});
+
+3. Add the Tool to an Agent
+Well create an agent and add thestockPricestool to it.
+src/agents/stockAgent.tsimport{ Agent }from'@mastra/core';
+
+import*astoolsfrom'../tools';
+
+exportconststockAgent=newAgent<typeoftools>({
+name:'Stock Agent',
+instructions:
+'You are a helpful assistant that provides current stock prices. When asked about a stock, use the stock price tool to fetch the stock price.',
+model: {
+provider:'OPEN_AI',
+name:'gpt-4o',
+toolChoice:'required',
+},
+enabledTools: {
+stockPrices:true,
+},
+});
+
+4. Set Up the Mastra Instance
+We need to initialize the Mastra instance with our agent and tool.
+src/index.tsimport{ Mastra }from'@mastra/core';
+
+```typescript:src/index.ts
+import { Mastra } from "@mastra/core";
+import { stockAgent } from "./agents/stockAgent";
+
+export const mastra = new Mastra({
+agents: { stockAgent },
+});
+5. Serve the Application
+Instead of running the application directly, well use themastra servecommand to start the server. This will expose your agent via REST API endpoints, allowing you to interact with it over HTTP.
+In your terminal, start the Mastra server by running:
+mastraserve
+This command will start the server and make your agent available at:
+http://localhost:3000/agents/stock-agent/generate
+Make sure that your environment variables are set, especially your OpenAI API key. If you havent set it yet, you can provide it inline:
+OPENAI_API_KEY=your_openai_api_keymastraserve
+
+6. Test the Agent with cURL
+Now that your server is running, you can test your agents endpoint usingcurl:
+curl-XPOSThttp://localhost:3000/agents/stock-agent/generate\
+-H"Content-Type: application/json"\
+-d'{
+"messages": [
+{ "role": "user", "content": "What is the current stock price of Apple (AAPL)?" }
+]
+}'
+Expected Response:
+You should receive a JSON response similar to:
+{
+"text":"The current price of Apple (AAPL) is $174.55.",
+"agent":"Stock Agent"
+}
+This indicates that your agent successfully processed the request, used thestockPricestool to fetch the stock price, and returned the result.Guide: Chef MichelOverviewLightMIT 2024  Nextra.
+Workflows in Mastra  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageBuilding a Workflow1. Import Necessary Modules2. Initialize Mastra Instance3. Define StepsOption 1: Inline Step CreationOption 2: Define Steps Separately4. Control Flow Between StepsParallel ExecutionSequential ExecutionBranching and Merging PathsCyclical Dependencies5. ConditionsOption 1: FunctionOption 2: Query ObjectOption 3: Simple Path Comparison (Syntactic Sugar)6. Variables7. Finalize the Workflow8. Serve the WorkflowStart the Mastra Server9. Test the Workflow with cURLQuestion? Give us feedback Edit this pageScroll to topDocsWorkflowsOverviewWorkflows in Mastra
+Workflows in Mastra are powerful tools for orchestrating complex sequences of operations. They support loops, branching, parallel execution, error handling, and more.
+The most powerful feature of workflows is that you can log the input and output of each step of each run, and send the results to your favorite observability tools. Teams have found this to be a powerful way to monitor and debug their workflows.
+Building a Workflow
+In this overview, well create a workflow with dummy steps to demonstrate how workflows are structured and executed in Mastra. Well cover options for defining steps, different kinds of control flow between steps, conditions, and variables.
+1. Import Necessary Modules
+import{ Step, Workflow, Mastra }from"@mastra/core";
+import{ z }from"zod";
+2. Initialize Mastra Instance
+Initialize your Mastra instance.
+exportconstmastra=newMastra({});
+3. Define Steps
+You can define steps inline or by function reference.
+Option 1: Inline Step Creation
+Define steps directly within the workflow using the.step()and.then()methods.
+constmyWorkflow=newWorkflow({
+name:"my-workflow",
+triggerSchema: z.object({
+inputValue: z.number(),
+}),
+});
+
+myWorkflow
+.step(
+newStep({
+id:"stepOne",
+inputSchema: z.object({
+value: z.number(),
+}),
+outputSchema: z.object({
+doubledValue: z.number(),
+}),
+execute:async({context})=>{
+constdoubledValue=context.value*2;
+return{ doubledValue };
+},
+})
+)
+.then(
+newStep({
+id:"stepTwo",
+inputSchema: z.object({
+valueToIncrement: z.number(),
+}),
+outputSchema: z.object({
+incrementedValue: z.number(),
+}),
+execute:async({context})=>{
+constincrementedValue=context.valueToIncrement+1;
+return{ incrementedValue };
+},
+variables: {
+valueToIncrement: {
+stepId:"stepOne",
+path:"doubledValue",
+},
+},
+})
+);
+Option 2: Define Steps Separately
+Define steps separately and then add them to the workflow.
+// Define steps separately
+conststepOne=newStep({
+id:"stepOne",
+inputSchema: z.object({
+inputValue: z.number(),
+}),
+outputSchema: z.object({
+doubledValue: z.number(),
+}),
+execute:async({context})=>{
+constdoubledValue=context.inputValue*2;
+return{ doubledValue };
+},
+});
+
+conststepTwo=newStep({
+id:"stepTwo",
+inputSchema: z.object({
+valueToIncrement: z.number(),
+}),
+outputSchema: z.object({
+incrementedValue: z.number(),
+}),
+execute:async({context})=>{
+constincrementedValue=context.valueToIncrement+1;
+return{ incrementedValue };
+},
+});
+
+// Build the workflow
+constmyWorkflow=newWorkflow({
+name:"my-workflow",
+triggerSchema: z.object({
+inputValue: z.number(),
+}),
+});
+
+myWorkflow.step(stepOne).then(stepTwo, {
+variables: {
+valueToIncrement: {
+stepId:"stepOne",
+path:"doubledValue",
+},
+},
+});
+4. Control Flow Between Steps
+Parallel Execution
+Use.step()to add steps that can run in parallel.
+myWorkflow
+.step(fetchUserData)
+.step(fetchOrderData);// These steps run in parallel
+Sequential Execution
+Use.then()to chain steps that depend on the previous step.
+myWorkflow
+.step(fetchOrderData)
+.then(validateData)
+.then(processOrder);
+Branching and Merging Paths
+Use.after()to specify dependencies explicitly and to manage branching.
+myWorkflow
+.step(stepA)
+.then(stepB)
+.then(stepD)
+.after(stepA)
+.step(stepC)
+.then(stepE)
+.after([stepD, stepE])
+.step(stepF);
+In this example:
+
+stepAleads tostepB, then tostepD.
+Separately, afterstepA, we startstepC, which leads tostepE.
+Once bothstepDandstepEcomplete,stepFruns.
+
+Cyclical Dependencies
+Workflows can support cyclical dependencies, allowing steps to loop based on conditions.
+myWorkflow
+.step(fetchData)
+.then(processData)
+.after(processData)
+.step(finalizeData, {
+when: {"processData.status":"success"},
+})
+.step(fetchData, {
+when: {"processData.status":"retry"},
+});
+In this example:
+
+IfprocessDataresults in a status of"success",finalizeDatawill run.
+IfprocessDataresults in a status of"retry", the workflow loops back tofetchData.
+
+5. Conditions
+Use thewhenproperty to define conditions under which a step should execute.
+Option 1: Function
+myWorkflow.step(
+newStep({
+id:"processData",
+execute:async({context})=>{
+// Action logic
+},
+when:async({context})=>{
+returncontext.stepResults.fetchData.status==="success";
+},
+})
+);
+Option 2: Query Object
+myWorkflow.step(
+newStep({
+id:"processData",
+execute:async({context})=>{
+// Action logic
+},
+when: {
+ref: { stepId:"fetchData", path:"status"},
+query: { $eq:"success"},
+},
+})
+);
+Option 3: Simple Path Comparison (Syntactic Sugar)
+myWorkflow.step(
+newStep({
+id:"processData",
+execute:async({context})=>{
+// Action logic
+},
+when: {
+"fetchData.status":"success",
+},
+})
+);
+6. Variables
+Variables allow you to pass data between steps.
+Option 1: Usingvariablesin.then()
+myWorkflow.step(stepOne).then(stepTwo, {
+variables: {
+valueToIncrement: {
+stepId:"stepOne",
+path:"doubledValue",
+},
+},
+});
+Option 2: Definevariablesinside theStep
+conststepTwo=newStep({
+id:"stepTwo",
+inputSchema: z.object({
+valueToIncrement: z.number(),
+}),
+outputSchema: z.object({
+incrementedValue: z.number(),
+}),
+execute:async({context})=>{
+constincrementedValue=context.valueToIncrement+1;
+return{ incrementedValue };
+},
+variables: {
+valueToIncrement: {
+stepId:"stepOne",
+path:"doubledValue",
+},
+},
+});
+In both options, thevalueToIncrementinput forstepTwois fetched from thedoubledValueoutput ofstepOne.
+7. Finalize the Workflow
+After defining all steps and their relationships, commit the workflow.
+myWorkflow.commit();
+8. Serve the Workflow
+We can now serve the workflow using themastra servecommand.
+Start the Mastra Server
+Open your terminal and run:
+mastraserve
+This command will start the server and make your workflow available at:
+http://localhost:3000/workflows/my-workflow/execute
+9. Test the Workflow with cURL
+With the server running, you can test your workflow usingcurl:
+curl-XPOSThttp://localhost:3000/workflows/my-workflow/execute\
+-H"Content-Type: application/json"\
+-d'{
+"inputValue": 5
+}'
+Expected Response:
+You should receive a JSON response similar to:
+{
+"results": {
+"stepOne": {
+"doubledValue":10
+},
+"stepTwo": {
+"incrementedValue":11
+}
+},
+"workflow":"my-workflow"
+}
+This indicates that:
+
+stepOnedoubled the input value5to10.
+stepTwoincremented10by1to get11.
+Guide: Stock AgentGuide: ScraperLightMIT 2024  Nextra.
+Workflows in Mastra  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageBuilding a Workflow1. Import Necessary Modules2. Initialize Mastra Instance3. Define StepsOption 1: Inline Step CreationOption 2: Step by Function Reference4. Control Flow Between StepsParallel ExecutionSequential ExecutionBranching and Merging PathsCyclical Dependencies5. Conditions and VariablesOption 1: FunctionOption 2: Query ObjectOption 3: Simple Path Comparison (Syntactic Sugar)6. Defining Variables7. Finalizing the WorkflowExecuting the WorkflowReference DocumentationQuestion? Give us feedback Edit this pageScroll to topDocsWorkflowsGuide: ScraperWorkflows in Mastra
+Workflows in Mastra are powerful tools for orchestrating complex sequences of operations.
+They support loops, branching, parallel execution, error handling, and more.
+Building a Workflow
+Heres an updated example of creating a workflow that uses predefined tools to crawl a website, structure the data using an LLM, and analyze the sentiment of the content.
+1. Import Necessary Modules
+import{ Step, Workflow, Mastra, Agent }from"@mastra/core";
+import{ PostgresEngine }from"@mastra/engine";
+import{ z }from"zod";
+import*assyncsfrom"./syncs";
+2. Initialize Mastra Instance
+constcrawlWebpage=createTool({
+id:"Crawl Webpage",
+description:"Crawls a webpage and extracts the text content",
+inputSchema: z.object({
+url: z.string().url(),
+}),
+outputSchema: z.object({
+rawText: z.string(),
+}),
+execute:async({context: {url} })=>{
+// Replace with actual crawling logic
+someCrawlFunction(url);
+return{ rawText:"This is the text content of the webpage"};
+},
+})
+
+constmyAgent=newAgent({
+name:"agentOne",
+instructions:"This agent crawls a website and analyzes the sentiment of the content.",
+tools: {
+crawlWebpage,
+},
+});
+
+constengine=newPostgresEngine({
+url: process.env.DB_URL!,
+});
+
+// Initialize your Mastra instance with registered tools and integrations
+exportconstmastra=newMastra({
+syncs,
+agents: { myAgent },
+engine,
+});
+3. Define Steps
+You can define steps inline or by function reference.
+Option 1: Inline Step Creation
+constcontentWorkflow=newWorkflow({ name:"content-review"});
+
+contentWorkflow
+.step(
+crawlWebpage
+)
+.then(
+newStep({
+id:"structure",
+inputSchema: z.object({
+rawText: z.string(),
+}),
+outputSchema: z.object({
+reviews: z.array(z.string()),
+}),
+execute:async({context})=>{
+return{ reviews: ['Amazing!'] };
+},
+})
+);
+Option 2: Step by Function Reference
+// Define steps separately
+conststructureStep=newStep({
+id:"structure",
+inputSchema: z.object({
+rawText: z.string(),
+}),
+outputSchema: z.object({
+reviews: z.array(z.string()),
+}),
+execute:async({context})=>{
+return{ reviews: ['Amazing!'] };
+},
+});
+
+// Build the workflow
+constcontentWorkflow=newWorkflow({ name:"content-review"});
+
+contentWorkflow.step(crawlWebpage).then(structureStep);
+4. Control Flow Between Steps
+Parallel Execution
+Use.step()to add steps that can run in parallel.
+contentWorkflow
+.step(fetchUserData)
+.step(fetchOrderData);// These steps run in parallel
+Sequential Execution
+Use.then()to chain steps that depend on the previous step.
+contentWorkflow
+.step(fetchOrderData)
+.then(validateData)
+.then(processOrder);
+Branching and Merging Paths
+Use.after()to specify dependencies explicitly and to manage branching.
+contentWorkflow
+.step(stepA)
+.then(stepB)
+.then(stepD)
+.after(stepA)
+.step(stepC)
+.then(stepE)
+.after([stepD, stepE])
+.step(stepF);
+In this example:
+
+stepAleads tostepB, then tostepD.
+Separately, afterstepA, we startstepC, which leads tostepE.
+Once bothstepDandstepEcomplete,stepFruns.
+
+Cyclical Dependencies
+Workflows can support cyclical dependencies, allowing steps to loop based on conditions.
+contentWorkflow
+.step(fetchData)
+.then(processData)
+.after(processData)
+.step(finalizeData, {
+when: {"processData.status":"success"},
+})
+.step(fetchData, {
+when: {"processData.status":"retry"},
+});
+5. Conditions and Variables
+Use thewhenproperty to define conditions under which a step should execute.
+Option 1: Function
+contentWorkflow.step(
+newStep({
+id:"processData",
+execute:async({context})=>{
+// Action logic
+},
+when:async({context})=>{
+returncontext.stepResults.fetchData.status==="success";
+},
+})
+);
+Option 2: Query Object
+contentWorkflow.step(
+newStep({
+id:"processData",
+execute:async({context})=>{
+// Action logic
+},
+when: {
+ref: { stepId:"fetchData", path:"status"},
+query: { $eq:"success"},
+},
+})
+);
+Option 3: Simple Path Comparison (Syntactic Sugar)
+contentWorkflow.step(
+newStep({
+id:"processData",
+execute:async({context})=>{
+// Action logic
+},
+when: {
+"fetchData.status":"success",
+},
+})
+);
+6. Defining Variables
+Variables allow you to pass data between steps.
+contentWorkflow
+.step(
+newStep({
+id:"processData",
+inputSchema: z.object({
+inputData: z.any(),
+}),
+execute:async({context})=>{
+// Use context.inputData
+},
+variables: {
+inputData: { stepId:"fetchData", path:"data"},
+},
+})
+);
+7. Finalizing the Workflow
+After defining all steps and their relationships, you can finalize the workflow.
+contentWorkflow.commit();
+Executing the Workflow
+// Execute the workflow with trigger data
+contentWorkflow.execute({ url:"https://example.com"});
+Reference Documentation
+For more details on workflows, steps, conditions, and variables, refer to the following:
+
+Workflows
+Steps
+Conditions
+Variables
+OverviewOverviewLightMIT 2024  Nextra.
+Building a Knowledge Base  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageSummaryQuestion? Give us feedback Edit this pageScroll to topDocsRAGOverviewBuilding a Knowledge Base
+Youll often want to enhance Large Language Model (LLM) outputs by supplying them with relevant context pulled from your own data sources. Retrieval-Augmented Generation (RAG) is a technique that does this.
+Before the LLM responds, it looks up helpful passages from your documents, improving accuracy and grounding responses in real data.
+RAG typically involves:
+
+Document Chunking and Embedding:Split your documents into manageable chunks, and optionally enrich them with metadata (titles, summaries, keywords, Q&A hints). Then, transform these chunks into high-dimensional vector representations (embeddings) using a model liketext-embedding-ada-002.
+Vector Storage:Store these embeddings in a vector database (e.g., PostgreSQL with pgvector, Pinecone, Qdrant) so that you can efficiently find the chunks most similar to any given query.
+Querying:At runtime, embed the users query, retrieve similar chunks from your vector database, and feed those chunks as context to an LLM.
+
+Mastras utilities help you orchestrate these steps with minimal friction.
+Summary
+With Mastras RAG utilities, you can:
+
+Initialize Documents: CreateMDocumentinstances from various formats.
+Process Documents: Usechunkto split documents and extract metadata.
+Generate Embeddings: Useembedfunctions to generate embeddings for documents or chunks.
+Store and Query: Utilize vector stores like PgVector, Pinecone, and Qdrant to persist and retrieve embeddings.
+Enhance LLM Outputs: Incorporate retrieved chunks as context to improve LLM responses.
+Guide: ScraperChunking and EmbeddingLightMIT 2024  Nextra.
+Chunking and Embedding  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageChunking and Embedding DocumentsStep 1: Document ProcessingStep 2: EmbeddingQuestion? Give us feedback Edit this pageScroll to topDocsRAGChunking and EmbeddingChunking and Embedding Documents
+Before processing, create aMDocumentinstance from your content. You can initialize it from text, HTML, Markdown, or JSON:
+constdocFromText=MDocument.fromText("Your plain text content...");
+
+constdocFromHTML=MDocument.fromHTML("<html>Your HTML content...</html>");
+
+constdocFromMarkdown=MDocument.fromMarkdown("# Your Markdown content...");
+
+constdocFromJSON=MDocument.fromJSON(`{ "key": "value" }`);
+Each method returns aMDocumentready for processing.
+Step 1: Document Processing
+Usechunkto split the document into manageable pieces. Mastra supports seven chunking strategies (recursive,character,token,markdown,html,json, andlatex), each optimized for different document types and with configurable options for chunk size and overlap.
+You can also enable metadata extraction, which uses LLM calls behind the scenes to provide titles, summaries, keywords, and potential Q&A pairs.
+Example:
+import{ MDocument }from"@mastra/rag";
+constmDoc=MDocument.fromText("Your plain text content...");
+constdoc=awaitmDoc.extractMetadata({
+title:true,
+summary:true,
+keywords:true,
+questions:true,
+});
+constchunks=doc.chunk({
+strategy:"recursive",
+options: {
+size:512,
+overlap:50,
+separator:"\n",
+},
+});
+This splits the document into chunks and extracts metadata. There are a variety of chunking strategies and options, which we go into in thechunk documentation. Metadata is preserved in the chunks, which you can use for retrieval.
+Note:Metadata extraction may use LLM calls behind the scenes, so ensureOPENAI_API_KEYis set.
+Step 2: Embedding
+Transform chunks into embeddings using an embedding model:
+import{ embed }from"@mastra/rag";
+
+constembeddings=awaitembed(chunks, {
+provider:"OPEN_AI",
+model:"text-embedding-ada-002",
+});
+
+// Embed a single chunk if needed:
+constsingleEmbedding=awaitembed(chunks[0], {
+provider:"OPEN_AI",
+model:"text-embedding-ada-002",
+});
+Embeddings are arrays of numbers representing the semantic meaning of the text. They enable similarity searches in a vector database.OverviewVector DatabasesLightMIT 2024  Nextra.
+Vector Databases  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageStep 3: Vector StorageQuestion? Give us feedback Edit this pageScroll to topDocsRAGVector DatabasesStep 3: Vector Storage
+Store embeddings in a vector database for efficient querying. Mastra supports PgVector, Pinecone, Qdrant, and more.
+Example with PgVector:
+import{ PgVector }from'@mastra/rag';
+
+awaitPgVector.upsert({
+connectionString:'postgresql://localhost:5432/mydb',
+tableName:'embeddings',
+documents: chunks,
+embeddings,
+});
+For details on each vector stores configuration and usage, see the reference docs forPgVector,Pinecone, andQdrant.Chunking and EmbeddingRetrievalLightMIT 2024  Nextra.
+Retrieval  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageStep 4: Querying the Knowledge BaseQuestion? Give us feedback Edit this pageScroll to topDocsRAGRetrievalStep 4: Querying the Knowledge Base
+When a user asks a question, embed their query and retrieve relevant chunks:
+import{ embed }from"@mastra/rag";
+
+const{embedding}=awaitembed("What are the main points in the article?", {
+provider:'openai',
+model:'text-embedding-ada-002',
+});
+
+constresults=awaitPgVector.query({
+connectionString:"postgresql://localhost:5432/mydb",
+tableName:"embeddings",
+queryEmbedding: embedding,
+topK:5,
+});
+
+console.log(results);
+// Example structure:
+// [
+// { text: "A chunk related to main points...", metadata: { title: "...", ... } },
+// ...
+// ]
+
+// Incorporate these results into your LLM prompt
+constprompt=`
+Using the context below, answer the user's question.
+
+Context:
+${results.map(r=>r.text).join('\n')}
+
+User's question: What are the main points in the article?
+`;
+
+// Send `prompt` to your LLM model for a more informed and grounded response.Vector DatabasesEngineLightMIT 2024  Nextra.
+Mastra Engine  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageKey FeaturesGetting StartedInstallationInitializationCore ConceptsEntities and RecordsSync OperationsRAG and Vector SearchCLI CommandsExample: Using the Mock Engine in TestsProduction ConsiderationsAPI SummaryConclusionQuestion? Give us feedback Edit this pageScroll to topDocsEngineEngineMastra Engine
+The Mastra Engine is a PostgreSQL-based system that provides core infrastructure for AI applications built on Mastra. It handles data persistence, background processing, and vector search capabilities to help you run your AI workflows, syncs, and agents in a production-ready environment.
+Mastra Engine is not required to run Mastra, but provides a batteries-included local development experience and a production-ready data layer.
+Key Features
+
+Data Persistence: Store agent states, records, conversation history, and other data required by your AI application.
+Sync Infrastructure: Run sync tasks that load and merge data from various sources in a consistent manner.
+Vector Search (RAG): Integrate vector stores for Retrieval-Augmented Generation (RAG) to build a knowledge base and query it for context.
+Database Migrations & Type Generation: Automatically manage database schema and generate TypeScript types to ensure type safety.
+
+Getting Started
+Installation
+Ensure you have Mastra and its CLI installed. Then add the engine package:
+npminstall@mastra/engine
+Initialization
+Initialize the Mastra Engine by passing in a database connection URL. This can be done when you set up your main Mastra instance:
+import{ Mastra }from'@mastra/core';
+import{ PostgresEngine }from'@mastra/engine';
+
+exportconstmastra=newMastra({
+engine:newPostgresEngine({
+url: process.env.DATABASE_URL!,// e.g., 'postgresql://localhost:5432/mydb'
+}),
+// ...other configuration
+});
+Once initialized, the Mastra Engine becomes available to all registered agents, workflows, tools, and syncs.
+Core Concepts
+Entities and Records
+
+Entitiesrepresent a conceptual data model (like Contacts, Orders, or Tickets) in your application.
+Recordsare individual data entries within an entity.
+
+You can create, read, update, and delete entities and their records using the engines methods.
+Sync Operations
+Syncs are async functions that manage data synchronization between external systems and Mastra. For example, you can use a sync to import records from a third-party API into your local database.
+RAG and Vector Search
+With RAG (Retrieval-Augmented Generation), you can store document embeddings in the database and efficiently query them using vector search. The Mastra Engine can integrate with vector stores like PostgreSQL PgVector, Pinecone, or Qdrant. This allows your LLM to retrieve relevant context from your custom knowledge base.
+CLI Commands
+The Mastra CLI includes commands to manage your engine and database:
+
+mastra engine up: Sets up your dev environment, starts Docker containers for Postgres, and configures.env.
+mastra engine migrate: Runs database migrations.
+mastra engine generate: Generates TypeScript types from your database schema.
+
+Example: Using the Mock Engine in Tests
+For testing or development, you can use theMockMastraEngine:
+import{ MockMastraEngine }from'@mastra/engine';
+
+constmockEngine=newMockMastraEngine({ url:'mock://localhost'});
+
+// Create an entity
+constentity=awaitmockEngine.createEntity({
+name:'Contacts',
+connectionId:'user_123',
+});
+
+// Insert records
+awaitmockEngine.upsertRecords({
+entityId: entity.id,
+records: [
+{ externalId:'c1', data: { name:'Alice'}, entityType:'Contacts'},
+{ externalId:'c2', data: { name:'Bob'}, entityType:'Contacts'},
+],
+});
+
+// Query the records
+constrecords=awaitmockEngine.getRecordsByEntityId({ entityId: entity.id });
+console.log(records);
+This mock engine mimics the behavior of the real engine without requiring a real database connection, making it ideal for unit tests.
+Production Considerations
+When running in production:
+
+Connection Pooling: Ensure proper connection pooling and timeouts for your Postgres connection.
+Migrations: Runmastra engine migrateduring deployment to keep the schema up to date.
+Backups: Regularly back up your Postgres database.
+Observability: Use built-in telemetry and logging features in Mastra to monitor engine queries and performance.
+
+API Summary
+Entity Management:
+
+createEntity({ name, connectionId }): Create a new entity
+getEntityById({ id }): Get an entity by ID
+getEntity({ name, connectionId }): Get entity by name and/or connectionId
+deleteEntityById({ id }): Delete an entity and its associated records
+
+Record Management:
+
+upsertRecords({ entityId, records }): Insert or update records for an entity
+getRecordsByEntityId({ entityId }): Retrieve all records for an entity
+getRecordsByEntityName({ name, connectionId }): Retrieve all records for an entity by name and connectionId
+getRecords({ entityName, connectionId, options }): Query records with filtering, sorting, and pagination
+
+Sync Operations:
+
+syncRecords({ name, connectionId, records, lastSyncId }): Sync incoming data to an entity
+
+Vector Search (Future)
+
+Integrate with vector stores for RAG workflows.
+
+Conclusion
+Mastra Engine is a key building block for building robust AI applications. By providing a standardized way to manage entities, records, and sync operations, it ensures a consistent and scalable data layer. Combined with Mastras workflows, agents, and observability tools, you can move from a prototype to a production-grade AI system with confidence.RetrievalSyncsLightMIT 2024  Nextra.
+Mastra Syncs  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageCreating a SyncRegistering SyncsExecuting SyncsSync ContextProduction UsageExample Use CasesTesting SyncsQuestion? Give us feedback Edit this pageScroll to topDocsEngineSyncsMastra Syncs
+Syncs in Mastra are async functions that handle data synchronization and background tasks. Unlike full job systems (e.g., Inngest or Trigger.dev), Mastra syncs are executed synchronously in the current process and do not include built-in retry, scheduling, or job queue capabilities.
+Creating a Sync
+Create a sync using thecreateSyncfunction:
+import{ createSync }from"@mastra/core";
+import{ z }from"zod";
+
+exportconstmySync=createSync({
+id:"my-sync",
+description:"Synchronize user data",
+inputSchema: z.object({
+userId: z.string(),
+data: z.record(z.any()),
+}),
+outputSchema: z.object({
+success: z.boolean(),
+message: z.string(),
+}),
+execute:async({context,engine})=>{
+try{
+awaitengine.syncRecords({
+connectionId:"users",
+name:"user_data",
+records: [
+{
+externalId: context.userId,
+data: context.data,
+},
+],
+});
+
+return{
+success:true,
+message:"Data synchronized successfully",
+};
+}catch(error) {
+return{
+success:false,
+message: error.message,
+};
+}
+},
+});
+Registering Syncs
+Register syncs when initializing Mastra:
+import{ Mastra }from"@mastra/core";
+import{ PostgresEngine }from"@mastra/engine";
+
+exportconstmastra=newMastra({
+engine:newPostgresEngine({
+url: process.env.DATABASE_URL,
+}),
+syncs: {
+mySync,
+otherSync,
+},
+});
+Executing Syncs
+Execute a sync using thesyncmethod:
+constresult=awaitmastra.sync("mySync", {
+userId:"123",
+data: {
+name:"John Doe",
+email:"john@example.com",
+},
+});
+Sync Context
+Syncs receive a context object with:
+
+context: The input parameters (validated byinputSchema)
+engine: The Mastra engine instance
+agents: Available Mastra agents
+vectors: Vector storage capabilities
+llm: LLM functionality
+runId: Optional execution ID for tracking
+
+Production Usage
+For production environments, its recommended to wrap Mastra syncs in a proper job system. For example:
+import{ Queue }from"your-job-system";
+
+constqueue=newQueue("data-sync");
+
+queue.process("sync-user-data",async(job)=>{
+constresult=awaitmastra.sync("mySync", job.data);
+returnresult;
+});
+Example Use Cases
+
+Data Synchronization:
+
+examples/vnext/src/mastra/syncs/index.tsexportconstmySync=createSync({
+label:"My Sync",
+description:"This is a test sync",
+schema: z.object({
+name: z.string(),
+connectionId: z.string(),
+records: z.array(
+z.object({
+data: z.record(z.any()),
+externalId: z.string(),
+}),
+),
+}),
+outputShema: z.object({
+message: z.string(),
+}),
+execute:async({context,engine})=>{
+awaitengine.syncRecords({
+name: context.name,
+connectionId: context.connectionId,
+records: context.records,
+});
+
+return{
+message:"Hello",
+};
+},
+});
+
+Web Crawling:
+
+examples/openapi-spec-writer/src/mastra/syncs/index.tsexportconstsiteCrawlSync=createSync({
+id:"site-crawl-sync",
+label:"Site Crawl Sync",
+inputSchema: z.object({
+url: z.string(),
+pathRegex: z.string(),
+limit: z.number(),
+}),
+outputSchema: z.object({
+success: z.boolean(),
+crawlData: z.array(
+z.object({
+markdown: z.string(),
+metadata: z.object({
+sourceURL: z.string(),
+}),
+})
+),
+entityType: z.string(),
+}),
+description:
+"Crawl a website and extract the markdown content and sync it to the database",
+execute:async({context,engine,runId})=>{
+consttoolResult=awaittools.siteCrawlTool.execute({
+context,
+runId,
+});
+
+const{crawlData,entityType}=toolResult;
+
+if(!crawlData) {
+return{
+success:false,
+crawlData: [],
+entityType:"",
+};
+}
+
+constrecordsToPersist=awaitPromise.all(
+crawlData?.flatMap(async({markdown,metadata})=>{
+constdoc=MDocument.fromMarkdown(markdown, metadata);
+
+awaitdoc.chunk({
+strategy:"markdown",
+options: {
+maxSize:8190,
+},
+});
+
+constchunks=doc.getDocs();
+
+returnchunks.map((c,i)=>{
+return{
+externalId:`${c.metadata?.sourceURL}_chunk_${i}`,
+data: { markdown: c.text },
+};
+});
+})
+);
+
+awaitengine?.syncRecords({
+connectionId:"SYSTEM",
+records: recordsToPersist.flatMap((r)=>r),
+name: entityType,
+});
+
+return{
+success:true,
+crawlData,
+entityType,
+};
+},
+Testing Syncs
+You can test syncs using the mock engine:
+packages/core/src/sync/sync.test.tsconsttestSync=createSync({
+id:"test",
+description:"test",
+inputSchema: z.object({
+name: z.string(),
+}),
+outputSchema: z.object({
+message: z.string(),
+}),
+execute:async({context})=>{
+return{
+message:`Hello, ${context.name}`,
+};
+},
+});
+Remember that syncs are meant for data synchronization tasks rather than full background job processing. For production applications requiring robust job scheduling, retries, and distributed execution, wrap Mastra syncs in your preferred job system (or use the job system of the platform you are deploying to).EngineIntegrationsLightMIT 2024  Nextra.
+Mastra Integrations  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageInstalling an IntegrationExample: Adding the GitHub IntegrationUsing Integrations in AgentsEnvironment ConfigurationAvailable IntegrationsConclusionQuestion? Give us feedback Edit this pageScroll to topDocsEngineIntegrationsMastra Integrations
+Integrations in Mastra are auto-generated, type-safe API clients for third-party services. They allow you to seamlessly interact with external APIs and services within your Mastra applications. Integrations can be used as tools for agents or as steps in workflows, enabling your AI agents to perform complex tasks involving external systems.
+Installing an Integration
+Mastras default integrations are packaged as individually installable npm modules. You can add an integration to your project by installing it via npm and importing it into your Mastra configuration.
+Example: Adding the GitHub Integration
+
+Install the Integration Package
+
+To install the GitHub integration, run:
+npminstall@mastra/github
+
+Add the Integration to Your Project
+
+Create a new file for your integrations (e.g.,src/mastra/integrations/index.ts) and import the integration:
+import{ GithubIntegration }from'@mastra/github';
+
+exportconstgithub=newGithubIntegration({
+config: {
+PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PAT!,
+},
+});
+Make sure to replaceprocess.env.GITHUB_PAT!with your actual GitHub Personal Access Token or ensure that the environment variable is properly set.
+
+Use the Integration in Tools or Workflows
+
+You can now use the integration when defining tools for your agents or in workflows.
+import{ createTool }from'@mastra/core';
+import{ z }from'zod';
+import{ github }from'../integrations';
+
+exportconstgetMainBranchRef=createTool({
+id:'getMainBranchRef',
+description:'Fetch the main branch reference from a GitHub repository',
+inputSchema: z.object({
+owner: z.string(),
+repo: z.string(),
+}),
+outputSchema: z.object({
+ref: z.string(),
+}),
+execute:async({context})=>{
+constclient=awaitgithub.getApiClient();
+
+constmainRef=awaitclient.git.getRef({
+owner: context.owner,
+repo: context.repo,
+ref:'heads/main',
+});
+
+return{ ref: mainRef.data.ref };
+},
+});
+In the example above:
+
+We import thegithubintegration.
+We define a tool calledgetMainBranchRefthat uses the GitHub API client to fetch the reference of the main branch of a repository.
+The tool acceptsownerandrepoas inputs and returns the reference string.
+
+Using Integrations in Agents
+Once youve defined tools that utilize integrations, you can include these tools in your agents.
+import{ Agent }from'@mastra/core';
+import{ getMainBranchRef }from'./tools';
+
+exportconstcodeReviewAgent=newAgent({
+name:'Code Review Agent',
+instructions:'An agent that reviews code repositories and provides feedback.',
+model: {
+provider:'OPEN_AI',
+name:'gpt-4',
+},
+tools: {
+getMainBranchRef,
+// other tools...
+},
+});
+In this setup:
+
+We create an agent namedCode Review Agent.
+We include thegetMainBranchReftool in the agents available tools.
+The agent can now use this tool to interact with GitHub repositories during conversations.
+
+Environment Configuration
+Ensure that any required API keys or tokens for your integrations are properly set in your environment variables. For example, with the GitHub integration, you need to set your GitHub Personal Access Token:
+GITHUB_PAT=your_personal_access_token
+Consider using a.envfile or another secure method to manage sensitive credentials.
+Available Integrations
+Mastra provides several built-in integrations; primarily API-key based integrations that do not require OAuth. Some available integrations including Github, Stripe, Resend, Firecrawl, and more.
+CheckMastras codebaseornpm packagesfor a full list of available integrations.
+Conclusion
+Integrations in Mastra enable your AI agents and workflows to interact with external services seamlessly. By installing and configuring integrations, you can extend the capabilities of your application to include operations such as fetching data from APIs, sending messages, or managing resources in third-party systems.
+Remember to consult the documentation of each integration for specific usage details and to adhere to best practices for security and type safety.SyncsLogging and TracingLightMIT 2024  Nextra.
+Logging and Tracing  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageLoggingBasic SetupConfigurationTelemetryBasic ConfigurationAutomatic InstrumentationExample: Tracing an Agent InteractionConfiguration OptionsUsing Environment VariablesNext.js ConfigurationQuestion? Give us feedback Edit this pageScroll to topDocsDeploying to ProdLogging and TracingLogging and Tracing
+Effective logging and tracing are crucial for understanding the behavior of your application.
+Tracing is especially important for AI engineering. Teams building AI products find that visibility into inputs and outputs of every step of every run is crucial to improving accuracy. You get this with Mastras telemetry.
+You can log to console or send log drains to third party services like Upstash. You can send traces to your favorite observability service like Datadog, Honeycomb, as well as AI-specific observability services like Braintrust or Langfuse.
+Logging
+In Mastra, logs can detail when certain functions run, what input data they receive, and how they respond.
+Basic Setup
+Heres a minimal example that sets up aconsole loggerat theINFOlevel. This will print out informational messages and above (i.e.,INFO,WARN,ERROR) to the console.
+mastra.config.tsimport{ Mastra, createLogger }from'@mastra/core';
+
+exportconstmastra=newMastra({
+// Other Mastra configuration...
+logger:createLogger({
+type:'CONSOLE',
+level:'INFO',
+}),
+});
+In this configuration:
+
+type: "CONSOLE"specifies that logs should be output to the console.
+level: "INFO"sets the minimum severity of logs to record.
+
+Configuration
+
+For more details on the options you can pass tocreateLogger(), see thecreateLogger reference documentation.
+Once you have aLoggerinstance, you can call its methods (e.g.,.info(),.warn(),.error()) in theLogger instance reference documentation.
+If you need to direct logs to multiple destinationslike both console and an external logging servicesee thecombineLoggers reference documentation.
+If you want to send your logs to an external service for centralized collection, analysis, or storage, you can configure other logger types such as Upstash Redis. Consult thecreateLogger reference documentationfor details on parameters likeurl,token, andkeywhen using theUPSTASHlogger type.
+
+Telemetry
+Mastra supports OpenTelemetry for tracing and monitoring your application. You can enable telemetry by adding thetelemetryproperty to your Mastra configuration.
+Basic Configuration
+Heres a simple example of enabling telemetry:
+mastra.config.tsexportconstmastra=newMastra({
+// ... other config
+telemetry: {
+serviceName:'my-app',
+enabled:true,
+sampling: {
+type:'always_on',
+},
+export: {
+type:'console',
+},
+},
+});
+Automatic Instrumentation
+When telemetry is enabled, Mastra automatically traces all core primitives including:
+
+Agent operations and steps
+LLM interactions
+Tool executions
+Integration calls
+Workflow runs
+Database operations
+
+This gives you visibility into your applications behavior without any additional configuration.
+Example: Tracing an Agent Interaction
+Heres what a traced agent interaction looks like inSignoz:
+
+Configuration Options
+The telemetry config accepts these properties:
+typeOtelConfig={
+// Name to identify your service in traces (optional)
+serviceName?:string;
+
+// Enable/disable telemetry (defaults to true)
+enabled?:boolean;
+
+// Control how many traces are sampled
+sampling?:{
+type:'ratio'|'always_on'|'always_off'|'parent_based';
+probability?:number;// For ratio sampling
+root?:{
+probability:number;// For parent_based sampling
+};
+};
+
+// Where to send telemetry data
+export?:{
+type:'otlp'|'console';
+endpoint?:string;
+headers?:Record<string,string>;
+};
+};
+See theOtelConfig reference documentationfor more details.
+Using Environment Variables
+You can configure the OTLP endpoint and headers through environment variables:
+.envOTEL_EXPORTER_OTLP_ENDPOINT=https://api.honeycomb.io
+OTEL_EXPORTER_OTLP_HEADERS=x-honeycomb-team=your-api-key
+Then in your config:
+mastra.config.tsexportconstmastra=newMastra({
+// ... other config
+telemetry: {
+serviceName:'my-app',
+enabled:true,
+export: {
+type:'otlp',
+// endpoint and headers will be picked up from env vars
+},
+},
+});
+Next.js Configuration
+When developing locally with Next.js, youll need to:
+
+Install the instrumentation package:
+
+npminstallimport-in-the-middle# or require-in-the-middle for CJS
+
+Add it as an external dependency in your Next.js config:
+
+next.config.tsimporttype{ NextConfig }from'next';
+
+constnextConfig:NextConfig={
+serverExternalPackages: ['import-in-the-middle'],
+};
+
+exportdefaultnextConfig;
+This configuration is only necessary for local development to ensure proper instrumentation during hot reloading.IntegrationsDeploymentLightMIT 2024  Nextra.
+Deployment  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PagePrerequisitesDeploying to VercelSteps to DeployExampleDeploying to Cloudflare WorkersSteps to DeployExampleAdditional TipsEnsure YourmastraInstance is Exported ProperlyConclusionQuestion? Give us feedback Edit this pageScroll to topDocsDeploying to ProdDeploymentDeployment
+In this guide, well cover how to deploy your Mastra agents and workflows using themastra deploycommand. Once deployed, your agents and workflows will be available via REST endpoints.
+Currently, the Mastra CLI supports deploying toVercelandCloudflare Workers.
+Prerequisites
+Before you begin, ensure you have the following:
+
+Node.jsinstalled (version 18 or higher is recommended).
+Mastra CLIinstalled globally:
+
+npminstall-gmastra
+
+An existing Mastra project set up. If not, initialize one using:
+
+mastrainit
+
+A Vercel account (if deploying to Vercel) or a Cloudflare account (if deploying to Cloudflare Workers).
+
+Deploying to Vercel
+Vercelis a cloud platform for static sites and serverless functions. Mastra can be easily deployed to Vercel using the CLI.
+Steps to Deploy
+
+Install the Vercel CLI(if you havent already):
+
+npminstall-gvercel
+
+Login to Vercel:
+
+vercellogin
+
+Deploy with Mastra CLI:
+
+Navigate to your project directory and run:
+mastradeployvercel
+The CLI will guide you through the deployment process, including:
+
+Authentication: If you havent provided a Vercel token before, youll be prompted to enter one.
+Team Selection: Choose the Vercel team or scope to deploy under.
+Environment Variables: Set any required environment variables (e.g.,OPENAI_API_KEY,ANTHROPIC_API_KEY).
+
+Set Environment Variables on Vercel(Optional):
+
+If you didnt set environment variables during deployment, you can configure them in the Vercel dashboard:
+
+Go to your Vercel project.
+Navigate toSettings > Environment Variables.
+Add your variables (e.g.,OPENAI_API_KEY,ANTHROPIC_API_KEY).
+
+Example
+cdyour-mastra-project
+mastradeployvercel
+Follow the prompts provided by the CLI to complete the deployment.
+
+Deploying to Cloudflare Workers
+Cloudflare Workersallow you to deploy serverless applications to Cloudflares edge network.
+Steps to Deploy
+
+Install the Wrangler CLI:
+
+npminstall-gwrangler
+
+Login to Cloudflare:
+
+wranglerlogin
+
+Deploy with Mastra CLI:
+
+Navigate to your project directory and run:
+mastradeploycloudflare
+The CLI will guide you through the process, including:
+
+Authentication: If you havent logged in, youll be prompted to do so.
+Project Configuration: The CLI will generate awrangler.tomlfile with necessary settings.
+Environment Variables: Set any required variables in thewrangler.tomlfile or via the Cloudflare dashboard.
+
+Set Environment Variables inwrangler.toml:
+
+Edit thewrangler.tomlfile in your project directory to include your environment variables:
+[vars]
+OPENAI_API_KEY ="your-openai-api-key"
+ANTHROPIC_API_KEY ="your-anthropic-api-key"
+Example
+cdyour-mastra-project
+mastradeploycloudflare
+Follow the prompts provided by the CLI to complete the deployment.
+
+Additional Tips
+Ensure YourmastraInstance is Exported Properly
+Make sure that yourmastrainstance is exported in your entry file (e.g.,src/mastra/index.ts):
+import { Mastra } from '@mastra/core';
+
+export const mastra = new Mastra({
+// Your configuration here
+});
+Conclusion
+Congratulations! Youve successfully deployed your Mastra agents and workflows. Theyre live on the internet and ready to be used by your users.Logging and TracingEvalsLightMIT 2024  Nextra.
+Running Evals  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightQuestion? Give us feedback Edit this pageScroll to topDocsEvalsRunning Evals
+Evals are automated tests that evaluate LLM outputs using model-graded, rule-based, and statistical methods. Each eval returns a normalized score between 0-1 that can be logged and compared. Evals can be customized with your own prompts and scoring functions.
+Evals suites run in the cloud, but as tests, its logical to store them in your codebase. Because LLMs are non-deterministic, you might not get a 100% pass rate every time.
+Mastra recommends using Braintrusts eval framework,autoevals, to run evals. They have a free tier that should be enough for most use cases.
+Other open-source eval frameworks:
+
+Laminar
+PromptFoo
+DeploymentMastra ClassLightMIT 2024  Nextra.
+The Mastra Class  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageConstructor OptionsInitializationMethodsError HandlingQuestion? Give us feedback Edit this pageScroll to topDocsReferenceLocal DevMastra ClassThe Mastra Class
+The Mastra class is the core entry point for your application. It manages agents, workflows, and server endpoints.
+Constructor Options
+agents?:Agent[]Array of Agent instances to registertools?:Record<string, ToolApi>Custom tools to register. Structured as a key-value pair, with keys being the tool name and values being the tool function.integrations?:Integration[]Array of Mastra integrations to register. Will be used by agents, workflows, and tools.engine?:MastraEngineDatabase engine instancevectors?:Record<string, MastraVector>Vector store instance, used for semantic search and vector-based tools (eg Pinecone, PgVector or Qdrant)logger?:LoggerLogger instance created with createLogger()workflows?:Workflow[]Array of Workflow instances to registersyncs?:Record<string, SyncConfig>Sync configurations (requires engine)
+Initialization
+The Mastra class is typically initialized in yoursrc/mastra/index.tsfile:
+import{ Mastra, createLogger }from"@mastra/core";
+
+// Basic initialization
+exportconst
+mastra=newMastra({});
+
+// Full initialization with all options
+exportconst
+mastra=newMastra({
+agents: {},
+workflows: [],
+integrations: [],
+logger:createLogger({
+type:"CONSOLE",
+level:"INFO",
+}),
+engine: {},
+syncs: {},
+tools: {},
+vectors: {},
+});
+You can think of theMastraclass as a top-level registry. When you register tools with Mastra, your registered agents and workflows can use them. When you register integrations with Mastra, agents, workflows, and tools can use them.
+Methods
+getAgent(name):AgentReturns an agent instance by id. Throws if agent not found.sync<K>(key, params):Promise<void>Executes a sync operation. Requires engine to be configured. Throws if sync not found.setLogger({ key, logger }):voidSets a logger for a specific component (AGENT | WORKFLOW). Advanced use case.getLogger(key):Logger | undefinedGets the logger for a specific component. Advanced use case.
+Error Handling
+The Mastra class methods throw typed errors that can be caught:
+try{
+consttool=mastra.getTool("nonexistentTool");
+}catch(error) {
+if(errorinstanceofError) {
+console.log(error.message);// "Tool with name nonexistentTool not found"
+}
+}EvalsMastra CLILightMIT 2024  Nextra.
+The Mastra CLI  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageInstalling the Mastra CLISetupmastra initAgentsmastra agent newmastra agent listEnginemastra engine addmastra engine generatemastra engine upmastra engine migrateServermastra serveQuestion? Give us feedback Edit this pageScroll to topDocsReferenceLocal DevMastra CLIThe Mastra CLI
+The Mastra CLI enables you to get up and running with mastra quickly. It is not required to use mastra, but helpful for getting started and scaffolding your project structure.
+Installing the Mastra CLI
+npmi-gmastra
+The Mastra CLI has the following commands:
+Setup
+mastra init
+This creates a new Mastra project. You can run it in three different ways:
+
+Interactive Mode (Recommended)Run without flags to use the interactive prompt, which will guide you through:
+
+Choosing a directory for Mastra files
+Selecting components to install (Agents, Tools, Workflows)
+Choosing a default LLM provider (OpenAI, Anthropic, or Groq)
+Deciding whether to include example code
+
+Quick Start with Defaults
+mastrainit--default
+This sets up a project with:
+
+Source directory:src/
+All components: agents, tools, workflows
+OpenAI as the default provider
+No example code
+
+Custom Setup
+mastrainit--dirsrc/mastra--componentsagents,tools--llmopenai--example
+Options:
+
+-d, --dir: Directory for Mastra files (defaults to src/mastra)
+-c, --components: Comma-separated list of components (agents, tools, workflows)
+-l, --llm: Default model provider (openai, anthropic, or groq)
+-e, --example: Include example code
+-ne, --no-example: Skip example code
+
+Agents
+mastra agent new
+Creates a new agent and automatically updates the agent index file. This command will:
+
+Guide you through creating a new agent
+Generate the necessary boilerplate code
+Update the agent index to include the new agent
+
+mastra agent list
+Lists all available agents in your project with a numbered index for easy reference.
+Engine
+mastra engine add
+Installs the@mastra/enginedependency to your project. The Mastra engine enables:
+
+Data Persistence: Store conversation history, agent states, and vector embeddings
+Background Processing: Run long-running tasks and data synchronization jobs
+RAG Capabilities: Build and search knowledge bases with vector embeddings
+Type Safety: Generate TypeScript types from your database schema
+
+While not required for basic agent interactions, the engine becomes essential when your application needs persistence, background tasks, or vector search capabilities.
+mastra engine generate
+Generates the Drizzle database client and TypeScript types based on your database schema. Requires a valid database connection.
+mastra engine up
+Sets up your development environment by:
+
+Runningdocker-compose upto start required Docker containers
+Creating or updating your environment file with the correct database URL
+Configuring the necessary environment variables
+
+mastra engine migrate
+Runs database migrations to keep your schema up to date.
+
+Requires a validDB_URLin your environment file
+IfDB_URLis missing, youll be prompted to runmastra engine upfirst
+Automatically applies any pending migrations
+
+Server
+mastra serve
+Starts a development server that creates REST API endpoints for your agents and workflows:
+Endpoints Created:
+
+/agent/:agentId/text- Text completion with any agent
+/agent/:agentId/stream- Streaming responses from any agent
+/workflows/:workflowId/execute- Execute any workflow
+
+Example usage:
+# Start the server
+mastraserve
+
+# Make a request to an agent
+curl-XPOSThttp://localhost:4111/agent/my-agent/text\
+-H"Content-Type: application/json"\
+-d'{"messages": ["Your prompt here"]}'
+The server:
+
+Runs on port 4111 by default
+Loads environment from.env.developmentor.env
+Automatically configures available API keys
+
+For more help on any command, you can run:
+mastra[command] --helpMastra ClassProviders and ModelsLightMIT 2024  Nextra.
+Providers and Models  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageIntroductionSupported ModelsMost popular providersOther natively supported providersCommunity supported providersExample: Custom Provider - OllamaPortkey supported providersQuestion? Give us feedback Edit this pageScroll to topDocsReferenceLLMProviders and ModelsProviders and Models
+Introduction
+Mastra supports a variety of language models from different providers. There are four types of providers we support:
+
+Most popular providers.OpenAI, Anthropic, Google Gemini. These are the most popular models and are highly recommended for most use cases. We will reference them and use them in docs and examples.
+Other natively supported providers.Mastra is built on AI SDK and supports a number of AI SDK supported models out of the box. We will always try to use these models in docs and examples.
+Community supported providers.A number of other providers have built AI SDK integrations (via creating an AI SDK provider).
+Custom providers through Portkey.If a provider does not have an AI SDK integration, you can use them through Portkey (an open-source AI gateway).
+
+Supported Models
+Most popular providers
+ProviderSupported ModelsOpenAIgpt-4,gpt-4-turbo,gpt-3.5-turbo,gpt-4o,gpt-4o-miniAnthropicclaude-3-5-sonnet-20241022,claude-3-5-sonnet-20240620,claude-3-5-haiku-20241022,claude-3-opus-20240229,claude-3-sonnet-20240229,claude-3-haiku-20240307Google Geminigemini-1.5-pro-latest,gemini-1.5-pro,gemini-1.5-flash-latest,gemini-1.5-flash
+Other natively supported providers
+ProviderSupported ModelsGroqllama3-groq-70b-8192-tool-use-preview,llama3-groq-8b-8192-tool-use-preview,gemma2-9b-it,gemma-7b-itPerplexityllama-3.1-sonar-small-128k-online,llama-3.1-sonar-large-128k-online,llama-3.1-sonar-huge-128k-online,llama-3.1-sonar-small-128k-chatTogetherAIcodellama/CodeLlama-34b-Instruct-hf,upstage/SOLAR-10.7B-Instruct-v1.0,mistralai/Mixtral-8x7B-v0.1,WhereIsAI/UAE-Large-V1LM Studioqwen2-7b-instruct-4bit,qwen2-math-1.5b,qwen2-0.5b,aya-23-8b,mistral-7b-v0.3Basetenllama-3.1-70b-instruct,qwen2.5-7b-math-instruct,qwen2.5-14b-instruct,qwen2.5-32b-coder-instructFireworksllama-3.1-405b-instruct,llama-3.1-70b-instruct,llama-3.1-8b-instruct,llama-3.2-3b-instructMistralpixtral-large-latest,mistral-large-latest,mistral-small-latest,ministral-3b-latestX Grokgrok-beta,grok-vision-betaCoherecommand-r-plusAzuregpt-35-turbo-instructAmazonamazon-titan-tg1-large,amazon-titan-text-express-v1,anthropic-claude-3-5-sonnet-20241022-v2:0Anthropic Vertexclaude-3-5-sonnet@20240620,claude-3-opus@20240229,claude-3-sonnet@20240229,claude-3-haiku@20240307
+Community supported providers
+You can see a list of Vercels community supported providershere. You can also write your own provider if desired.
+Example: Custom Provider - Ollama
+Here is an example of using a custom provider, Ollama, to create a model instance.
+npmpnpmyarnbunnpminstallollama-ai-providerpnpmaddollama-ai-provideryarnaddollama-ai-providerbunaddollama-ai-provider
+Import and configure the Ollama model by usingcreateOllamafrom theollama-ai-providerpackage.
+import{ createOllama }from"ollama-ai-provider";
+
+constollama=createOllama({
+// optional settings, e.g.
+baseURL:"https://api.ollama.com",
+});
+After creating the instance, you can use it like any other model in Mastra.
+src/mastra/index.tsimport{ Mastra,typeModelConfig }from"@mastra/core";
+import{ createOllama }from"ollama-ai-provider";
+
+constollama=createOllama({
+// optional settings, e.g.
+baseURL:"https://api.ollama.com",
+});
+
+constmodelConfig:ModelConfig={
+model: ollama.chat("gemma"),// The model instance created by the Ollama provider
+apiKey: process.env.OLLAMA_API_KEY,
+provider:"Ollama",
+toolChoice:"auto",// Controls how the model handles tool/function calling
+};
+
+constmastra=newMastra({});
+
+constllm=mastra.llm;
+
+constresponse=awaitllm.generate(
+[
+{
+role:"user",
+content:"What is machine learning?",
+},
+],
+{ model: modelConfig },
+);
+Portkey supported providers
+Portkeyis an open-source AI gateway with support for 200+ providers, so if the provider you want isnt available through AI SDK, it probably is through Portkey.
+You can refer to thePortkey documentationfor more details on how to implement custom models.
+Additionally, you can find an example implementation in theMastra GitHub repository.Mastra CLIgenerateLightMIT 2024  Nextra.
+generate()  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageParametersmessagesMessage Object Structureoptions(Optional)DefinitionReturnsPropertiesTable for Return ValuesQuestion? Give us feedback Edit this pageScroll to topDocsReferenceLLMgenerategenerate()
+Thegenerate()method is used to interact with the language model to produce text or structured responses. This method acceptsmessagesand an optionaloptionsobject as parameters.
+Parameters
+messages
+Themessagesparameter can be:
+
+A single string
+An array of strings
+An array of message objects withroleandcontentproperties
+
+Message Object Structure
+interfaceMessage{
+role:'system'|'user'|'assistant';
+content:string;
+}
+options(Optional)
+An optional object that can include:
+
+stream: A boolean indicating if the response should be streamed.
+schema: An object defining the expected structure of the output. Can be a JSON Schema or a Zod schema.
+Additional options such as callbacks and configurations.
+
+Definition
+messages:string | string[] | Message[]The messages to be processed by the LLM. Can be a single string, an array of strings, or an array of message objects with `role` and `content`.options?:objectAdditional options for the `generate` method.booleanobject | Zod schema(result: string) => Promise<void> | void(step: string) => voidnumberobjectstring
+Returns
+The return value of thegenerate()method depends on thestreamandschemaoptions provided. It can include one or more of the following properties:
+PropertiesTable for Return Values
+text?:stringThe generated text response. Present if `stream` is `false` and `schema` is not provided.object?:objectThe generated structured response based on the provided `schema`. Present if `schema` is provided and `stream` is `false`.textStream?:AsyncIterable<string>An async iterable stream of text chunks. Present if `stream` is `true` and `schema` is not provided.objectStream?:AsyncIterable<object>An async iterable stream of structured data. Present if `stream` is `true` and `schema` is provided.error?:stringError message if the generation fails.Providers and ModelsgetAgentLightMIT 2024  Nextra.
+getAgent  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageAPI SignatureParametersReturnsQuestion? Give us feedback Edit this pageScroll to topDocsReferenceAgentsgetAgentgetAgent()
+Retrieve an agent based on the provided configuration
+asyncfunctiongetAgent({
+connectionId,
+agent,
+apis,
+logger,
+}:{
+connectionId:string;
+agent:Record<string,any>;
+apis:Record<string,IntegrationApi>;
+logger:any;
+}):Promise<(props:{prompt:string})=>Promise<any>> {
+returnasync(props:{prompt:string})=>{
+return{ message:"Hello, world!"};
+};
+}
+API Signature
+Parameters
+connectionId:stringThe connection ID to use for the agent's API calls.agent:Record<string, any>The agent configuration object.apis:Record<string, IntegrationAPI>A map of API names to their respective API objects.
+Returns
+generategenerateLightMIT 2024  Nextra.
+generate()  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageParametersmessagesoptions(Optional)ReturnsPropertiesTable for Return ValuesToolCall StructureQuestion? Give us feedback Edit this pageScroll to topDocsReferenceAgentsgenerategenerate()
+Thegenerate()method is used to interact with an agent to produce text or structured responses. This method acceptsmessagesand an optionaloptionsobject as parameters.
+Parameters
+messages
+Themessagesparameter can be:
+
+A single string
+An array of strings
+An array of message objects withroleandcontentproperties
+
+The message object structure:
+interfaceMessage{
+role:'system'|'user'|'assistant';
+content:string;
+}
+options(Optional)
+An optional object that can include:
+
+stream: A boolean indicating if the response should be streamed.
+structuredOutput(orschema): An object defining the expected structure of the output. Can be a JSON Schema or a Zod schema.
+Additional options likeonStepFinish,maxSteps,threadId,resourceId, etc.
+
+messages:string | Array<string> | Array<Message>The messages to be processed by the agent. Can be a single string, an array of strings, or an array of message objects with `role` and `content`.options?:objectAdditional options for the `generate` method.booleanobject | Zod schema(step: string) => voidnumberstringstringArray<Message>
+Returns
+The return value of thegenerate()method depends on the options provided, specifically thestreamandstructuredOutputoptions.
+PropertiesTable for Return Values
+text?:stringThe generated text response. Present if `stream` is `false` and `structuredOutput` is not provided.object?:objectThe generated structured response based on the provided schema. Present if `structuredOutput` is provided and `stream` is `false`.textStream?:AsyncIterable<string>An async iterable stream of text chunks. Present if `stream` is `true` and `structuredOutput` is not provided.objectStream?:AsyncIterable<object>An async iterable stream of structured data chunks. Present if `stream` is `true` and `structuredOutput` is provided.toolCalls?:Array<ToolCall>The tool calls made during the generation process.error?:stringError message if the generation fails.
+ToolCall Structure
+toolName:stringThe name of the tool invoked.args:anyThe arguments passed to the tool.getAgentcreateToolLightMIT 2024  Nextra.
+createTool  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageAPI SignatureParametersReturnsQuestion? Give us feedback Edit this pageScroll to topDocsReferenceAgentscreateToolcreateTool()
+Tools are typed functions that can be executed by agents or workflows, with built-in integration access and parameter validation. Each tool has a schema that defines its inputs, an executor function that implements its logic, and access to configured integrations.
+src/mastra/tools/index.tsimport{ createTool }from"@mastra/core";
+import{ z }from"zod";
+
+constgetStockPrice=async(symbol:string)=>{
+constdata=awaitfetch(
+`https://mastra-stock-data.vercel.app/api/stock-data?symbol=${symbol}`,
+).then((r)=>r.json());
+returndata.prices["4. close"];
+};
+
+exportconststockPrices=createTool({
+id:"Get Stock Price",
+inputSchema: z.object({
+symbol: z.string(),
+}),
+description:`Fetches the last day's closing stock price for a given symbol`,
+execute:async({context})=>{
+console.log("Using tool to fetch stock price for", context.symbol);
+return{
+symbol: context.symbol,
+currentPrice:awaitgetStockPrice(context.symbol),
+};
+},
+});
+API Signature
+Parameters
+label:stringName of the tool (e.g., "Get Stock Prices")schema:ZodSchemaZod schema for validating inputsdescription:stringClear explanation of what market data the tool providesexecutor:(params: ExecutorParams) => Promise<any>Async function that fetches the requested market dataExecutorParamsdata:objectThe validated input data (in this case, symbol)integrationsRegistry:functionFunction to get connected integrationsrunId?:stringThe runId of the current runagents:Map<string, Agent<any>>Map of registered agentsengine?:MastraEngineMastra engine instancellm:LLMLLM instanceoutputSchema?:ZodSchemaZod schema for validating outputs
+Returns
+ToolApi:objectThe tool API object that includes the schema, label, description, and executor function.ToolApischema:ZodSchema<IN>Zod schema for validating inputs.label:stringName of the tool.description:stringDescription of the tool's functionality.outputSchema?:ZodSchema<OUT>Zod schema for validating outputs.executor:(params: IntegrationApiExcutorParams<IN>) => Promise<OUT>Async function that executes the tool's logic.generateWorkflowLightMIT 2024  Nextra.
+Workflow  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageAPI ReferenceConstructorCore Methodsstep()commit()execute()Trigger SchemasVariables & Data FlowVariable ResolutionExampleValidation1. At Commit Time2. During ExecutionError HandlingRelated DocumentationQuestion? Give us feedback Edit this pageScroll to topDocsReferenceWorkflowsWorkflowWorkflow
+The Workflow class enables you to create state machines for complex sequences of operations with conditional branching and data validation.
+import{ Workflow }from"@mastra/core";
+
+constworkflow=newWorkflow({ name:"my-workflow"});
+API Reference
+Constructor
+name:stringIdentifier for the workflowlogger?:Logger<WorkflowLogMessage>Optional logger instance for workflow execution detailssteps:Step[]Array of steps to include in the workflowtriggerSchema:z.SchemaOptional schema for validating workflow trigger data
+Core Methods
+step()
+Adds aStepto the workflow, including transitions to other steps. Returns the workflow instance for chaining.Learn more about steps.
+commit()
+Validates and finalizes the workflow configuration. Must be called after adding all steps.
+execute()
+Executes the workflow with optional trigger data. Typed based on thetrigger schema.
+Trigger Schemas
+Trigger schemas validate the initial data passed to a workflow using Zod.
+constworkflow=newWorkflow({
+name:"order-process",
+triggerSchema: z.object({
+orderId: z.string(),
+customer: z.object({
+id: z.string(),
+email: z.string().email(),
+}),
+}),
+});
+The schema:
+
+Validates data passed toexecute()
+Provides TypeScript types for your workflow input
+
+Variables & Data Flow
+Variables allow steps to access data from:
+
+Previous steps outputs
+Trigger data
+
+Variables payloads are typesafe with fields defined in theStep
+inputSchema.
+workflow
+.step("createOrder", {
+// Access trigger data
+variables: {
+orderId: { stepId:"trigger", path:"orderId"},
+},
+})
+.step("processPayment", {
+variables: {
+// Access previous step's data
+orderStatus: { stepId:"createOrder", path:"status"},
+amount: { stepId:"createOrder", path:"total"},
+},
+});
+Variable Resolution
+
+Variables are resolved in order of step execution
+Each step can access outputs of all previous steps
+Paths use dot notation for nested data
+Missing or invalid paths throw errors during execution
+
+Example
+constworkflow=newWorkflow({
+name:"process-data",
+triggerSchema: z.object({
+items: z.array(
+z.object({
+id: z.number(),
+value: z.number(),
+}),
+),
+}),
+})
+.step("filter", {
+variables: {
+items: { stepId:"trigger", path:"."},
+},
+})
+.step("process", {
+variables: {
+items: { stepId:"filter", path:"filtered.user.name"},
+},
+})
+.commit();
+Validation
+Workflow validation happens at two key times:
+1. At Commit Time
+When you call.commit(), the workflow validates:
+workflow
+.step('step1', {...})
+.step('step2', {...})
+.commit();// Validates workflow structure
+
+Circular dependencies between steps
+Terminal paths (every path must end)
+Unreachable steps
+Variable references to non-existent steps
+Duplicate step IDs
+
+2. During Execution
+When you callexecute(), it validates:
+// Validates trigger data against schema
+awaitworkflow.execute({
+orderId:"123",
+customer: {
+id:"cust_123",
+email:"invalid-email",// Will fail validation
+},
+});
+
+Trigger data against trigger schema
+Each steps input data against its inputSchema
+Variable paths exist in referenced step outputs
+Required variables are present
+
+Error Handling
+try{
+awaitworkflow.execute(data);
+}catch(error) {
+if(errorinstanceofValidationError) {
+// Handle validation errors
+console.log(error.type);// 'circular_dependency' | 'no_terminal_path' | 'unreachable_step'
+console.log(error.details);// { stepId?: string, path?: string[] }
+}
+}
+Related Documentation
+
+Step
+Transition
+createToolStepLightMIT 2024  Nextra.
+Step Configuration  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageAPI ReferenceCreating StepsStep Configuration OptionsAdding Steps to Workflowsstep()Step Configuration in WorkflowExamplesBasic StepWith Schema ValidationWith VariablesWith Static PayloadQuestion? Give us feedback Edit this pageScroll to topDocsReferenceWorkflowsStepStep Configuration
+Steps are the building blocks of a workflow. Each step defines an action to execute and how to handle its data.
+We are adding explicit OpenTelemetry tracing to each step, so that you can see the inputs and outputs of each step in your observability platform.
+API Reference
+Creating Steps
+Steps are created using theStepclass:
+conststep=newStep({
+id:"stepId",
+payload: {
+/* ... */
+},
+inputSchema: z.object({
+/* ... */
+}),
+outputSchema: z.object({
+/* ... */
+}),
+execute:async({context,runId})=>{
+/* ... */
+},
+});
+Step Configuration Options
+id:stringUnique identifier for the stepinputSchema:z.ZodSchemaZod schema to validate input data before executionoutputSchema:z.ZodSchemaZod schema to infer output data typepayload:Partial<Record<string, any>>Static data to be merged with variablesaction:(data: TInput) => Promise<TOutput>Async function that executes the step logic
+Adding Steps to Workflows
+When adding steps to a workflow, you can configure additional behavior using thestep()method:
+step()
+workflow.step("stepId", {
+variables: {
+// Map data from previous steps or trigger
+userId: { stepId:"trigger", path:"user.id"},
+orderData: { stepId:"processOrder", path:"result"},
+},
+transitions: {
+// Define conditional transitions to other steps
+nextStep: {
+condition: {
+ref: { stepId:"stepId", path:"status"},
+query: { $eq:"success"},
+},
+},
+},
+});
+Step Configuration in Workflow
+variables:Record<string, VariableReference>Maps data from previous steps or trigger data into the step inputtransitions:Record<string, TransitionConfig>Defines conditional transitions to other steps
+Examples
+Basic Step
+constprocessOrder=newStep({
+id:"processOrder",
+execute:async({context,runId})=>{
+return{
+status:"processed",
+orderId: context.id,
+};
+},
+});
+
+// Configure step in workflow
+workflow.step("processOrder");
+With Schema Validation
+constvalidateUser=newStep({
+id:"validateUser",
+inputSchema: z.object({
+userId: z.string(),
+email: z.string().email(),
+}),
+outputSchema: z.object({
+isValid: z.boolean(),
+}),
+execute:async({context,runId})=>{
+const{userId,email}=context;
+return{ isValid:true};
+},
+});
+
+// Configure step in workflow
+workflow.step("validateUser");
+With Variables
+constsendEmail=newStep({
+id:"sendEmail",
+inputSchema: z.object({
+userId: z.string(),
+orderDetails: z.object({
+orderId: z.string(),
+status: z.string(),
+}),
+}),
+execute:async({context,runId})=>{
+const{userId,orderDetails}=context;
+return{ sent:true};
+},
+});
+
+// Configure step in workflow
+workflow.step("sendEmail", {
+variables: {
+userId: { stepId:"trigger", path:"user.id"},
+orderDetails: { stepId:"processOrder", path:"result"},
+},
+});
+With Static Payload
+constcreateInvoice=newStep({
+id:"createInvoice",
+inputSchema: z.object({
+orderId: z.string(),
+currency: z.string(),
+taxRate: z.number(),
+}),
+execute:async({context,runId})=>{
+const{orderId,currency,taxRate}=context;
+return{ invoiceId:"INV-123"};
+},
+});
+
+workflow.step("createInvoice", {
+variables: {
+orderId: { stepId:"processOrder", path:"orderId"},
+},
+payload: {
+currency:"USD",
+taxRate:0.2,
+},
+});WorkflowTransitionLightMIT 2024  Nextra.
+Transitions  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This Page1. Base Condition2. AND Condition3. OR ConditionQuery SyntaxQuestion? Give us feedback Edit this pageScroll to topDocsReferenceWorkflowsTransitionTransitions
+Mastra is built on top of XState, which allows for complex state transitions in workflows.
+A step can have multiple transitions, which are a key/value pair of the next step ID and a condition. Conditions are objects that determine when a workflow should move to the next step. They can be structured in three ways:
+1. Base Condition
+interfaceBaseCondition{
+ref:{
+stepId:string|"trigger";// ID of step to reference, or 'trigger' for initial data
+path:string;// Path to the value in the step's result
+};
+query:Query<any>;// MongoDB-style query using sift
+}
+2. AND Condition
+interfaceAndCondition{
+and:StepCondition[];// Array of conditions that must all be true
+}
+3. OR Condition
+interfaceOrCondition{
+or:StepCondition[];// Array of conditions where at least one must be true
+}
+Examples:
+// Base condition - check if status equals 'success'
+{
+ref: {
+stepId:'step1',
+path:'status'
+},
+query: {$eq:'success'}
+}
+
+// AND condition - check multiple conditions
+{
+and: [
+{
+ref: { stepId:'step1', path:'status'},
+query: { $eq:'success'}
+},
+{
+ref: { stepId:'step1', path:'score'},
+query: { $gte:70}
+}
+]
+}
+
+// OR condition - check alternative conditions
+{
+or: [
+{
+ref: { stepId:'step1', path:'status'},
+query: { $eq:'success'}
+},
+{
+ref: { stepId:'step1', path:'status'},
+query: { $eq:'partial'}
+}
+]
+}
+Query Syntax
+The query syntax follows MongoDB-style queries using thesiftlibrary, supporting operators like:
+
+$eq: Equal to
+$ne: Not equal to
+$gt,$gte: Greater than (or equal)
+$lt,$lte: Less than (or equal)
+$in: In array
+$exists: Property exists
+$where: Custom function
+StepChunkLightMIT 2024  Nextra.
+Chunk Function Reference  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageParametersChunking OptionsStrategy-Specific OptionsHTMLMarkdownTokenJSONReturn ValueQuestion? Give us feedback Edit this pageScroll to topDocsReferenceKnowledgeChunkChunk Function Reference
+Thechunkfunction splits documents into smaller segments using various strategies and options.
+Parameters
+strategy?:'recursive' | 'character' | 'token' | 'markdown' | 'html' | 'json' | 'latex'The chunking strategy to use. If not specified, defaults based on document type.chunkOptions?:ChunkOptionsConfiguration options for the chunking strategyextract?:ExtractParamsMetadata extraction options (requires OpenAI API key)
+Chunking Options
+Options vary by strategy, but common parameters include:
+size?:numberMaximum size of each chunkoverlap?:numberNumber of characters/tokens that overlap between chunksseparator?:stringCharacter(s) to split onisSeparatorRegex?:booleanWhether the separator is a regex patternkeepSeparator?:'start' | 'end'Whether to keep the separator at the start or end of chunks
+Strategy-Specific Options
+HTML
+headers:Array<[string, string]>Array of [selector, metadata key] pairs for header-based splittingsections:Array<[string, string]>Array of [selector, metadata key] pairs for section-based splittingreturnEachLine?:booleanWhether to return each line as a separate chunk
+Markdown
+headers:Array<[string, string]>Array of [header level, metadata key] pairsstripHeaders?:booleanWhether to remove headers from the outputreturnEachLine?:booleanWhether to return each line as a separate chunk
+Token
+encodingName?:stringName of the token encoding to usemodelName?:stringName of the model for tokenization
+JSON
+maxSize:numberMaximum size of each chunkminSize?:numberMinimum size of each chunkensureAscii?:booleanWhether to ensure ASCII encodingconvertLists?:booleanWhether to convert lists in the JSON
+Return Value
+Returns aMDocumentinstance containing the chunked documents. Each chunk includes:
+interfaceDocumentNode{
+text:string;
+metadata:Record<string,any>;
+embedding?:number[];
+}TransitionDocumentLightMIT 2024  Nextra.
+Document Processing  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageConstructorMethodschunk()Response TypesError HandlingQuestion? Give us feedback Edit this pageScroll to topDocsReferenceKnowledgeDocumentDocument Processing
+TheMDocumentclass handles document chunking and metadata extraction.
+Constructor
+text:stringDocument text contentmetadata?:Record<string, any>Optional metadata about the document
+Methods
+chunk()
+Splits document into chunks and optionally extracts metadata.
+strategy:'sentence' | 'paragraph' | 'fixed'Chunking strategy to useparseMarkdown?:booleanWhether to parse markdown syntaxmetadataExtraction?:objectMetadata extraction options (requires OpenAI)boolean | TitleExtractorsArgsboolean | SummaryExtractArgsboolean | QuestionAnswerExtractArgsboolean | KeywordExtractArgs
+Response Types
+The chunk method returns an array of document nodes:
+interfaceDocumentNode{
+text:string;
+metadata:Record<string,any>;
+embedding?:number[];
+}
+Error Handling
+try{
+constchunks=awaitdoc.chunk({
+strategy:"sentence",
+});
+}catch(error) {
+if(errorinstanceofDocumentProcessingError) {
+console.log(error.code);// 'invalid_strategy' | 'extraction_failed' etc
+console.log(error.details);// Additional error context
+}
+}ChunkEmbeddingsLightMIT 2024  Nextra.
+Embed  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageParametersReturn ValueQuestion? Give us feedback Edit this pageScroll to topDocsReferenceKnowledgeEmbeddingsEmbed
+Theembedfunction generates vector embeddings for text inputs, enabling similarity search and RAG workflows.
+Parameters
+input:string | string[] | { text: string; metadata?: Record<string, any> }[]Content to embed. Can be a single string, an array of strings, or an array of objects with `text` and optional `metadata`.options:objectConfiguration for the embedding call.'openai' | 'anthropic' | 'google' | 'custom'string
+Return Value
+embedding:number[] | number[][]The embedding vector(s). If `input` is a single string, returns one vector; if multiple, returns an array of vectors.DocumentPgstoreLightMIT 2024  Nextra.
+Pgstore  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PagePgStoreConstructor OptionsMethodscreateIndex()upsert()query()describeIndex()deleteIndex()disconnect()Response TypesError HandlingQuestion? Give us feedback Edit this pageScroll to topDocsReferenceKnowledgePgstorePgStore
+The PgStore class provides vector search using PostgreSQL with pgvector extension.
+Constructor Options
+connectionString:stringPostgreSQL connection URLtableName?:stringTable name for vector storagedimension?:numberVector dimension (must match your embedding model)
+Methods
+createIndex()
+indexName:stringName of the index to createdimension:numberVector dimension sizemetric?:'cosine' | 'euclidean' | 'dotproduct'Distance metric for similarity search
+upsert()
+vectors:number[][]Array of embedding vectorsmetadata?:Record<string, any>[]Metadata for each vectorids?:string[]Optional vector IDs (auto-generated if not provided)
+query()
+vector:number[]Query vectortopK?:numberNumber of results to returnfilter?:Record<string, any>Metadata filtersminScore?:numberMinimum similarity score threshold
+describeIndex()
+indexName:stringName of the index to describe
+Returns:
+interfaceIndexStats{
+dimension:number;
+count:number;
+metric:"cosine"|"euclidean"|"dotproduct";
+}
+deleteIndex()
+indexName:stringName of the index to delete
+disconnect()
+Closes the database connection pool. Should be called when done using the store.
+Response Types
+Query results are returned in this format:
+interfaceQueryResult{
+id:string;
+score:number;
+metadata:Record<string,any>;
+}
+Error Handling
+The store throws typed errors that can be caught:
+try{
+awaitstore.query(queryVector);
+}catch(error) {
+if(errorinstanceofVectorStoreError) {
+console.log(error.code);// 'connection_failed' | 'invalid_dimension' | etc
+console.log(error.details);// Additional error context
+}
+}EmbeddingsPineconeLightMIT 2024  Nextra.
+Pinecone  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PagePineconeConstructor OptionsMethodscreateIndex()upsert()query()listIndexes()describeIndex()deleteIndex()Response TypesError HandlingEnvironment VariablesQuestion? Give us feedback Edit this pageScroll to topDocsReferenceKnowledgePineconePinecone
+The PineconeStore class provides an interface to Pinecones vector database.
+Constructor Options
+apiKey:stringPinecone API keyenvironment:stringPinecone environment (e.g., "us-west1-gcp")indexName:stringName of your Pinecone index
+Methods
+createIndex()
+indexName:stringName of the index to createdimension:numberVector dimension sizemetric?:'cosine' | 'euclidean' | 'dotproduct'Distance metric for similarity search
+upsert()
+vectors:number[][]Array of embedding vectorsmetadata?:Record<string, any>[]Metadata for each vectornamespace?:stringOptional namespace for organization
+query()
+vector:number[]Query vector to find similar vectorstopK?:numberNumber of results to returnfilter?:Record<string, any>Metadata filters for the query
+listIndexes()
+Returns an array of index names as strings.
+describeIndex()
+indexName:stringName of the index to describe
+Returns:
+interfaceIndexStats{
+dimension:number;
+count:number;
+metric:"cosine"|"euclidean"|"dotproduct";
+}
+deleteIndex()
+indexName:stringName of the index to delete
+Response Types
+Query results are returned in this format:
+interfaceQueryResult{
+id:string;
+score:number;
+metadata:Record<string,any>;
+}
+Error Handling
+The store throws typed errors that can be caught:
+try{
+awaitstore.query(queryVector);
+}catch(error) {
+if(errorinstanceofVectorStoreError) {
+console.log(error.code);// 'connection_failed' | 'invalid_dimension' | etc
+console.log(error.details);// Additional error context
+}
+}
+Environment Variables
+Required environment variables:
+
+PINECONE_API_KEY: Your Pinecone API key
+PINECONE_ENVIRONMENT: Pinecone environment (e.g., us-west1-gcp)
+PgstoreQdrantLightMIT 2024  Nextra.
+Qdrant  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageQdrantConstructor OptionsMethodscreateIndex()upsert()query()listIndexes()describeIndex()deleteIndex()Response TypesError HandlingQuestion? Give us feedback Edit this pageScroll to topDocsReferenceKnowledgeQdrantQdrant
+Qdrantis a vector similarity search engine. It provides a production-ready service with a convenient API to store, search, and manage vectors with additional payload and extended filtering support.
+Constructor Options
+url:stringREST URL of the Qdrant instance. Eg. https://xyz-example.eu-central.aws.cloud.qdrant.io:6333apiKey:stringOptional Qdrant API keyhttps:booleanWhether to use TLS when setting up the connection. Recommended.
+Methods
+createIndex()
+indexName:stringName of the index to createdimension:numberVector dimension sizemetric?:'cosine' | 'euclidean' | 'dotproduct'Distance metric for similarity search
+upsert()
+vectors:number[][]Array of embedding vectorsmetadata?:Record<string, any>[]Metadata for each vectornamespace?:stringOptional namespace for organization
+query()
+vector:number[]Query vector to find similar vectorstopK?:numberNumber of results to returnfilter?:Record<string, any>Metadata filters for the query
+listIndexes()
+Returns an array of index names as strings.
+describeIndex()
+indexName:stringName of the index to describe
+Returns:
+interfaceIndexStats{
+dimension:number;
+count:number;
+metric:"cosine"|"euclidean"|"dotproduct";
+}
+deleteIndex()
+indexName:stringName of the index to delete
+Response Types
+Query results are returned in this format:
+interfaceQueryResult{
+id:string;
+score:number;
+metadata:Record<string,any>;
+}
+Error Handling
+The store throws typed errors that can be caught:
+try{
+awaitstore.query(queryVector);
+}catch(error) {
+if(errorinstanceofVectorStoreError) {
+console.log(error.code);// 'connection_failed' | 'invalid_dimension' | etc
+console.log(error.details);// Additional error context
+}
+}PineconecreateLogger()LightMIT 2024  Nextra.
+createLogger()  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageUsageConsole Logger (Development)File Logger (Structured Logs)Upstash Logger (Remote Log Drain)ParametersQuestion? Give us feedback Edit this pageScroll to topDocsReferenceObservabilitycreateLogger()createLogger()
+ThecreateLogger()function is used to instantiate a logger based on a given configuration. You can create console-based, file-based, or Upstash Redis-based loggers by specifying the type and any additional parameters relevant to that type.
+Usage
+Console Logger (Development)
+constconsoleLogger=createLogger({ type:'CONSOLE', level:'DEBUG'});
+consoleLogger.info('App started');
+File Logger (Structured Logs)
+constfileLogger=createLogger({ type:'FILE', dirPath:'my-logs', level:'WARN'});
+fileLogger.warn({ message:'Low disk space', destinationPath:'system', type:'WORKFLOW'});
+Upstash Logger (Remote Log Drain)
+constupstashLogger=createLogger({
+type:'UPSTASH',
+url: process.env.UPSTASH_URL!,
+token: process.env.UPSTASH_TOKEN!,
+level:'INFO',
+key:'production-logs',
+});
+awaitupstashLogger.info({ message:'User signed in', destinationPath:'auth', type:'AGENT', runId:'run_123'});
+Parameters
+type:0Specifies the logger implementation to create.level?:LogLevelMinimum severity level of logs to record. One of DEBUG, INFO, WARN, or ERROR.dirPath?:stringFor FILE type only. Directory path where log files are stored (default: "logs").url?:stringFor UPSTASH type only. Upstash Redis endpoint URL used for storing logs.token?:stringFor UPSTASH type only. Upstash Redis access token.key?:stringFor UPSTASH type only. Redis list key under which logs are stored.QdrantLoggerLightMIT 2024  Nextra.
+Logger Instance  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageExampleMethodsQuestion? Give us feedback Edit this pageScroll to topDocsReferenceObservabilityLoggerLogger Instance
+A Logger instance is created bycreateLogger()orcombineLoggers()and provides methods to record events at various severity levels. Depending on the logger type, messages may be written to the console, file, or an external service.
+Example
+// Using a console logger
+constlogger=createLogger({ type:'CONSOLE', level:'INFO'});
+
+logger.debug('Debug message');// Won't be logged because level is INFO
+logger.info({ message:'User action occurred', destinationPath:'user-actions', type:'AGENT'});// Logged
+logger.error('An error occurred');// Logged as ERROR
+Methods
+debug:(message: BaseLogMessage | string, ...args: any[]) => void | Promise<void>Write a DEBUG-level log. Only recorded if level  DEBUG.info:(message: BaseLogMessage | string, ...args: any[]) => void | Promise<void>Write an INFO-level log. Only recorded if level  INFO.warn:(message: BaseLogMessage | string, ...args: any[]) => void | Promise<void>Write a WARN-level log. Only recorded if level  WARN.error:(message: BaseLogMessage | string, ...args: any[]) => void | Promise<void>Write an ERROR-level log. Only recorded if level  ERROR.cleanup?:() => Promise<void>Cleanup resources held by the logger (e.g., network connections for Upstash). Not all loggers implement this.
+Note:Some loggers require aBaseLogMessageobject (withmessage,destinationPath,typefields). For instance, theFileandUpstashloggers need structured messages.createLogger()combineLoggers()LightMIT 2024  Nextra.
+combineLoggers()  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PageUsageParametersQuestion? Give us feedback Edit this pageScroll to topDocsReferenceObservabilitycombineLoggers()combineLoggers()
+ThecombineLoggers()function takes multiple logger instances and returns a single Logger that broadcasts messages to all underlying loggers. This is useful for writing logs to multiple destinations simultaneously.
+Usage
+import{ createLogger, combineLoggers }from'@mastra/core';
+
+constconsoleLogger=createLogger({ type:'CONSOLE', level:'INFO'});
+constfileLogger=createLogger({ type:'FILE', dirPath:'my-logs', level:'INFO'});
+
+constmultiLogger=combineLoggers([consoleLogger, fileLogger]);
+
+// This log entry is recorded by both the console and file loggers
+multiLogger.info({ message:'Server started', destinationPath:'server', type:'AGENT'});
+Parameters
+loggers:Logger<BaseLogMessage>[]An array of logger instances created by createLogger() or custom logger objects.LoggerOtelConfigLightMIT 2024  Nextra.
+OtelConfig  MastraShowcaseDocsGitHubGitHubIntroductionGetting StartedInstallationProject StructureLLM ModelsOverviewGuide: Harry PotterAgentsOverviewMemoryToolsGuide: Chef MichelGuide: Stock AgentWorkflowsOverviewGuide: ScraperRAGOverviewChunking and EmbeddingVector DatabasesRetrievalEngineEngineSyncsIntegrationsDeploying to ProdLogging and TracingDeploymentEvalsReferenceLocal DevMastra ClassMastra CLILLMProviders and ModelsgenerateAgentsgetAgentgeneratecreateToolWorkflowsWorkflowStepTransitionKnowledgeChunkDocumentEmbeddingsPgstorePineconeQdrantObservabilitycreateLogger()LoggercombineLoggers()OtelConfigLightOn This PagePropertiesQuestion? Give us feedback Edit this pageScroll to topDocsReferenceObservabilityOtelConfigOtelConfig
+TheOtelConfigobject is used to configure OpenTelemetry instrumentation, tracing, and exporting behavior within your application. By adjusting its properties, you can control how telemetry data (such as traces) is collected, sampled, and exported.
+To use theOtelConfigwithin Mastra, pass it as the value of thetelemetrykey when initializing Mastra. This will configure Mastra to use your custom OpenTelemetry settings for tracing and instrumentation.
+import{ Mastra }from'mastra';
+
+constotelConfig:OtelConfig={
+serviceName:'my-awesome-service',
+enabled:true,
+sampling: {
+type:'ratio',
+probability:0.5,
+},
+export: {
+type:'otlp',
+endpoint:'https://otel-collector.example.com/v1/traces',
+headers: {
+Authorization:'Bearer YOUR_TOKEN_HERE',
+},
+},
+};
+Properties
+serviceName?:stringHuman-readable name used to identify your service in telemetry backends.enabled?:booleanWhether telemetry collection and export are enabled.sampling?:SamplingStrategyDefines the sampling strategy for traces, controlling how much data is collected.'ratio' | 'always_on' | 'always_off' | 'parent_based'number (0.0 to 1.0)objectexport?:objectConfiguration for exporting collected telemetry data.'otlp' | 'console'stringRecord<string, string>combineLoggers()LightMIT 2024  Nextra.
+BlogOpen main menuDocsBlog1.1kGet started1.1kGet startedBlogNov 20, 2024A framework for the next million AI developersSBNov 11, 2024AI engineering, two years laterSBmastraPrivacyPolicy 2024 Kepler Software Inc.AboutDocsGithub
+The Typescript AI framework - MastraOpen main menuDocsBlog1.1kGet started1.1kGet startedTeam.Eight years ago, we fell in love with React and component-driven development, and we built Gatsby. Today, lots of frontend and full-stack devs want to do AI engineering.But most tooling to build AI applications and features is in Python. If you're a JS/TS dev, it's really hard to get started.That's why we built Mastra as a JS/TS-first AI framework. Mastra includes the primitives you need to take your AI feature or application from prototype to production. It uses Drizzle for data fetching and integrates into your app. You can deploy it to Vercel or Netlify. Happy building!sam,shane,abhi.mastraPrivacyPolicy 2024 Kepler Software Inc.AboutDocsGithub
+404: This page could not be found404This page could not be found.
+A framework for the next million AI developersOpen main menuDocsBlog1.1kGet started1.1kGet startedBlogA framework for the next million AI developersNov 20, 2024Today we're excited to announceMastra, a Typescript AI framework that Abhi Aiyer, Shane Thomas, and I are building.
+Brief backstory:last year, after spending the better part of a decade building Gatsby, we joined Netlify. And earlier this year, we began building an AI-powered CRM called Kepler.
+Building Kepler, we tried a few different frameworks for the AI bits. Each time, we ended up ripping out most of the code as we tried to make our pipelines more reliable. So we switched gears.
+We wanted to create an AI framework that's fun to build toy projects with, but sturdy enough to take into production.
+We wanted to build for product developers: frontend, fullstack, backend, the kinds of folks that had fun toying on their Gatsby blogs years and years ago. The kind of folks who will be (we think) the next million AI engineers.
+We're launching today, and we're excited to share bothour projectand our principles:
+Typescript-first, Typescript-only.Typescript is the language of product development. And these days "APIs are all you need" for AI development.
+The Python tie-in of current AI frameworks is a legacy holdover. Sure, Pythonic frameworks have JS/TS ports, but they're an afterthought with a fraction of the features and docs/examples.
+A great framework should be mono-lingual to work with language-specific package managers, testing tools, and ORMs. And Typescript developers want a great tool that's built for them.
+Workflow graph based.LLM applications are non-deterministic pipelines. One emergent practice is defining discrete steps, logging inputs and outputs at each step of each run, and piping them into an observability tool.
+Mastra includes a workflow graph that encapsulates loops, branching, waiting for human input, embedding other workflows, error handling, retries, and so on.
+Domain-complete.Most developers prefer to use a framework that has opinions about all the key jobs-to-be-done in a domain. Kubernetes for running infra, Terraform for provisioning it, Next.js for websites.
+Mastra hascarefully curatedtop-level nouns for all the key concerns in AI engineering: LLMs, agents, workflows, RAG, observability, evals, integrations & syncs. But we don't want to reinvent the wheel, and in many cases choose to build on top of great libraries (AI SDK, autoevals).
+Object-sparse, example-rich.Many frameworks hand users flat lists of dozens of classes. But more API surface area is a liability, not an asset. Objects should be scoped to the correct top-level concern. Integrations should be scoped to an appropriate provider model. A rich library of code examples should cover use-cases.
+This one comes from painful experience: "too many, poorly organized APIs" was one of Gatsby's main weaknesses -- and a mistake we see AI frameworks making.
+Domain-specific grammar.AI engineering is building production-ready ETL pipelines and should be described with dataflow nouns and verbs.
+We prefer concrete nouns ("workflow", "step", "connection") to abstract nouns ("graph", "node", "edge") or adjectives ("runnable"). We prefer verbs ("extract") to agent nouns ("TextExtractor"). We prefer them because it's the proper way to write TypeScript. Frameworks are DSLs and need domain- and language-specific grammar.
+Explicit, no indirection.Many framework APIs help people get started byhiding prompt engineering and retry logic in their APIs. These indirections speed up the "aha!" moment but are notoriously difficult to debug.
+It's why many engineers (us included, when we were building Kepler) used frameworks for the first 90% of their project...then for the next 90% ripped and replaced them with vanilla model API calls.
+(And anyway, Claude on Cursor is a good enough prompt engineer to get started.)
+Deployable to a serverless or public cloud.It's 2024. You should be able to easily deploy agents and workflows to a serverless cloud and access them as API endpoints.
+We're building examples and guides for you to deploy wherever you want. (We're also building a simple cloud-based agent/workflow runtime with a generous free tier.)
+Let's build together
+We're excited to see what you'll build. Pleasenpm/pnpm/yarn install mastraand tell us everything you love or hate.
+See you on Github :)AuthorSBSam BhagwatShareCopy linkmastraPrivacyPolicy 2024 Kepler Software Inc.AboutDocsGithub
+AI engineering, two years laterOpen main menuDocsBlog1.1kGet started1.1kGet startedBlogAI engineering, two years laterNov 11, 2024It's been two years since ChatGPT went viral.
+But despite being avid users of 4o, Claude, Copilot, Cursor, etc, when we started building AI features a few months ago, it took a while to get up to speed. Building AI applications today feels a bit like web development in 2012 - the primitives are powerful, but frameworks and best practices are still emerging.
+Local Environment, Models & Prompts
+If you're doing AI development, you should use an editor with AI chat built in. Even if you're married to your vim keybindings or you hate code complete, AI models write pretty good prompts, and they know the provider SDKs well.
+Want to get to hello world in five minutes? Download Cursor, back it with claude-3.5-sonnet-new, and ask the chat to write a script that uses OpenAI's Node.js SDK to classify support tickets (or whatever your use-case is). If you need sample data, ask the AI to generate some.
+Claude's models have been better than OpenAI's for the last few months, so you probably want an Anthropic API key. If cost is an issue, Google's Gemini model has a generous free tier. Also, if you bring your own API key, Cursor is free.
+Sequences & Workflows
+The first generation of AI features were single-prompt transformations (a transcript summary or an image classifier) and then simple agents (a chatbot with some functions to call).
+But LLMs generate short responses and don't perform well on long context windows. So people started decomposing long/complex prompts into multiple prompts, then joining the answers together. They started using one model to judge the results of other models. They added error handling and retries to boost reliability.
+As these sort of improvements stacked, AI applications started looking more like graph-based data workflows, and researchersbegan calling thiscompound AI. There are a few graph-based frameworks around (and we're building one!) so if you think your application will end up looking like this it's worth giving them a try.
+
+Agents
+The best definition of an AI agent is a system where the language model chooses a sequence of actions. Six to twelve months ago, agents weren't very good, but there have been fairly rapid advances in this space.
+AI agents, like self-driving cars, have different levels of autonomy. At low levels, agents are decider nodes in a pre-defined workflow graph. At higher levels, agents own the control flow  they can break down tasks into subtasks, execute them, and check their work.
+A basic agent  something you could write in a day, like an agent to get stock prices  might have have a single prompt, do some query parsing, make a function call hitting an external service, and lightly track internal state and conversation history (or offload that to a model, like OpenAI Assistants).
+The best open-source agents today (OpenHands,Composio SWEKit) have been trained on tasks like code generation with public benchmarks. They delegate to other agents in a project-specific team structure  say, a code analyzer, a code writer, and a code reviewer who coordinates the other two.
+They break down tasks into subtasks, browse the web, run sandboxed code, retry with modification on errors, and prompt the user for clarification. They keep a memory of event history, current task context, and the runtime environment and include it in LLM context windows. They store task status in a state machine. A controller runs a while loop until a task reaches a finished state.
+
+Knowledge & RAG
+Building agents and workflows usually requires both general knowledge (from base models) and domain- or user-specific knowledge, from specific documents, web scrapers, or data from internal SaaS.
+You get this from retrieval-augmented generation (RAG), basically an ETL pipeline with specific querying techniques. The ETL part is chunking documents and other content into smaller pieces, embedding each chunk (transforming it into a vector), and loading it into a vector DB.
+Then, the querying part, known as retrieval. You have to embed your query text into a vector, search the DB for similar vectors, and feed the results into an LLM call. (You can also take your top results and use a more computationally-intense search method to rerank them.)
+
+Once you build an initial version there are a dozen ways to tweak and optimize: overlap between chunks, query smaller chunks to get more precise answers, feed surrounding context to the LLM synthesizer, use domain-specific embedding models, combine multiple query algorithms, add filtering based on metadata, and so on.
+Observability: Tracing & Evals
+The three magic properties of AI applications are accuracy, latency, and cost. So once you get a basic application working, the next step is to add tracing and hook it up to an observability service, write tests, and hook it up to evals.
+Tracing
+Tracing is the gold standard for LLM observability. It gives you function-level insight into execution times, and inputs and outputs at each stage. Most frameworks come with tracing out of the box (we do), so this avoids you having to hand-instrument your code. There are a bunch of different providers, and some take tracing in non-standard formats. Ideally, prefer a provider that takes straight-OpenTelemetry logs.
+The UIs for these will feel fairly familiar if you've used a provider like Datadog or Honeycomb; they help you zoom into surprisingly long requests or unexpected LLM responses. Look for unexpected responses whenever you're calling an LLM.
+
+Evals
+Repeat three times after me. Evals are just tests. Evals are just tests. Evals are just tests.
+Okay, evalsaretests of non-deterministic systems, so you need to write more. Evals can return fractional values, not just binary pass/fail. Unlike the rest of your CI suite, your evals may not all pass all the time.
+You may write five evals for a single (input, output, expected) triple of a single LLM call, checking it for accuracy, relevance, factual consistency, length adherence. You might write evals checking semantic distance, search results to look for a particular string, or have a different LLM evaluate your first LLM's response. Short, well-tested workflows can amass hundreds of evals.
+After you write your evals, you'll probably go back and change your prompts, or your pipeline, or some part about your application, and then you'll be able to see the impact of those changes on the data set.
+For your own and your team's sanity, you may want to use the same service for tracing and evals (Braintrust is good here).
+Putting it all together
+The reality of building AI projects in most companies is that it usually takes a day or two to get yourself to wow, a week or two to build a demo to show everyone else value, and a month or two (or more) getting to something you can ship.
+Happy building, and do check out Mastra if you're building in TypeScript.AuthorSBSam BhagwatShareCopy linkmastraPrivacyPolicy 2024 Kepler Software Inc.AboutDocsGithub

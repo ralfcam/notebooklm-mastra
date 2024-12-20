@@ -1,96 +1,62 @@
 import { Step, Workflow } from "@mastra/core";
 import { z } from "zod";
 
-// Step 1: Create podcast record and retrieve content
-const initializeAndGetContent = new Step({
-  id: "initialize-and-get-content",
-  description: "Create podcast record and retrieve relevant content",
-  execute: async (c) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { topic, format, limit = 5 } = c.context.machineContext?.triggerData;
-
-    try {
-      // Create initial podcast record
-
-      // Retrieve relevant content
-
-      return {};
-    } catch (error) {
-      console.error("Error in initialization step:", error);
-      throw error;
-    }
-  },
-});
-
-// Step 2: Generate script
+// Step to generate the podcast script
 const createScript = new Step({
   id: "create-script",
-  description: "Generate podcast script",
-  execute: async () => {
-    try {
-      // Get script result
+  description: "Generate podcast script from context",
+  execute: async ({ context, mastra }) => {
+    const tools = mastra?.agents?.["transcriptGenerator"]?.tools;
+    if (!tools) throw new Error("Cannot access tools");
 
-      // Update podcast with generated script
+    const executeGenerateScript = tools["generate-script"]?.execute;
+    if (!executeGenerateScript)
+      throw new Error("Generate script tool not found");
 
-      return {};
-    } catch (error) {
-      // mark podcast as failed
-      throw error;
-    }
+    return executeGenerateScript({
+      mastra,
+      context: context.machineContext?.triggerData,
+    });
   },
 });
 
-// Step 3: Generate audio
+// Step to generate the audio
 const createAudio = new Step({
   id: "create-audio",
-  description: "Generate podcast audio",
-  execute: async () => {
-    try {
-      // Get audio result
+  description: "Generate podcast audio from script",
+  execute: async ({ context, mastra }) => {
+    const tools = mastra?.agents?.["transcriptGenerator"]?.tools;
+    if (!tools) throw new Error("Cannot access tools");
 
-      // Update podcast with audio URL
+    const executeGenerateAudio = tools["generate-podcast-audio"]?.execute;
+    if (!executeGenerateAudio) throw new Error("Generate audio tool not found");
 
-      return {};
-    } catch (error) {
-      // mark podcast as failed
-      throw error;
-    }
+    if (
+      context.machineContext?.stepResults.createTranscript.status === "failed"
+    )
+      throw new Error("Transcript creation failed");
+
+    const transcript =
+      context.machineContext?.stepResults?.createScript?.transcript;
+
+    return executeGenerateAudio({
+      mastra,
+      context: {
+        transcript,
+      },
+    });
   },
 });
 
-// Define the workflow input schema
-const podcastGenerationSchema = z.object({
-  topic: z.string(),
-  format: z
-    .object({
-      host1Name: z.string().default("Alex"),
-      host2Name: z.string().default("Sarah"),
-      durationMinutes: z.number().default(10),
-      style: z
-        .enum(["casual", "professional", "educational"])
-        .default("casual"),
-    })
-    .default({
-      host1Name: "Alex",
-      host2Name: "Sarah",
-      durationMinutes: 10,
-      style: "casual",
-    }),
-  voices: z
-    .object({
-      host1Voice: z.string().optional(),
-      host2Voice: z.string().optional(),
-    })
-    .optional(),
-  limit: z.number().default(5),
-});
-
-// Export the workflow
+// Create and export the workflow
 export const generatePodcast = new Workflow({
   name: "generatePodcast",
-  triggerSchema: podcastGenerationSchema,
+  triggerSchema: z.object({
+    topic: z.string(),
+    contextDocs: z.array(z.any()),
+    duration: z.number().optional(),
+  }),
 })
-  .step(initializeAndGetContent)
-  .then(createScript)
+  .step(createScript)
   .then(createAudio)
   .commit();

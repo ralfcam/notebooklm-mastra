@@ -1,4 +1,6 @@
 export * from "./chunk-input";
+export * from "./generate-script";
+export * from "./play-ai";
 export * from "./parse-and-chunk-file";
 export * from "./generate-embeddings";
 export * from "./generate-query-vector";
