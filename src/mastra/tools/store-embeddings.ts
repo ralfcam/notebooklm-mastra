@@ -1,29 +1,42 @@
-import { createVectorStore } from "@/lib/vector-store";
+import { addChunkWithEmbedding } from "@/utils/db";
 import { createTool } from "@mastra/core";
 import { z } from "zod";
 
 export const storeEmbeddings = createTool({
   id: "store-embeddings",
-  description: "Store embeddings to vector database.",
+  description: "Store embeddings and their associated content chunks to the database.",
   inputSchema: z.object({
     embeddings: z.array(z.array(z.number())),
-    index_name: z.string().default("podcast_content"),
+    chunks: z.array(z.string()),
+    sourceId: z.string(),
     metadata: z.array(z.record(z.any())).optional(),
   }),
   execute: async ({ context }) => {
     try {
-      const vectorStore = createVectorStore(context.index_name);
+      const { embeddings, chunks, sourceId } = context;
+      
+      if (embeddings.length !== chunks.length) {
+        throw new Error("Number of embeddings must match number of chunks");
+      }
 
-      const vectorIds = await vectorStore
-        .upsert(context.index_name, context.embeddings, context.metadata)
-        .finally(() => vectorStore.disconnect());
+      const results = await Promise.all(
+        chunks.map((content, index) => 
+          addChunkWithEmbedding({
+            content,
+            sourceId,
+            embedding: embeddings[index]
+          })
+        )
+      );
 
       return {
         ok: true,
-        vectorIds,
+        storedChunks: results.length,
+        chunkIds: results.map(result => result.id)
       };
     } catch (error) {
-      console.error(error);
+      console.error("Error storing embeddings:", error);
+      throw error;
     }
   },
 });

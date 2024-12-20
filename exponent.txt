@@ -1,0 +1,79 @@
+# NotebookLM-Mastra Project Summary
+
+## Overview
+This is a Next.js project that implements a specialized system using the Mastra framework for processing and generating podcast-style content with AI assistance. The core functionality is centered in the `src/mastra` directory.
+
+## Key Components
+
+### 1. Mastra Framework Integration
+- The project uses the Mastra framework (@mastra/core) for orchestrating AI agents and workflows
+- Main configuration is in `src/mastra/index.ts`
+- Uses Anthropic's Claude 3 Sonnet model for AI operations
+
+### 2. Core Components
+
+#### Agents
+- Primary agent: `transcriptGenerator`
+- Specialized for generating podcast scripts
+- Uses Claude 3.5 Sonnet model
+- Configured with specific tools and instructions for content generation
+
+#### Workflows
+- Main workflow: `updateKnowledgeBase`
+- Handles content processing through multiple steps:
+  1. Chunking content
+  2. Generating embeddings
+  3. Storing embeddings
+
+#### Tools
+Several utility tools are implemented:
+- chunk-input
+- parse-and-chunk-file
+- generate-embeddings
+- generate-query-vector
+- retrieve-content
+- store-embeddings
+
+### 3. Content Generation
+- Focused on podcast script generation
+- Features two hosts: Alex and Sarah
+- Aims for informative, engaging, and conversational content
+- Emphasizes accessibility and natural dialogue
+
+## Important Considerations
+
+1. **AI Model Dependencies**
+   - Relies on Anthropic's Claude 3.5 Sonnet model
+   - Model configuration is crucial for tool integration
+
+2. **Content Processing Pipeline**
+   - Structured workflow for knowledge base updates
+   - Multiple processing stages for content handling
+   - Embedding generation and storage capabilities
+
+3. **Script Generation Guidelines**
+   - Specific format requirements (speaker prefixes)
+   - Focus on natural conversation
+   - Balance of information and entertainment
+   - No stage directions in scripts
+
+4. **Technical Architecture**
+   - Built on Next.js framework
+   - Modular structure with clear separation of concerns
+   - Extensible design for adding new agents and workflows
+
+5. **Development Considerations**
+   - Requires proper setup of AI model credentials
+   - Knowledge base management system in place
+   - Tool integration for content processing
+   - Structured workflow system for content updates
+
+## Project Structure
+```
+src/mastra/
+├── agents/
+├── index.ts
+├── prompts/
+├── tools/
+└── workflows/
+```

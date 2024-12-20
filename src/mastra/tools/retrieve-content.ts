@@ -1,28 +1,45 @@
-import { createVectorStore } from "@/lib/vector-store";
 import { createTool } from "@mastra/core";
 import { z } from "zod";
+import { searchSimilarChunks } from "@/utils/db";
+import { embed } from "@mastra/rag";
 
 export const retrieveContent = createTool({
   id: "retrieve-content",
-  description: "Retrieve content from the knowledge base",
+  description: "Retrieve relevant content from the knowledge base using semantic search",
   inputSchema: z.object({
-    queryVector: z.array(z.number()),
-    indexName: z.string().default("podcast_content"),
-    topK: z.number().default(5),
-    minScore: z.number().default(0.7),
-    filter: z.record(z.any()).optional(),
+    query: z.string(),
+    limit: z.number().default(5),
   }),
-  execute: async ({ context: c }) => {
-    const vectorStore = createVectorStore(c.indexName);
+  execute: async ({ context }) => {
+    try {
+      // Generate embedding for the query
+      const queryEmbeddings = await embed([context.query], {
+        provider: "OPEN_AI",
+        model: "text-embedding-ada-002",
+        maxRetries: 3,
+      });
 
-    const results = await vectorStore
-      .query(c.indexName, c.queryVector, c.topK, c.filter, c.minScore)
-      .then((v) => v)
-      .finally(() => vectorStore.disconnect());
+      // Search for similar chunks
+      const results = await searchSimilarChunks(
+        queryEmbeddings[0], 
+        context.limit
+      );
 
-    return {
-      ok: true,
-      results,
-    };
+      return {
+        results: results.map(({ chunk, similarity }) => ({
+          content: chunk.content,
+          similarity,
+          source: {
+            id: chunk.source.id,
+            name: chunk.source.name,
+            type: chunk.source.type,
+            url: chunk.source.url,
+          }
+        }))
+      };
+    } catch (error) {
+      console.error("Error retrieving content:", error);
+      throw error;
+    }
   },
 });

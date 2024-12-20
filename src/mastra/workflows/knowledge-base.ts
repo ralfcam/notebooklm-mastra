@@ -5,6 +5,27 @@ import {
   parseAndChunkFileInputSchema,
 } from "../tools/schemas";
 import { generateEmbeddings, storeEmbeddings } from "../tools";
+import { addSource } from "@/utils/db";
+
+// Create a source first
+const createSource = new Step({
+  id: "create-source",
+  description: "Create a new source in the database",
+  execute: async (c) => {
+    const triggerData = c.context.machineContext?.triggerData;
+    
+    const source = await addSource({
+      name: triggerData.name || 'Untitled Source',
+      type: triggerData.contentType || 'text',
+      url: triggerData.url
+    });
+
+    return {
+      ...triggerData,
+      sourceId: source.id
+    };
+  }
+});
 
 const chunk = new Step({
   id: "chunk",
@@ -18,19 +39,25 @@ const chunk = new Step({
     if ("file" in triggerData) {
       const executeParseAndChunk = tools["parse-and-chunk-file"]?.execute;
 
-      return await executeParseAndChunk({
-        machineContext: c.context.machineContext,
-        ...triggerData,
-      });
+      return {
+        ...(await executeParseAndChunk({
+          machineContext: c.context.machineContext,
+          ...triggerData,
+        })),
+        sourceId: triggerData.sourceId
+      };
     }
 
     if ("content" in triggerData && "contentType" in triggerData) {
       const executeChunkInput = tools?.["chunk-input"]?.execute;
 
-      return await executeChunkInput({
-        machineContext: c.context.machineContext,
-        ...triggerData,
-      });
+      return {
+        ...(await executeChunkInput({
+          machineContext: c.context.machineContext,
+          ...triggerData,
+        })),
+        sourceId: triggerData.sourceId
+      };
     }
 
     return new Promise((_r, rej) => {
@@ -42,11 +69,21 @@ const chunk = new Step({
   },
 });
 
+// Update the input schema to include source information
+const sourceInfoSchema = z.object({
+  name: z.string().optional(),
+  url: z.string().optional(),
+});
+
 export const updateKnowledgeBase = new Workflow({
   name: "updateKnowledgeBase",
-  triggerSchema: z.union([chunkInputSchema, parseAndChunkFileInputSchema]),
+  triggerSchema: z.union([
+    chunkInputSchema.merge(sourceInfoSchema),
+    parseAndChunkFileInputSchema.merge(sourceInfoSchema)
+  ]),
 })
-  .step(chunk)
+  .step(createSource)
+  .then(chunk)
   .then(generateEmbeddings)
   .then(storeEmbeddings)
   .commit();
