@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Configuration schema
-const configSchema = z.object({
+export const configSchema = z.object({
   userId: z.string(),
   secretKey: z.string(),
   baseUrl: z.string().url().default("https://api.play.ai/api/v1"),
