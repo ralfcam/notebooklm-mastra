@@ -1,1 +1,1 @@
-export * from "./transcript-generator";
+export * from "./podcast-generator";
