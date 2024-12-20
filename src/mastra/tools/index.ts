@@ -5,3 +5,5 @@ export * from "./generate-query-vector";
 export * from "./retrieve-content";
 export * from "./store-embeddings";
 export * from "./delete-source";
+export * from "./generate-podcast-script";
+export * from "./generate-podcast-audio";

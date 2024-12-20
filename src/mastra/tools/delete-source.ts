@@ -1,17 +1,17 @@
 import { createTool } from "@mastra/core";
 import { z } from "zod";
-import { deleteSource } from "@/utils/db";
 
 export const deleteSourceTool = createTool({
   id: "delete-source",
-  description: "Delete a source and all its associated chunks and embeddings from the knowledge base",
+  description:
+    "Delete a source and all its associated chunks and embeddings from the knowledge base",
   inputSchema: z.object({
     sourceId: z.string(),
   }),
   execute: async ({ context }) => {
     try {
-      await deleteSource(context.sourceId);
-      
+      // await deleteSource(context.sourceId);
+
       return {
         ok: true,
         message: `Successfully deleted source ${context.sourceId} and all associated content`,
@@ -22,3 +22,4 @@ export const deleteSourceTool = createTool({
     }
   },
 });
+

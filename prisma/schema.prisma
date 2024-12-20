@@ -12,28 +12,41 @@ datasource db {
 model Source {
   id        String   @id @default(cuid())
   name      String
-  type      String   // e.g., "text", "pdf", "webpage"
-  url       String?  // optional URL if content is from web
+  type      String // e.g., "text", "pdf", "webpage"
+  url       String? // optional URL if content is from web
   chunks    Chunk[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Chunk {
-  id         String     @id @default(cuid())
-  content    String
-  sourceId   String
-  source     Source     @relation(fields: [sourceId], references: [id])
-  embedding  Embedding?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id        String     @id @default(cuid())
+  content   String
+  sourceId  String
+  source    Source     @relation(fields: [sourceId], references: [id])
+  embedding Embedding?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Embedding {
   id        String   @id @default(cuid())
-  vector    Float[]  // Store embedding vector
+  vector    Float[] // Store embedding vector
   chunkId   String   @unique
   chunk     Chunk    @relation(fields: [chunkId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Podcast {
+  id          String   @id @default(cuid())
+  topic       String
+  script      String   @db.Text
+  audioUrl    String?
+  status      String   @default("GENERATING") // GENERATING, COMPLETED, FAILED
+  format      Json // Store format settings
+  sourcesUsed String[] // Array of source IDs used
+  error       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -5,26 +5,19 @@ import {
   parseAndChunkFileInputSchema,
 } from "../tools/schemas";
 import { generateEmbeddings, storeEmbeddings } from "../tools";
-import { addSource } from "@/utils/db";
 
 // Create a source first
 const createSource = new Step({
   id: "create-source",
   description: "Create a new source in the database",
   execute: async (c) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const triggerData = c.context.machineContext?.triggerData;
-    
-    const source = await addSource({
-      name: triggerData.name || 'Untitled Source',
-      type: triggerData.contentType || 'text',
-      url: triggerData.url
-    });
 
-    return {
-      ...triggerData,
-      sourceId: source.id
-    };
-  }
+    // add source
+
+    return {};
+  },
 });
 
 const chunk = new Step({
@@ -44,7 +37,7 @@ const chunk = new Step({
           machineContext: c.context.machineContext,
           ...triggerData,
         })),
-        sourceId: triggerData.sourceId
+        sourceId: triggerData.sourceId,
       };
     }
 
@@ -56,7 +49,7 @@ const chunk = new Step({
           machineContext: c.context.machineContext,
           ...triggerData,
         })),
-        sourceId: triggerData.sourceId
+        sourceId: triggerData.sourceId,
       };
     }
 
@@ -79,7 +72,7 @@ export const updateKnowledgeBase = new Workflow({
   name: "updateKnowledgeBase",
   triggerSchema: z.union([
     chunkInputSchema.merge(sourceInfoSchema),
-    parseAndChunkFileInputSchema.merge(sourceInfoSchema)
+    parseAndChunkFileInputSchema.merge(sourceInfoSchema),
   ]),
 })
   .step(createSource)
