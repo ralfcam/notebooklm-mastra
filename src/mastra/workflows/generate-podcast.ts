@@ -33,10 +33,12 @@ const createAudio = new Step({
 
     if (
       context.machineContext?.stepResults.createTranscript.status === "failed"
-    )
+    ) {
       throw new Error("Transcript creation failed");
+    }
 
     const transcript =
+      //@ts-expect-error just building it out
       context.machineContext?.stepResults?.createScript?.transcript;
 
     return executeGenerateAudio({

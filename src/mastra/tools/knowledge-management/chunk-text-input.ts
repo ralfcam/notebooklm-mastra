@@ -1,6 +1,7 @@
 import { createTool } from "@mastra/core";
 import { MDocument } from "@mastra/rag";
 import { z } from "zod";
+import { Document } from "llamaindex";
 
 const inputSchema = z.object({
   content: z.string(),

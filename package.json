@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "mastra:init": "pnpm dlx mastra init"
+    "mastra:init": "pnpm dlx mastra init",
+    "mastra:dev": "pnpm dlx mastra dev"
   },
   "dependencies": {
     "@mastra/core": "0.1.27-alpha.40",
@@ -30,9 +31,15 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "canvas": "^2.11.2",
     "eslint": "^9",
     "eslint-config-next": "15.1.1",
+    "import-in-the-middle": "^1.12.0",
+    "jsdom": "^25.0.1",
+    "pg": "^8.13.1",
     "postcss": "^8",
+    "require-in-the-middle": "^7.4.0",
+    "sharp": "^0.33.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
