@@ -31,7 +31,7 @@ export const queryEmbeddings = createTool({
   execute: async ({ context }) => {
     const { indexName, queryVector, topK = 10, filter, minScore = 0 } = context;
 
-    const pgVector = new PgVector(process.env.DATABASE_URL!);
+    const pgVector = new PgVector(process.env.DB_URL!);
 
     try {
       const results = await pgVector.query(

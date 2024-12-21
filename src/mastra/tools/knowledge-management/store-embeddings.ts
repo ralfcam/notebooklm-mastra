@@ -32,7 +32,7 @@ export const storeEmbeddings = createTool({
   outputSchema,
   execute: async ({ context }) => {
     const { embeddedDocuments, metadata, indexName } = context;
-    const pgVector = new PgVector(process.env.DATABASE_URL!);
+    const pgVector = new PgVector(process.env.DB_URL!);
 
     try {
       // Ensure index exists (creates if not)

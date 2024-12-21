@@ -9,20 +9,22 @@
     "lint": "next lint",
     "mastra:init": "pnpm dlx mastra init",
     "mastra:dev": "pnpm dlx mastra dev",
-    "db:studio": "pnpm drizzle-kit studio"
+    "db:studio": "pnpm drizzle-kit studio",
+    "db:pull": "pnpm drizzle-kit pull",
+    "db:gen": "pnpm drizzle-kit generate",
+    "db:migrate": "pnpm drizzle-kit migrate"
   },
   "dependencies": {
     "@mastra/core": "0.1.27-alpha.40",
     "@mastra/engine": "0.0.5-alpha.38",
     "@mastra/rag": "0.0.2-alpha.25",
-    "@prisma/client": "^6.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-kit": "^0.30.1",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.38.2",
     "llamaindex": "^0.8.30",
     "lucide-react": "^0.468.0",
     "next": "15.1.1",
-    "prisma": "^6.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.5.5",
@@ -32,9 +34,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/pg": "^8.11.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "canvas": "^2.11.2",
+    "drizzle-kit": "^0.30.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.1",
     "import-in-the-middle": "^1.12.0",
@@ -44,6 +48,7 @@
     "require-in-the-middle": "^7.4.0",
     "sharp": "^0.33.5",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }

@@ -30,7 +30,7 @@ export const searchVectorContent = createTool({
   outputSchema,
   execute: async ({ context }) => {
     const { indexName, queryVector, topK, filter, minScore } = context;
-    const pgVector = new PgVector(process.env.DATABASE_URL!);
+    const pgVector = new PgVector(process.env.DB_URL!);
 
     try {
       const results = await pgVector.query(
