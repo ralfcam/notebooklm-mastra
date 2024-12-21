@@ -18,6 +18,7 @@
     "@mastra/core": "0.1.27-alpha.40",
     "@mastra/engine": "0.0.5-alpha.38",
     "@mastra/rag": "0.0.2-alpha.25",
+    "@radix-ui/react-slot": "^1.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",

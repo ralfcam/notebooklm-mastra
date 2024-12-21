@@ -8,7 +8,7 @@ const fontSans = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NotebookLM Mastra",
+  title: "Mastra NotebookLM",
   description: "AI-Powered Podcast Generation Platform",
 };
 
