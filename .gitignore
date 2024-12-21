@@ -40,3 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .mastra
+
+# personal notes
+notes.md
+plan.md
+system-notes.md
+play-ai.txt
+workflow-docs.txt
+exponent.txt
+mastra-docs.txt
