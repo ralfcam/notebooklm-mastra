@@ -1,9 +1,3 @@
-export default async function NotebookPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const notebookId = (await params).id;
-
-  return <div>{notebookId}</div>;
+export default async function NotebookPage() {
+  return <div>center</div>;
 }
