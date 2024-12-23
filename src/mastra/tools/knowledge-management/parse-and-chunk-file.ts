@@ -5,10 +5,16 @@ import { z } from "zod";
 const inputSchema = z.object({
   buffer: z.instanceof(ArrayBuffer),
   fileName: z.string(),
+  notebookId: z.string(),
 });
 
 const outputSchema = z.object({
   chunkedDocuments: z.array(z.instanceof(Document)),
+  notebookId: z.string(),
+  source: z.object({
+    name: z.string(),
+    content: z.string(),
+  }),
 });
 
 const description =
@@ -19,7 +25,7 @@ export const parseAndChunkFile = createTool({
   description,
   inputSchema,
   outputSchema,
-  execute: async ({ context: c, mastra }) => {
+  execute: async ({ context: c }) => {
     const reader = new LlamaParseReader({
       resultType: "markdown",
       apiKey: process.env.LLAMA_CLOUD_API_KEY!,
@@ -32,10 +38,13 @@ export const parseAndChunkFile = createTool({
       c.fileName,
     );
 
-    mastra?.logger?.debug(
-      JSON.stringify({ type: "CUSTOM_LOG", chunkedDocuments }),
-    );
-
-    return { chunkedDocuments };
+    return {
+      chunkedDocuments,
+      notebookId: c.notebookId,
+      source: {
+        name: c.fileName,
+        content: chunkedDocuments.map((doc) => doc.text).join("\n"),
+      },
+    };
   },
 });

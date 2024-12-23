@@ -31,3 +31,5 @@ export function formatBytes(
       : (sizes[i] ?? "Bytes")
   }`;
 }
+
+export const connectionId = "mastra_notebooklm";

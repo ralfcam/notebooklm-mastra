@@ -13,7 +13,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { useSidebar } from "../ui/sidebar";
 import { FileUploader } from "./file-uploader";
-import { parseAndChunkFileAction } from "@/actions/handleFiles";
+import { parseAndChunkFileAction } from "@/actions/process-upload-action";
 
 interface UploadSourceDialogProps {
   initialOpen: boolean;
@@ -22,6 +22,7 @@ interface UploadSourceDialogProps {
 
 export const UploadSourceDialog: React.FC<UploadSourceDialogProps> = ({
   initialOpen,
+  notebookId,
 }) => {
   const [open, setOpen] = useState(initialOpen);
   const { open: sidebarOpen } = useSidebar();
@@ -29,10 +30,11 @@ export const UploadSourceDialog: React.FC<UploadSourceDialogProps> = ({
 
   const onUpload = async (files: File[]) => {
     if (files.length !== 1) return;
+
     const buffer = await files[0].arrayBuffer();
     const fileName = files[0].name;
 
-    const res = await parseAndChunkFileAction(buffer, fileName);
+    const res = await parseAndChunkFileAction(buffer, fileName, notebookId);
 
     console.log(res);
   };

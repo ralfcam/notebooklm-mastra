@@ -14,6 +14,7 @@ import {
   organizeSources,
   parseAndChunkFile,
   queryEmbeddings,
+  saveSource,
   searchVectorContent,
   storeEmbeddings,
 } from "../tools";
@@ -48,6 +49,7 @@ export const knowledgeManager = new Agent({
   tools: {
     chunkText,
     parseAndChunkFile,
+    saveSource,
     generateEmbeddings,
     storeEmbeddings,
     queryEmbeddings,
