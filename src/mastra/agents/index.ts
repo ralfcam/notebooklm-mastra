@@ -15,7 +15,6 @@ import {
   parseAndChunkFile,
   queryEmbeddings,
   saveSource,
-  searchVectorContent,
   storeEmbeddings,
 } from "../tools";
 
@@ -28,7 +27,6 @@ export const podcastGenerator = new Agent({
     toolChoice: "auto",
   },
   tools: {
-    searchVectorContent,
     organizeSources,
     createSynthesis,
     extractMainPoints,
@@ -53,6 +51,5 @@ export const knowledgeManager = new Agent({
     generateEmbeddings,
     storeEmbeddings,
     queryEmbeddings,
-    searchVectorContent,
   },
 });

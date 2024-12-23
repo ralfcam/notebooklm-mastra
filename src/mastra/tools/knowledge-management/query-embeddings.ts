@@ -1,5 +1,5 @@
 import { createTool } from "@mastra/core";
-import { PgVector } from "@mastra/rag";
+import { embed, PgVector } from "@mastra/rag";
 import { z } from "zod";
 
 const inputSchema = z.object({
@@ -30,6 +30,15 @@ export const queryEmbeddings = createTool({
   outputSchema,
   execute: async ({ context }) => {
     const { indexName, queryVector, topK = 10, filter, minScore = 0 } = context;
+
+    const { embedding } = await embed(
+      "What are the main points in the article?",
+      {
+        provider: "OPEN_AI",
+        model: "",
+        maxRetries: 5,
+      },
+    );
 
     const pgVector = new PgVector(process.env.DB_URL!);
 

@@ -5,6 +5,7 @@ import { z } from "zod";
 
 const inputSchema = z.object({
   chunkedDocuments: z.array(z.instanceof(Document)),
+  metadata: z.object({ title: z.string() }),
 });
 
 const outputSchema = z.object({
@@ -14,6 +15,9 @@ const outputSchema = z.object({
       embedding: z.array(z.number()),
     }),
   ),
+  metadata: z.object({
+    title: z.string(),
+  }),
 });
 
 const description =
@@ -42,7 +46,7 @@ export const generateEmbeddings = createTool({
         embedding: embeddings[index],
       }));
 
-      return { embeddedDocuments };
+      return { embeddedDocuments, metadata: context.metadata };
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to generate embeddings: ${error.message}`);

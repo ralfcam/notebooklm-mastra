@@ -9,8 +9,6 @@ export const fetchNotebookSources = async (notebookId: string) => {
     .where(eq(sources.notebookId, notebookId))
     .leftJoin(sourceTopics, eq(sources.id, sourceTopics.sourceId));
 
-  console.log("res >>", res);
-
   type Sources = typeof sources.$inferSelect;
   type SourceTopic = typeof sourceTopics.$inferSelect;
 
@@ -18,8 +16,6 @@ export const fetchNotebookSources = async (notebookId: string) => {
     string,
     Sources & { sourceTopics: SourceTopic[] }
   >();
-
-  console.dir(res, { depth: Infinity });
 
   res.forEach(({ sources, source_topics }) => {
     if (sourcesMap.has(sources.id)) {

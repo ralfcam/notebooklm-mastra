@@ -27,8 +27,6 @@ const generateSourceSummary = new Step({
   execute: async ({ context: c, mastra }) => {
     const knowledgeManager = mastra?.agents?.["knowledgeManager"];
 
-    console.log("notebook from summary gen", c.notebookId);
-
     if (!knowledgeManager)
       throw new Error("knowledgeManager agent not available");
 

@@ -29,7 +29,7 @@ export default async function NotebookLayout({
       <main className="grow">{children}</main>
       <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
         <CustomSidebar side="right" header="Studio">
-          <StudioPanel />
+          <StudioPanel notebookId={notebookId} />
         </CustomSidebar>
       </SidebarProvider>
     </div>

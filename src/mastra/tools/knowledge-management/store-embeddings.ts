@@ -12,8 +12,6 @@ const inputSchema = z.object({
   ),
   metadata: z.object({
     title: z.string(),
-    source: z.string(),
-    additionalMetadata: z.record(z.any()).optional(),
   }),
   indexName: z.string(),
 });
@@ -45,8 +43,6 @@ export const storeEmbeddings = createTool({
         ...doc.document.metadata,
         text: doc.document.text,
         title: metadata.title,
-        source: metadata.source,
-        ...metadata.additionalMetadata,
       }));
 
       // Store vectors and metadata

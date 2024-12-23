@@ -5,10 +5,14 @@ import { Document } from "llamaindex";
 
 const inputSchema = z.object({
   content: z.string(),
+  title: z.string(),
 });
 
 const outputSchema = z.object({
   chunkedDocuments: z.array(z.instanceof(Document)),
+  metadata: z.object({
+    title: z.string(),
+  }),
 });
 
 const description =
@@ -19,13 +23,13 @@ export const chunkText = createTool({
   description,
   inputSchema,
   outputSchema,
-  execute: async ({ context: { content } }) => {
+  execute: async ({ context: { content, title } }) => {
     const chunkedDocuments = await MDocument.fromText(content).chunk({
       strategy: "recursive",
       size: 512,
       overlap: 50,
     });
 
-    return { chunkedDocuments };
+    return { chunkedDocuments, metadata: { title } };
   },
 });

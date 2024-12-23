@@ -1,4 +1,4 @@
-import { createTool } from "@mastra/core";
+import { createSync } from "@mastra/core";
 import { z } from "zod";
 import { db } from "@/db";
 import { sources, sourceTopics } from "@/db/schema/sources";
@@ -17,8 +17,8 @@ const outputSchema = z.void();
 
 const description = "Saves a record of the source to the postgres engine";
 
-export const saveSource = createTool({
-  id: "saveSource",
+export const saveSourceSync = createSync({
+  id: "saveSourceSync",
   description,
   inputSchema,
   outputSchema,
