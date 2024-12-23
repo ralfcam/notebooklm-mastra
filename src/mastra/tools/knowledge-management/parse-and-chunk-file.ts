@@ -3,7 +3,8 @@ import { Document, LlamaParseReader } from "llamaindex";
 import { z } from "zod";
 
 const inputSchema = z.object({
-  file: z.instanceof(File),
+  buffer: z.instanceof(ArrayBuffer),
+  fileName: z.string(),
 });
 
 const outputSchema = z.object({
@@ -18,13 +19,21 @@ export const parseAndChunkFile = createTool({
   description,
   inputSchema,
   outputSchema,
-  execute: async ({ context: c }) => {
-    const reader = new LlamaParseReader({ resultType: "markdown" });
-    const content = new Uint8Array(await c.file.arrayBuffer());
+  execute: async ({ context: c, mastra }) => {
+    const reader = new LlamaParseReader({
+      resultType: "markdown",
+      apiKey: process.env.LLAMA_CLOUD_API_KEY!,
+    });
+
+    const content = new Uint8Array(c.buffer);
 
     const chunkedDocuments = await reader.loadDataAsContent(
       content,
-      c.file.name,
+      c.fileName,
+    );
+
+    mastra?.logger?.debug(
+      JSON.stringify({ type: "CUSTOM_LOG", chunkedDocuments }),
     );
 
     return { chunkedDocuments };

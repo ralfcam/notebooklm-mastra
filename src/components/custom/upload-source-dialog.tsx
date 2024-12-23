@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { useSidebar } from "../ui/sidebar";
 import { FileUploader } from "./file-uploader";
+import { parseAndChunkFileAction } from "@/actions/handleFiles";
 
 interface UploadSourceDialogProps {
   initialOpen: boolean;
@@ -24,6 +25,17 @@ export const UploadSourceDialog: React.FC<UploadSourceDialogProps> = ({
 }) => {
   const [open, setOpen] = useState(initialOpen);
   const { open: sidebarOpen } = useSidebar();
+  const [files, setFiles] = useState<File[]>([]);
+
+  const onUpload = async (files: File[]) => {
+    if (files.length !== 1) return;
+    const buffer = await files[0].arrayBuffer();
+    const fileName = files[0].name;
+
+    const res = await parseAndChunkFileAction(buffer, fileName);
+
+    console.log(res);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -39,7 +51,11 @@ export const UploadSourceDialog: React.FC<UploadSourceDialogProps> = ({
           <DialogDescription>Upload a source to the notebook</DialogDescription>
         </DialogHeader>
         <form>
-          <FileUploader />
+          <FileUploader
+            value={files}
+            onValueChange={setFiles}
+            onUpload={onUpload}
+          />
         </form>
       </DialogContent>
     </Dialog>
