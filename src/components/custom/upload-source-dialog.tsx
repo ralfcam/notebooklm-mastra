@@ -34,9 +34,9 @@ export const UploadSourceDialog: React.FC<UploadSourceDialogProps> = ({
     const buffer = await files[0].arrayBuffer();
     const fileName = files[0].name;
 
-    const res = await parseAndChunkFileAction(buffer, fileName, notebookId);
+    await parseAndChunkFileAction(buffer, fileName, notebookId);
 
-    console.log(res);
+    setOpen(false);
   };
 
   return (

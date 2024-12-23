@@ -1,6 +1,7 @@
 "use server";
 
 import { mastra } from "@/mastra";
+import { revalidatePath } from "next/cache";
 
 export const parseAndChunkFileAction = async (
   buffer: ArrayBuffer,
@@ -15,5 +16,8 @@ export const parseAndChunkFileAction = async (
     },
   });
 
+  console.dir(workflowResult, { depth: Infinity });
+
+  revalidatePath(`/notebooks/${notebookId}`);
   return workflowResult.runId;
 };
