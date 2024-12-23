@@ -4,6 +4,7 @@ import { parseAndChunkFile, saveSource } from "../tools";
 import { generateSourceSummaryPrompt } from "../prompts/generate-source-summary";
 
 const inputSchema = z.object({
+  notebookId: z.string(),
   source: z.object({
     name: z.string(),
     content: z.string(),
@@ -11,8 +12,10 @@ const inputSchema = z.object({
 });
 
 const outputSchema = z.object({
+  source: z.object({ name: z.string(), content: z.string() }),
   summary: z.string(),
   keyTopics: z.array(z.string()),
+  notebookId: z.string(),
 });
 
 const generateSourceSummary = new Step({
@@ -23,6 +26,8 @@ const generateSourceSummary = new Step({
   outputSchema,
   execute: async ({ context: c, mastra }) => {
     const knowledgeManager = mastra?.agents?.["knowledgeManager"];
+
+    console.log("notebook from summary gen", c.notebookId);
 
     if (!knowledgeManager)
       throw new Error("knowledgeManager agent not available");
@@ -36,7 +41,12 @@ const generateSourceSummary = new Step({
     );
 
     //NOTE: Object isn't inferred by typescript even though the schema is present
-    return response.object as z.infer<typeof outputSchema>;
+    return {
+      summary: response.object.summary,
+      keyTopics: response.object.keyTopics,
+      source: c.source,
+      notebookId: c.notebookId,
+    };
   },
 });
 
@@ -55,16 +65,18 @@ export const processUpload = new Workflow({
       notebookId: { step: "trigger", path: "notebookId" },
     },
   })
-  .after(parseAndChunkFile)
-  .step(saveSource, {
+  .then(generateSourceSummary, {
     variables: {
-      notebookId: { step: parseAndChunkFile, path: "notebookId" },
       source: { step: parseAndChunkFile, path: "source" },
+      notebookId: { step: parseAndChunkFile, path: "notebookId" },
     },
   })
-  .step(generateSourceSummary, {
+  .then(saveSource, {
     variables: {
-      source: { step: parseAndChunkFile, path: "source" },
+      keyTopics: { step: generateSourceSummary, path: "keyTopics" },
+      notebookId: { step: generateSourceSummary, path: "notebookId" },
+      source: { step: generateSourceSummary, path: "source" },
+      summary: { step: generateSourceSummary, path: "summary" },
     },
   })
   .commit();

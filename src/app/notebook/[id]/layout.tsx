@@ -19,8 +19,6 @@ export default async function NotebookLayout({
 
   const notebookId = (await params).id;
 
-  console.log({ notebookId });
-
   return (
     <div className="flex">
       <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>

@@ -1,7 +1,7 @@
 import { createTool } from "@mastra/core";
 import { z } from "zod";
 import { db } from "@/db";
-import { sources } from "@/db/schema/sources";
+import { sources, sourceTopics } from "@/db/schema/sources";
 
 const inputSchema = z.object({
   notebookId: z.string(),
@@ -9,6 +9,8 @@ const inputSchema = z.object({
     name: z.string(),
     content: z.string(),
   }),
+  keyTopics: z.array(z.string()),
+  summary: z.string(),
 });
 
 const outputSchema = z.void();
@@ -25,14 +27,25 @@ export const saveSource = createTool({
 
     if (!engine) throw new Error("Mastra engine not available.");
 
+    console.log("notebookId", c.notebookId);
+
     const insertResults = await db
       .insert(sources)
       .values({
         content: c.source.content,
+        name: c.source.name,
+        summary: c.summary,
         type: "file",
         notebookId: c.notebookId,
       })
       .returning({ externalId: sources.id });
+
+    await db.insert(sourceTopics).values(
+      c.keyTopics.map((t) => ({
+        topic: t,
+        sourceId: insertResults[0].externalId,
+      })),
+    );
 
     let sourcesEntity = await engine.getEntity({ name: "sources" });
 
@@ -47,7 +60,7 @@ export const saveSource = createTool({
       entityId: sourcesEntity.id,
       records: [
         {
-          data: { ...c.source },
+          data: { ...c.source, summary: c.summary, keyTopics: c.keyTopics },
           entityType: "sources",
           externalId: insertResults[0].externalId,
         },

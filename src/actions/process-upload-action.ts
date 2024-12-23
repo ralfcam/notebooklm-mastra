@@ -16,8 +16,6 @@ export const parseAndChunkFileAction = async (
     },
   });
 
-  console.dir(workflowResult, { depth: Infinity });
-
   revalidatePath(`/notebooks/${notebookId}`);
   return workflowResult.runId;
 };
