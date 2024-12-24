@@ -16,16 +16,18 @@ interface SourceItemProps {
   content: string;
   summary: string;
   keyTopics: string[];
+  disabled: boolean;
 }
 export const SourceItem: React.FC<SourceItemProps> = ({
   name,
   content,
   summary,
   keyTopics,
+  disabled,
 }) => {
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={disabled}>
         <Button variant="secondary" className="w-full justify-start">
           <File />
           <span className="truncate">{name}</span>

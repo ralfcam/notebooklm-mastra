@@ -15,4 +15,4 @@ export const actionClient = createSafeActionClient({
     console.error("[ACTION CLIENT ERROR]:", e.message);
     return DEFAULT_SERVER_ERROR_MESSAGE;
   },
-}).use(({ next }) => next({ ctx: { mastra } })); // mastra instance to client context
+}).use(({ next }) => next({ ctx: { mastra } })); // add mastra instance to client context
