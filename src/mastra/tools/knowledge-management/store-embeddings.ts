@@ -13,7 +13,6 @@ const inputSchema = z.object({
   metadata: z.object({
     title: z.string(),
   }),
-  indexName: z.string(),
 });
 
 const outputSchema = z.object({
@@ -28,8 +27,20 @@ export const storeEmbeddings = createTool({
   description,
   inputSchema,
   outputSchema,
-  execute: async ({ context }) => {
-    const { embeddedDocuments, metadata, indexName } = context;
+  execute: async ({ context, mastra }) => {
+    const stepResults =
+      context.machineContext?.stepResults.generateSourceSummary;
+
+    let indexName: string = "mastra_embeddings_index";
+
+    if (stepResults?.status === "success" && stepResults.payload.notebookId) {
+      indexName = (stepResults.payload.notebookId as string).replaceAll(
+        "-",
+        "_",
+      );
+    }
+
+    const { embeddedDocuments, metadata } = context;
     const pgVector = new PgVector(process.env.DB_URL!);
 
     try {
@@ -45,12 +56,18 @@ export const storeEmbeddings = createTool({
         title: metadata.title,
       }));
 
+      mastra?.logger?.debug(
+        `[STORE EMBEDDINGS]: >>>> ${JSON.stringify({ indexName, vectors, documentMetadata })}`,
+      );
+
       // Store vectors and metadata
       const vectorIds = await pgVector.upsert(
         indexName,
         vectors,
         documentMetadata,
       );
+
+      mastra?.logger?.debug("[VECTOR IDS] >>>>", vectorIds);
 
       await pgVector.disconnect();
 

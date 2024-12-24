@@ -1,4 +1,4 @@
-export * from "./chunk-text-input";
+export * from "./chunk-text";
 export * from "./generate-embeddings";
 export * from "./parse-and-chunk-file";
 export * from "./query-embeddings";

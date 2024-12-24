@@ -1,6 +1,12 @@
 import { Step, Workflow } from "@mastra/core";
 import { z } from "zod";
-import { parseAndChunkFile, saveSource } from "../tools";
+import {
+  chunkText,
+  generateEmbeddings,
+  parseAndChunkFile,
+  saveSource,
+  storeEmbeddings,
+} from "../tools";
 import { generateSourceSummaryPrompt } from "../prompts/generate-source-summary";
 
 const inputSchema = z.object({
@@ -75,6 +81,30 @@ export const processUpload = new Workflow({
       notebookId: { step: generateSourceSummary, path: "notebookId" },
       source: { step: generateSourceSummary, path: "source" },
       summary: { step: generateSourceSummary, path: "summary" },
+    },
+  })
+  .then(chunkText, {
+    variables: {
+      title: { step: saveSource, path: "title" },
+      content: { step: saveSource, path: "content" },
+    },
+  })
+  .then(generateEmbeddings, {
+    variables: {
+      chunkedDocuments: { step: chunkText, path: "chunkedDocuments" },
+      metadata: { step: chunkText, path: "metadata" },
+    },
+  })
+  .then(storeEmbeddings, {
+    variables: {
+      embeddedDocuments: {
+        step: generateEmbeddings,
+        path: "embeddedDocuments",
+      },
+      metadata: {
+        step: generateEmbeddings,
+        path: "metadata",
+      },
     },
   })
   .commit();

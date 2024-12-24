@@ -17,5 +17,6 @@ export const mastra = new Mastra({
   agents: { knowledgeManager, podcastGenerator },
   workflows: { generatePodcast, processUpload },
   logger,
+  //@ts-expect-error check PostgresEngine note
   engine,
 });

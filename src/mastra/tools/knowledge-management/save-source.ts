@@ -2,7 +2,6 @@ import { createTool } from "@mastra/core";
 import { z } from "zod";
 import { db } from "@/db";
 import { sources, sourceTopics } from "@/db/schema/sources";
-import { fetchNotebookSources } from "@/db/queries/sources";
 
 const inputSchema = z.object({
   notebookId: z.string(),
@@ -14,12 +13,18 @@ const inputSchema = z.object({
   summary: z.string(),
 });
 
+const outputSchema = z.object({
+  title: z.string(),
+  content: z.string(),
+});
+
 const description = "Saves a record of the source to the postgres engine";
 
 export const saveSource = createTool({
   id: "saveSource",
   description,
   inputSchema,
+  outputSchema,
   execute: async ({ context: c, mastra }) => {
     const engine = mastra?.engine;
 
@@ -63,8 +68,9 @@ export const saveSource = createTool({
       ],
     });
 
-    const results = await fetchNotebookSources(c.notebookId);
-
-    return results;
+    return {
+      title: c.source.name,
+      content: c.source.content,
+    };
   },
 });
