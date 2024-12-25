@@ -1,5 +1,7 @@
+import { db } from "@/db";
+import { sourceChunks, sources } from "@/db/schema/sources";
 import { createTool } from "@mastra/core";
-import { PgVector } from "@mastra/rag";
+import { eq } from "drizzle-orm";
 import { Document } from "llamaindex";
 import { z } from "zod";
 
@@ -10,15 +12,11 @@ const inputSchema = z.object({
       embedding: z.array(z.number()),
     }),
   ),
-  metadata: z.object({
-    title: z.string(),
-  }),
+  embeddedSummary: z.array(z.number()),
+  sourceId: z.string(),
 });
 
-const outputSchema = z.object({
-  success: z.boolean(),
-  vectorIds: z.array(z.string()),
-});
+const outputSchema = z.void();
 
 const description = "Stores document embeddings using PgVector with metadata";
 
@@ -27,60 +25,34 @@ export const storeEmbeddings = createTool({
   description,
   inputSchema,
   outputSchema,
-  execute: async ({ context, mastra }) => {
+  execute: async ({ context }) => {
+    const { embeddedDocuments, embeddedSummary, sourceId } = context;
+
     const stepResults =
       context.machineContext?.stepResults.generateSourceSummary;
-
-    let indexName: string = "mastra_embeddings_index";
-
-    if (stepResults?.status === "success" && stepResults.payload.notebookId) {
-      indexName = (stepResults.payload.notebookId as string).replaceAll(
-        "-",
-        "_",
+    let notebookId: string;
+    if (stepResults?.status === "success") {
+      notebookId = stepResults.payload.notebookId;
+    } else {
+      throw new Error(
+        "Could not retrieve the notebookId from generateSourceSummary step",
       );
     }
 
-    const { embeddedDocuments, metadata } = context;
-    const pgVector = new PgVector(process.env.DB_URL!);
+    const chunkInserts = embeddedDocuments.map((doc) => ({
+      content: doc.document.text,
+      embedding: doc.embedding,
+      sourceId,
+    }));
 
     try {
-      // Ensure index exists (creates if not)
-      const dimension = embeddedDocuments[0].embedding.length;
-      await pgVector.createIndex(indexName, dimension);
+      await db
+        .update(sources)
+        .set({ summaryEmbedding: embeddedSummary })
+        .where(eq(sources.notebookId, notebookId));
 
-      // Prepare data for upsert
-      const vectors = embeddedDocuments.map((doc) => doc.embedding);
-      const documentMetadata = embeddedDocuments.map((doc) => ({
-        ...doc.document.metadata,
-        text: doc.document.text,
-        title: metadata.title,
-      }));
-
-      mastra?.logger?.debug(`[STORE EMBEDDINGS]: >>>>`, {
-        indexName,
-        documentMetadata,
-      });
-
-      // Store vectors and metadata
-      const vectorIds = await pgVector.upsert(
-        indexName,
-        vectors,
-        documentMetadata,
-        undefined,
-        mastra?.logger,
-      );
-
-      mastra?.logger?.debug("[RESES] >>>>", vectorIds);
-
-      await pgVector.disconnect();
-
-      return {
-        success: true,
-        vectorIds,
-      };
+      await db.insert(sourceChunks).values(chunkInserts);
     } catch (error: unknown) {
-      await pgVector.disconnect();
-
       if (error instanceof Error) {
         throw new Error(`Failed to store embeddings: ${error.message}`);
       }

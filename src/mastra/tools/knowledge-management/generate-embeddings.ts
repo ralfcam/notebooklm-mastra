@@ -1,11 +1,13 @@
 import { createTool } from "@mastra/core";
-import { embed } from "@mastra/rag";
+import { embed, MDocument } from "@mastra/rag";
 import { Document } from "llamaindex";
 import { z } from "zod";
 
 const inputSchema = z.object({
-  chunkedDocuments: z.array(z.instanceof(Document)),
-  metadata: z.object({ title: z.string() }),
+  chunkedContent: z.array(z.instanceof(Document)),
+  keyTopics: z.array(z.string()),
+  sourceId: z.string(),
+  summary: z.string(),
 });
 
 const outputSchema = z.object({
@@ -15,9 +17,8 @@ const outputSchema = z.object({
       embedding: z.array(z.number()),
     }),
   ),
-  metadata: z.object({
-    title: z.string(),
-  }),
+  embeddedSummary: z.array(z.number()),
+  sourceId: z.string(),
 });
 
 const description =
@@ -29,24 +30,41 @@ export const generateEmbeddings = createTool({
   inputSchema,
   outputSchema,
   execute: async ({ context }) => {
-    const { chunkedDocuments } = context;
+    const { chunkedContent, sourceId, summary } = context;
 
     try {
-      const result = await embed(chunkedDocuments, {
+      const contentEmbeddingRes = await embed(chunkedContent, {
         provider: "OPEN_AI",
         model: "text-embedding-ada-002",
         maxRetries: 5,
       });
 
-      const embeddings =
-        "embeddings" in result ? result.embeddings : [result.embedding];
+      const contentEmbeddings =
+        "embeddings" in contentEmbeddingRes
+          ? contentEmbeddingRes.embeddings
+          : [contentEmbeddingRes.embedding];
 
-      const embeddedDocuments = chunkedDocuments.map((document, index) => ({
+      const embeddedDocuments = chunkedContent.map((document, index) => ({
         document,
-        embedding: embeddings[index],
+        embedding: contentEmbeddings[index],
       }));
 
-      return { embeddedDocuments, metadata: context.metadata };
+      const summaryEmbeddingRes = await embed(summary, {
+        provider: "OPEN_AI",
+        model: "text-embedding-ada-002",
+        maxRetries: 5,
+      });
+
+      const summaryEmbeddings =
+        "embeddings" in summaryEmbeddingRes
+          ? summaryEmbeddingRes.embeddings
+          : [summaryEmbeddingRes.embedding];
+
+      return {
+        embeddedSummary: summaryEmbeddings[0],
+        embeddedDocuments,
+        sourceId,
+      };
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to generate embeddings: ${error.message}`);

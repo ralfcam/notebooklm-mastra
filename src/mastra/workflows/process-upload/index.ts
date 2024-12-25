@@ -40,14 +40,18 @@ export const processUpload = new Workflow({
   })
   .then(chunkText, {
     variables: {
-      title: { step: saveSource, path: "title" },
-      content: { step: saveSource, path: "content" },
+      keyTopics: { step: saveSource, path: "keyTopics" },
+      notebookId: { step: saveSource, path: "notebookId" },
+      source: { step: saveSource, path: "source" },
+      summary: { step: saveSource, path: "summary" },
     },
   })
   .then(generateEmbeddings, {
     variables: {
-      chunkedDocuments: { step: chunkText, path: "chunkedDocuments" },
-      metadata: { step: chunkText, path: "metadata" },
+      chunkedContent: { step: chunkText, path: "chunkedContent" },
+      keyTopics: { step: chunkText, path: "keyTopics" },
+      sourceId: { step: chunkText, path: "sourceId" },
+      summary: { step: chunkText, path: "summary" },
     },
   })
   .then(storeEmbeddings, {
@@ -56,10 +60,8 @@ export const processUpload = new Workflow({
         step: generateEmbeddings,
         path: "embeddedDocuments",
       },
-      metadata: {
-        step: generateEmbeddings,
-        path: "metadata",
-      },
+      embeddedSummary: { step: generateEmbeddings, path: "embeddedSummary" },
+      sourceId: { step: generateEmbeddings, path: "sourceId" },
     },
   })
   .commit();
