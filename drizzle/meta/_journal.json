@@ -64,6 +64,20 @@
       "when": 1734962757534,
       "tag": "0008_equal_payback",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1735104461205,
+      "tag": "0009_kind_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1735105145946,
+      "tag": "0010_striped_wild_child",
+      "breakpoints": true
     }
   ]
 }
