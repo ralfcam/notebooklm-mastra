@@ -1,20 +1,28 @@
 "use server";
 
-import { fetchNotebookSources } from "@/db/queries/sources";
-import { mastra } from "@/mastra";
+import { revalidatePath } from "next/cache";
+import { actionClient } from "./safe-action";
+import { z } from "zod";
 
-export const generatePodcastAction = async (notebookId: string) => {
-  const generatePodcastWorkflow = mastra.getWorkflow("generatePodcast");
+const inputSchema = z.object({
+  triggerData: z.object({
+    notebookId: z.string(),
+  }),
+  pathToRevalidate: z.string(),
+});
 
-  const sources = await fetchNotebookSources(notebookId);
+export const generatePodcastAction = actionClient
+  .metadata({ name: "generatePodcastAction" })
+  .schema(inputSchema)
+  .action(async ({ ctx, parsedInput }) => {
+    const { mastra } = ctx;
+    const { triggerData, pathToRevalidate } = parsedInput;
 
-  // testing with raw content from sources
-  const source = sources[sources.length - 1];
+    const workflowResult = await mastra
+      .getWorkflow("generatePodcast")
+      .execute({ triggerData });
 
-  await generatePodcastWorkflow.execute({
-    triggerData: {
-      content: source.content,
-      title: source.name,
-    },
+    if (pathToRevalidate) revalidatePath(pathToRevalidate);
+
+    return workflowResult;
   });
-};

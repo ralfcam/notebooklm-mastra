@@ -1,58 +1,13 @@
-import { Step, Workflow } from "@mastra/core";
-import { z } from "zod";
 import {
-  chunkText,
-  generateEmbeddings,
   parseAndChunkFile,
   saveSource,
+  chunkText,
+  generateEmbeddings,
   storeEmbeddings,
-} from "../tools";
-import { generateSourceSummaryPrompt } from "../prompts/generate-source-summary";
-
-const inputSchema = z.object({
-  notebookId: z.string(),
-  source: z.object({
-    name: z.string(),
-    content: z.string(),
-  }),
-});
-
-const outputSchema = z.object({
-  source: z.object({ name: z.string(), content: z.string() }),
-  summary: z.string(),
-  keyTopics: z.array(z.string()),
-  notebookId: z.string(),
-});
-
-const generateSourceSummary = new Step({
-  id: "generateSourceSummary",
-  description:
-    "Generate summary from a source. The summary includes an overview of what the source is about and a list of key topics from the source.",
-  inputSchema,
-  outputSchema,
-  execute: async ({ context: c, mastra }) => {
-    const knowledgeManager = mastra?.agents?.["knowledgeManager"];
-
-    if (!knowledgeManager)
-      throw new Error("knowledgeManager agent not available");
-
-    const response = await knowledgeManager.generate(
-      [
-        { role: "system", content: generateSourceSummaryPrompt },
-        { role: "user", content: c.source.content },
-      ],
-      { schema: outputSchema },
-    );
-
-    //NOTE: Object isn't inferred by typescript even though the schema is present
-    return {
-      summary: response.object.summary,
-      keyTopics: response.object.keyTopics,
-      source: c.source,
-      notebookId: c.notebookId,
-    };
-  },
-});
+} from "@/mastra/tools";
+import { Workflow } from "@mastra/core";
+import { generateSourceSummary } from "./steps";
+import { z } from "zod";
 
 export const processUpload = new Workflow({
   name: "processUpload",

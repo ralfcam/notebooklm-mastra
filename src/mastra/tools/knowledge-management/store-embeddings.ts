@@ -56,18 +56,21 @@ export const storeEmbeddings = createTool({
         title: metadata.title,
       }));
 
-      mastra?.logger?.debug(
-        `[STORE EMBEDDINGS]: >>>> ${JSON.stringify({ indexName, vectors, documentMetadata })}`,
-      );
+      mastra?.logger?.debug(`[STORE EMBEDDINGS]: >>>>`, {
+        indexName,
+        documentMetadata,
+      });
 
       // Store vectors and metadata
       const vectorIds = await pgVector.upsert(
         indexName,
         vectors,
         documentMetadata,
+        undefined,
+        mastra?.logger,
       );
 
-      mastra?.logger?.debug("[VECTOR IDS] >>>>", vectorIds);
+      mastra?.logger?.debug("[RESES] >>>>", vectorIds);
 
       await pgVector.disconnect();
 
