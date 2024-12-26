@@ -1,5 +1,5 @@
 import { createTool } from "@mastra/core";
-import { embed, MDocument } from "@mastra/rag";
+import { embed } from "@mastra/rag";
 import { Document } from "llamaindex";
 import { z } from "zod";
 

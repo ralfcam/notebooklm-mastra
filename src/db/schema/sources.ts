@@ -41,9 +41,11 @@ export const sourceChunks = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     content: text().notNull(),
     embedding: vector("embedding", { dimensions: 1536 }),
-    sourceId: uuid("source_id").references(() => sources.id, {
-      onDelete: "cascade",
-    }),
+    sourceId: uuid("source_id")
+      .references(() => sources.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     ...timestamps,
   },
   (t) => [

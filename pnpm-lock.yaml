@@ -14,6 +14,9 @@ importers:
       '@mastra/engine':
         specifier: 0.0.5-alpha.38
         version: 0.0.5-alpha.38(@opentelemetry/api@1.9.0)(@prisma/client@6.1.0(prisma@6.1.0))(@types/pg@8.11.10)(@types/react@19.0.2)(encoding@0.1.13)(prisma@6.1.0)(react@19.0.0)
+      '@mastra/memory':
+        specifier: 0.0.2-alpha.19
+        version: 0.0.2-alpha.19(encoding@0.1.13)(react@19.0.0)(zod@3.24.1)
       '@mastra/rag':
         specifier: 0.0.2-alpha.25
         version: 0.0.2-alpha.25(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-sts@3.716.0)(@aws-sdk/credential-providers@3.716.0(@aws-sdk/client-sso-oidc@3.716.0(@aws-sdk/client-sts@3.716.0)))(@google/generative-ai@0.21.0)(@huggingface/transformers@3.2.1)(canvas@2.11.2(encoding@0.1.13))(cohere-ai@7.14.0(@aws-sdk/client-sso-oidc@3.716.0(@aws-sdk/client-sts@3.716.0))(encoding@0.1.13))(encoding@0.1.13)(gpt-tokenizer@2.8.1)(openai@4.77.0(encoding@0.1.13)(zod@3.24.1))(pathe@1.1.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tree-sitter@0.22.1)(typescript@5.7.2)(web-tree-sitter@0.24.5)
@@ -1259,6 +1262,9 @@ packages:
   '@mastra/engine@0.0.5-alpha.38':
     resolution: {integrity: sha512-nHt/YIQGbcZJs7jPpD7hJfc6BpBpyvswOLn7MDm2Z2AEkmZIkIsqffgsc8FtDsURN62iVjr5JSpHx9tA9VbC5A==}
 
+  '@mastra/memory@0.0.2-alpha.19':
+    resolution: {integrity: sha512-FXEmWgA3Nqv8vLX/vJbgW9lwVDNB9crM7IvCATWG1sxayfmcDExOJzSl7BPjIh7P4W9EA/nh5qqHqui29hPWqQ==}
+
   '@mastra/rag@0.0.2-alpha.25':
     resolution: {integrity: sha512-Vi1A8aZ70UXr9V+HncvqzNLz7A7x38ayAk3X4gahWv0em7Y2bClH6ZWkOSuyw1klXW/PkVU9rFCf7DncC6wFqw==}
 
@@ -2197,6 +2203,35 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
+  '@redis/bloom@1.2.0':
+    resolution: {integrity: sha512-HG2DFjYKbpNmVXsa0keLHp/3leGJz1mjh09f2RLGGLQZzSHpkmZWuwJbAvo3QcRY8p80m5+ZdXZdYOSBLlp7Cg==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/client@1.6.0':
+    resolution: {integrity: sha512-aR0uffYI700OEEH4gYnitAnv3vzVGXCFvYfdpu/CJKvk4pHfLPEy/JSZyrpQ+15WhXe1yJRXLtfQ84s4mEXnPg==}
+    engines: {node: '>=14'}
+
+  '@redis/graph@1.1.1':
+    resolution: {integrity: sha512-FEMTcTHZozZciLRl6GiiIB4zGm5z5F3F6a6FZCyrfxdKOhFlGkiAqlexWMBzCi4DcRoyiOsuLfW+cjlGWyExOw==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/json@1.0.7':
+    resolution: {integrity: sha512-6UyXfjVaTBTJtKNG4/9Z8PSpKE6XgSyEb8iwaqDcy+uKrd/DGYHTWkUdnQDyzm727V7p21WUMhsqz5oy65kPcQ==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/search@1.2.0':
+    resolution: {integrity: sha512-tYoDBbtqOVigEDMAcTGsRlMycIIjwMCgD8eR2t0NANeQmgK/lvxNAvYyb6bZDD4frHRhIHkJu2TBRvB0ERkOmw==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
+  '@redis/time-series@1.1.0':
+    resolution: {integrity: sha512-c1Q99M5ljsIuc4YdaCwfUEXsofakb9c8+Zse2qxTadu8TalLXuAESzLvFAvNVbkmSlvlzIQOLpBCmWI9wTOt+g==}
+    peerDependencies:
+      '@redis/client': ^1.0.0
+
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
@@ -2993,6 +3028,10 @@ packages:
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
+
+  cluster-key-slot@1.1.2:
+    resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
+    engines: {node: '>=0.10.0'}
 
   cohere-ai@7.14.0:
     resolution: {integrity: sha512-hSo2/tFV29whjFFtVtdS7kHmtUsjfMO1sgwE/d5bhOE4O7Vkj5G1R9lLIqkIprp/+rrvCq3HGvEaOgry7xRcDA==}
@@ -5016,6 +5055,9 @@ packages:
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
+
+  redis@4.7.0:
+    resolution: {integrity: sha512-zvmkHEAdGMn+hMRXuMBtu4Vo5P6rHQjLoHftu+lBqq8ZTA3RCVC/WzD790bkKKiNFp7d5/9PcSD19fJyyRvOdQ==}
 
   reflect.getprototypeof@1.0.9:
     resolution: {integrity: sha512-r0Ay04Snci87djAsI4U+WNRcSw5S4pOH7qFjd/veA5gC7TbqESR3tcj28ia95L/fYUDw11JKP7uqUKUAfVvV5Q==}
@@ -7423,6 +7465,23 @@ snapshots:
       - sqlite3
       - supports-color
 
+  '@mastra/memory@0.0.2-alpha.19(encoding@0.1.13)(react@19.0.0)(zod@3.24.1)':
+    dependencies:
+      '@mastra/core': 0.1.27-alpha.40(encoding@0.1.13)(react@19.0.0)
+      '@upstash/redis': 1.34.3
+      ai: 4.0.21(react@19.0.0)(zod@3.24.1)
+      pg: 8.13.1
+      pg-pool: 3.7.0(pg@8.13.1)
+      postgres: 3.4.5
+      redis: 4.7.0
+    transitivePeerDependencies:
+      - aws-crt
+      - encoding
+      - pg-native
+      - react
+      - supports-color
+      - zod
+
   '@mastra/rag@0.0.2-alpha.25(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-sts@3.716.0)(@aws-sdk/credential-providers@3.716.0(@aws-sdk/client-sso-oidc@3.716.0(@aws-sdk/client-sts@3.716.0)))(@google/generative-ai@0.21.0)(@huggingface/transformers@3.2.1)(canvas@2.11.2(encoding@0.1.13))(cohere-ai@7.14.0(@aws-sdk/client-sso-oidc@3.716.0(@aws-sdk/client-sts@3.716.0))(encoding@0.1.13))(encoding@0.1.13)(gpt-tokenizer@2.8.1)(openai@4.77.0(encoding@0.1.13)(zod@3.24.1))(pathe@1.1.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tree-sitter@0.22.1)(typescript@5.7.2)(web-tree-sitter@0.24.5)':
     dependencies:
       '@datastax/astra-db-ts': 1.5.0
@@ -8556,6 +8615,32 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
+  '@redis/bloom@1.2.0(@redis/client@1.6.0)':
+    dependencies:
+      '@redis/client': 1.6.0
+
+  '@redis/client@1.6.0':
+    dependencies:
+      cluster-key-slot: 1.1.2
+      generic-pool: 3.9.0
+      yallist: 4.0.0
+
+  '@redis/graph@1.1.1(@redis/client@1.6.0)':
+    dependencies:
+      '@redis/client': 1.6.0
+
+  '@redis/json@1.0.7(@redis/client@1.6.0)':
+    dependencies:
+      '@redis/client': 1.6.0
+
+  '@redis/search@1.2.0(@redis/client@1.6.0)':
+    dependencies:
+      '@redis/client': 1.6.0
+
+  '@redis/time-series@1.1.0(@redis/client@1.6.0)':
+    dependencies:
+      '@redis/client': 1.6.0
+
   '@rtsao/scc@1.1.0': {}
 
   '@rushstack/eslint-patch@1.10.4': {}
@@ -9572,6 +9657,8 @@ snapshots:
       wrap-ansi: 7.0.0
 
   clsx@2.1.1: {}
+
+  cluster-key-slot@1.1.2: {}
 
   cohere-ai@7.14.0(@aws-sdk/client-sso-oidc@3.716.0(@aws-sdk/client-sts@3.716.0))(encoding@0.1.13):
     dependencies:
@@ -11874,6 +11961,15 @@ snapshots:
   readdirp@3.6.0:
     dependencies:
       picomatch: 2.3.1
+
+  redis@4.7.0:
+    dependencies:
+      '@redis/bloom': 1.2.0(@redis/client@1.6.0)
+      '@redis/client': 1.6.0
+      '@redis/graph': 1.1.1(@redis/client@1.6.0)
+      '@redis/json': 1.0.7(@redis/client@1.6.0)
+      '@redis/search': 1.2.0(@redis/client@1.6.0)
+      '@redis/time-series': 1.1.0(@redis/client@1.6.0)
 
   reflect.getprototypeof@1.0.9:
     dependencies:

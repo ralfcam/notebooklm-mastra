@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { actionClient } from "./safe-action";
 import { z } from "zod";
 
@@ -15,14 +14,12 @@ export const generatePodcastAction = actionClient
   .metadata({ name: "generatePodcastAction" })
   .schema(inputSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { mastra } = ctx;
-    const { triggerData, pathToRevalidate } = parsedInput;
+    const orchestrator = ctx.mastra.getAgent("orchestrator");
 
-    const workflowResult = await mastra
-      .getWorkflow("generatePodcast")
-      .execute({ triggerData });
+    const res = await orchestrator.generate(
+      `I'd like you to validate that we have sources available for the notebook with the this notebookId ${parsedInput.triggerData.notebookId} and query the database to get to thoroughly understand the content. Then proceed to work on the podcast. Make sure to include the url in the final response.`,
+    );
 
-    if (pathToRevalidate) revalidatePath(pathToRevalidate);
-
-    return workflowResult;
+    console.dir(res, { depth: Infinity });
+    return res.text;
   });

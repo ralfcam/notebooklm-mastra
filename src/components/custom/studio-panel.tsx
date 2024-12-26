@@ -6,19 +6,23 @@ import { SidebarContent } from "../ui/sidebar";
 import { generatePodcastAction } from "@/actions/generate-podcast-action";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
 interface StudioPanelProps {
   notebookId: string;
 }
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
-  const [result, setResult] = useState("");
+  const [res, setRes] = useState("");
 
   const { execute, status } = useAction(generatePodcastAction, {
-    onError: () => toast.error("Error generating podcast"),
+    onError: ({ error }) => {
+      toast.error("Error generating podcast");
+      setRes(JSON.stringify(error, null, 2));
+    },
     onSuccess: ({ data }) => {
       toast.success("Generated podcast");
-      setResult(JSON.stringify(data, null, 2));
+      setRes(data ?? "data is undefined");
     },
   });
 
@@ -33,9 +37,14 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
       <Button onClick={handleGenerate}>
         {status === "executing" ? "Loading..." : "Generate Podcast"}
       </Button>
-      <pre>
-        <code className="font-mono text-xs">{result}</code>
-      </pre>
+      <ScrollArea>
+        <ScrollArea className="h-[80vh] border text-xs">
+          <pre>
+            <code>{res}</code>
+          </pre>
+        </ScrollArea>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </SidebarContent>
   );
 };

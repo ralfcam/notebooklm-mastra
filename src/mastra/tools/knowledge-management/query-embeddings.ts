@@ -31,14 +31,11 @@ export const queryEmbeddings = createTool({
   execute: async ({ context }) => {
     const { indexName, queryVector, topK = 10, filter, minScore = 0 } = context;
 
-    const { embedding } = await embed(
-      "What are the main points in the article?",
-      {
-        provider: "OPEN_AI",
-        model: "",
-        maxRetries: 5,
-      },
-    );
+    await embed("What are the main points in the article?", {
+      provider: "OPEN_AI",
+      model: "",
+      maxRetries: 5,
+    });
 
     const pgVector = new PgVector(process.env.DB_URL!);
 

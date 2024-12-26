@@ -13,7 +13,7 @@ export default async function NotebookLayout({
   params: Promise<{ notebookId: string }>;
 }) {
   const sidebarWidths = {
-    "--sidebar-width": "30rem",
+    "--sidebar-width": "70rem",
     "--sidebar-width-mobile": "40rem",
     "--sidebar-width-icon": "4rem",
   } as CSSProperties;

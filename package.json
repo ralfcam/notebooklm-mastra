@@ -17,6 +17,7 @@
   "dependencies": {
     "@mastra/core": "0.1.27-alpha.40",
     "@mastra/engine": "0.0.5-alpha.38",
+    "@mastra/memory": "0.0.2-alpha.19",
     "@mastra/rag": "0.0.2-alpha.25",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-progress": "^1.1.1",

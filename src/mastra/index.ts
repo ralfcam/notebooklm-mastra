@@ -1,11 +1,18 @@
 import { Mastra, createLogger } from "@mastra/core";
 import { PostgresEngine } from "@mastra/engine";
-import { knowledgeManager, podcastGenerator } from "./agents";
-import { generatePodcast, processUpload } from "./workflows";
+import { knowledgeManager } from "./agents";
+import { processUpload } from "./workflows";
+import { orchestrator } from "./agents/orchestrator";
+import { PgMemory } from "@mastra/memory";
 
-//BUG: "Property #private missing in type PostgresEngine but required in MastraEngine"
+//NOTE: "Property #private missing in type PostgresEngine but required in MastraEngine"
 const engine = new PostgresEngine({
   url: process.env.DB_URL!,
+});
+
+//NOTE: Seems like the method shown in docs has changed. PgMemory vs PostgresMemory, pool vs connectionString
+const memory = new PgMemory({
+  connectionString: process.env.DB_URL!,
 });
 
 const logger = createLogger({
@@ -14,9 +21,10 @@ const logger = createLogger({
 });
 
 export const mastra = new Mastra({
-  agents: { knowledgeManager, podcastGenerator },
-  workflows: { generatePodcast, processUpload },
+  agents: { knowledgeManager, orchestrator },
+  workflows: { processUpload },
+  memory,
   logger,
-  //@ts-expect-error check PostgresEngine note
+  //@ts-expect-error check note on PostgresEngine initialization above
   engine,
 });
