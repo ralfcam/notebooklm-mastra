@@ -43,9 +43,8 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             id: "optimistic",
             name: newNotebookSource.triggerData.fileName,
             notebookId: newNotebookSource.triggerData.notebookId,
-            content: "",
             summary: "",
-            type: "file" as const,
+            summaryEmbedding: [],
             updatedAt: new Date(),
             createdAt: new Date(),
             sourceTopics: [],
@@ -89,7 +88,7 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
             <SourceItem
               name={source.name ?? ""}
               summary={source.summary ?? ""}
-              content={source.content ?? ""}
+              content={""} //TODO: Fetch content and pass it here
               keyTopics={source.sourceTopics.map((t) => t.topic ?? "")}
               disabled={source.id === "optimistic"}
             />

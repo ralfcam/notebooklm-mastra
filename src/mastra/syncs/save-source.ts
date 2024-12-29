@@ -30,10 +30,9 @@ export const saveSourceSync = createSync({
     const insertResults = await db
       .insert(sources)
       .values({
-        content: c.source.content,
         name: c.source.name,
         summary: c.summary,
-        type: "file",
+        summaryEmbedding: [],
         notebookId: c.notebookId,
       })
       .returning({ externalId: sources.id });

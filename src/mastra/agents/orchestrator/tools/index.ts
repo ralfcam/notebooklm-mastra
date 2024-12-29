@@ -249,7 +249,6 @@ export const generatePodcast = createTool({
       const statusUrl = `https://api.play.ai/api/v1/tts/${jobId}`;
 
       // Poll for completion
-      const attempts = 0;
       while (true) {
         const statusResponse = await fetch(statusUrl, { headers });
 
