@@ -1,13 +1,18 @@
 "use server";
 
-import { db } from "@/db";
 import { notebooks } from "@/db/schema/notebooks";
-import { redirect } from "next/navigation";
+import { actionClient } from "./safe-action";
+import { z } from "zod";
 
-export const createNotebook = async () => {
-  const notebook = await db.insert(notebooks).values({}).returning();
+export const createNotebookAction = actionClient
+  .metadata({
+    name: "createNotebookAction",
+  })
+  .schema(z.object({}).optional())
+  .action(async ({ ctx }) => {
+    const notebook = await ctx.db.insert(notebooks).values({}).returning();
 
-  if (notebook.length) {
-    redirect(`/notebook/${notebook[0].id}`);
-  }
-};
+    return {
+      notebookId: notebook[0].id,
+    };
+  });
