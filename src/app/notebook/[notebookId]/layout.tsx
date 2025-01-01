@@ -1,5 +1,7 @@
 import { CustomSidebar } from "@/components/custom/custom-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Navbar } from "@/components/custom/navbar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { fetchNavbarName } from "@/db/queries/notebooks";
 import { CSSProperties, PropsWithChildren } from "react";
 
 interface NotebookLayoutProps {
@@ -12,17 +14,20 @@ export default async function NotebookLayout({
 }: PropsWithChildren<NotebookLayoutProps>) {
   const sidebarWidths = {
     "--sidebar-width": "20rem",
+    "--sidebar-width-mobile": "20rem",
+    "--sidebar-width-icon": "4rem",
   } as CSSProperties;
   const notebookId = (await params).notebookId;
+  const notebookName =
+    (await fetchNavbarName(notebookId))[0].name ?? "Untitled notebook";
 
   return (
-    <div className="flex">
-      <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
+    <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
+      <div className="w-full">
+        <Navbar notebookName={notebookName} notebookId={notebookId} />
         <CustomSidebar notebookId={notebookId} />
-        <SidebarInset>
-          <main className="grow">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-    </div>
+        <main className="grow">{children}</main>
+      </div>
+    </SidebarProvider>
   );
 }
