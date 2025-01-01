@@ -39,14 +39,12 @@ export const OptimisticNotebooks: React.FC<OptimisticNotebooksProps> = ({
         notebookSources: [
           ...state.notebookSources,
           {
-            id: "optimistic",
-            name: newNotebookSource.triggerData.fileName,
+            sourceId: "optimistic",
+            sourceName: newNotebookSource.triggerData.fileName,
             notebookId: newNotebookSource.triggerData.notebookId,
-            summary: "",
-            summaryEmbedding: [],
-            updatedAt: new Date(),
-            createdAt: new Date(),
+            sourceSummary: "",
             sourceTopics: [],
+            sourceChunks: [],
           },
         ],
       }),
@@ -77,18 +75,18 @@ export const OptimisticNotebooks: React.FC<OptimisticNotebooksProps> = ({
       <hr />
       {optimisticState.notebookSources?.map((source) => (
         <SidebarMenuItem
-          key={source.id}
+          key={source.sourceId}
           className={cn(
             "list-none",
-            source.id === "optimistic" && "animate-pulse",
+            source.sourceId === "optimistic" && "animate-pulse",
           )}
         >
           <SourceItem
-            name={source.name ?? ""}
-            summary={source.summary ?? ""}
-            content={""} //TODO: Fetch content and pass it here
-            keyTopics={source.sourceTopics.map((t) => t.topic ?? "")}
-            disabled={source.id === "optimistic"}
+            name={source.sourceName ?? ""}
+            summary={source.sourceSummary ?? ""}
+            content={source.sourceChunks.map((c) => c.content).join("")}
+            keyTopics={source.sourceTopics}
+            disabled={source.sourceId === "optimistic"}
           />
         </SidebarMenuItem>
       ))}

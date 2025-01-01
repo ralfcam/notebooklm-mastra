@@ -1,45 +1,35 @@
 import { db } from "@/db";
-import { sources, sourceTopics } from "@/db/schema/sources";
-import { eq } from "drizzle-orm";
+import { sourceChunks, sources, sourceTopics } from "@/db/schema/sources";
+import { eq, sql } from "drizzle-orm";
 
 export type FetchedNotebookSource = Awaited<
   ReturnType<typeof fetchNotebookSources>
 >[number];
 
 export const fetchNotebookSources = async (notebookId: string) => {
-  const res = await db
-    .select()
+  const chunks = sql<
+    { content: string }[]
+  >`array_agg(json_build_object('content', ${sourceChunks.content})) filter (where ${sourceChunks.content} is not null)`.as(
+    "chunks",
+  );
+  const topics = sql<
+    string[]
+  >`array_agg(distinct ${sourceTopics.topic}) filter (where ${sourceTopics.topic} is not null)`.as(
+    "topics",
+  );
+
+  return await db
+    .select({
+      sourceId: sources.id,
+      sourceName: sources.name,
+      sourceSummary: sources.summary,
+      notebookId: sources.notebookId,
+      sourceTopics: topics,
+      sourceChunks: chunks,
+    })
     .from(sources)
     .where(eq(sources.notebookId, notebookId))
-    .leftJoin(sourceTopics, eq(sources.id, sourceTopics.sourceId));
-
-  type Sources = typeof sources.$inferSelect;
-  type SourceTopic = typeof sourceTopics.$inferSelect;
-
-  const sourcesMap = new Map<
-    string,
-    Sources & { sourceTopics: SourceTopic[] }
-  >();
-
-  res.forEach(({ sources, source_topics }) => {
-    if (sourcesMap.has(sources.id)) {
-      const prevValue = sourcesMap.get(sources.id);
-
-      if (prevValue) {
-        sourcesMap.set(sources.id, {
-          ...prevValue,
-          sourceTopics: source_topics
-            ? [...prevValue.sourceTopics, { ...source_topics }]
-            : prevValue.sourceTopics,
-        });
-      }
-    } else {
-      sourcesMap.set(sources.id, {
-        ...sources,
-        sourceTopics: source_topics ? [{ ...source_topics }] : [],
-      });
-    }
-  });
-
-  return sourcesMap.values().toArray();
+    .leftJoin(sourceTopics, eq(sources.id, sourceTopics.sourceId))
+    .leftJoin(sourceChunks, eq(sourceChunks.sourceId, sources.id))
+    .groupBy(sources.id, sources.name, sources.summary, sources.notebookId);
 };
