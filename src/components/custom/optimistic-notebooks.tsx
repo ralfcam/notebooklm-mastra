@@ -1,21 +1,20 @@
 "use client";
 
-import { FetchedNotebookSource } from "@/db/queries/sources";
-import { SidebarContent, SidebarMenuItem } from "../ui/sidebar";
-import { UploadSourceDialog } from "./upload-source-dialog";
-import { SourceItem } from "./source-item";
 import { processUploadAction } from "@/actions/process-upload-action";
+import { FetchedNotebookSource } from "@/db/queries/sources";
 import { useOptimisticAction } from "next-safe-action/hooks";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { SidebarMenuItem } from "../ui/sidebar";
+import { SourceItem } from "./source-item";
 import { cn } from "@/lib/utils";
+import { UploadSourceDialog } from "./upload-source-dialog";
 
-interface SourcesPanelProps {
+interface OptimisticNotebooksProps {
   notebookSources: FetchedNotebookSource[];
 }
-
-export const SourcesPanel: React.FC<SourcesPanelProps> = ({
+export const OptimisticNotebooks: React.FC<OptimisticNotebooksProps> = ({
   notebookSources,
 }) => {
   const { notebookId }: { notebookId: string } = useParams();
@@ -73,28 +72,26 @@ export const SourcesPanel: React.FC<SourcesPanelProps> = ({
   };
 
   return (
-    <SidebarContent className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <UploadSourceDialog onUpload={onUpload} open={open} setOpen={setOpen} />
       <hr />
-      <div className="flex flex-col gap-2">
-        {optimisticState.notebookSources?.map((source) => (
-          <SidebarMenuItem
-            key={source.id}
-            className={cn(
-              "list-none",
-              source.id === "optimistic" && "animate-pulse",
-            )}
-          >
-            <SourceItem
-              name={source.name ?? ""}
-              summary={source.summary ?? ""}
-              content={""} //TODO: Fetch content and pass it here
-              keyTopics={source.sourceTopics.map((t) => t.topic ?? "")}
-              disabled={source.id === "optimistic"}
-            />
-          </SidebarMenuItem>
-        ))}
-      </div>
-    </SidebarContent>
+      {optimisticState.notebookSources?.map((source) => (
+        <SidebarMenuItem
+          key={source.id}
+          className={cn(
+            "list-none",
+            source.id === "optimistic" && "animate-pulse",
+          )}
+        >
+          <SourceItem
+            name={source.name ?? ""}
+            summary={source.summary ?? ""}
+            content={""} //TODO: Fetch content and pass it here
+            keyTopics={source.sourceTopics.map((t) => t.topic ?? "")}
+            disabled={source.id === "optimistic"}
+          />
+        </SidebarMenuItem>
+      ))}
+    </div>
   );
 };

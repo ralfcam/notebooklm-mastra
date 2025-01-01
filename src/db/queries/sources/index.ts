@@ -2,9 +2,9 @@ import { db } from "@/db";
 import { sources, sourceTopics } from "@/db/schema/sources";
 import { eq } from "drizzle-orm";
 
-export type FetchedNotebookSources = Awaited<
+export type FetchedNotebookSource = Awaited<
   ReturnType<typeof fetchNotebookSources>
->;
+>[number];
 
 export const fetchNotebookSources = async (notebookId: string) => {
   const res = await db

@@ -1,38 +1,27 @@
 import { CustomSidebar } from "@/components/custom/custom-sidebar";
-import { SourcesPanel } from "@/components/custom/sources-panel";
-import { StudioPanel } from "@/components/custom/studio-panel";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { fetchNotebookSources } from "@/db/queries/sources";
-import { CSSProperties } from "react";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { CSSProperties, PropsWithChildren } from "react";
+
+interface NotebookLayoutProps {
+  params: Promise<{ notebookId: string }>;
+}
 
 export default async function NotebookLayout({
   children,
   params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ notebookId: string }>;
-}) {
+}: PropsWithChildren<NotebookLayoutProps>) {
   const sidebarWidths = {
-    "--sidebar-width": "70rem",
-    "--sidebar-width-mobile": "40rem",
-    "--sidebar-width-icon": "4rem",
+    "--sidebar-width": "20rem",
   } as CSSProperties;
-
   const notebookId = (await params).notebookId;
-  const notebookSources = await fetchNotebookSources(notebookId);
 
   return (
     <div className="flex">
       <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
-        <CustomSidebar side="left" header="Sources">
-          <SourcesPanel notebookSources={notebookSources} />
-        </CustomSidebar>
-      </SidebarProvider>
-      <main className="grow">{children}</main>
-      <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
-        <CustomSidebar side="right" header="Studio">
-          <StudioPanel notebookId={notebookId} />
-        </CustomSidebar>
+        <CustomSidebar notebookId={notebookId} />
+        <SidebarInset>
+          <main className="grow">{children}</main>
+        </SidebarInset>
       </SidebarProvider>
     </div>
   );

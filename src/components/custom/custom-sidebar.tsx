@@ -1,50 +1,31 @@
-"use client";
-
+import { Sidebar, SidebarContent, SidebarRail } from "../ui/sidebar";
+import { PropsWithChildren, Suspense } from "react";
 import {
-  PanelLeft,
-  PanelLeftClose,
-  PanelRight,
-  PanelRightClose,
-} from "lucide-react";
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarRail,
-  SidebarTrigger,
-  useSidebar,
-} from "../ui/sidebar";
-import { PropsWithChildren } from "react";
+  SidebarNotebooks,
+  SidebarNotebooksSkeleton,
+} from "./sidebar-notebooks";
 
 interface CustomSidebarProps {
-  side: "left" | "right";
-  header: string;
+  notebookId: string;
 }
-export const CustomSidebar: React.FC<PropsWithChildren<CustomSidebarProps>> = ({
-  children,
-  header,
-  side,
-}) => {
-  const { open } = useSidebar();
 
+export const CustomSidebar: React.FC<PropsWithChildren<CustomSidebarProps>> = ({
+  notebookId,
+}) => {
   return (
-    <Sidebar collapsible="icon" side={side}>
-      <SidebarHeader className="flex-row items-center border-b justify-center">
-        <span className={`grow ${!open ? "sr-only" : ""}`}>{header}</span>
-        <SidebarTrigger>
-          {side === "left" ? (
-            open ? (
-              <PanelLeftClose />
-            ) : (
-              <PanelLeft />
-            )
-          ) : open ? (
-            <PanelRightClose />
-          ) : (
-            <PanelRight />
-          )}
-        </SidebarTrigger>
-      </SidebarHeader>
-      <div className="p-2">{children}</div>
+    <Sidebar collapsible="icon">
+      {/* <SidebarHeader className="flex-row items-center justify-start border-b"> */}
+      {/*   <span className={cn("grow", !sidebarOpen && "sr-only")}>Sources</span> */}
+      {/*   <SidebarTrigger> */}
+      {/*     {sidebarOpen ? <PanelLeftClose /> : <PanelLeft />} */}
+      {/*   </SidebarTrigger> */}
+      {/* </SidebarHeader> */}
+
+      <SidebarContent className="p-2">
+        <Suspense fallback={<SidebarNotebooksSkeleton />}>
+          <SidebarNotebooks notebookId={notebookId} />
+        </Suspense>
+      </SidebarContent>
       <SidebarRail />
     </Sidebar>
   );
