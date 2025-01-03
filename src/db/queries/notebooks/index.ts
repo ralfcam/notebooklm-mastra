@@ -1,6 +1,8 @@
 import { db } from "@/db";
-import { notebooks } from "../../../../drizzle/schema";
+import { notebooks } from "@/db/schema/notebooks";
 import { eq } from "drizzle-orm";
+
+export type Notebook = Awaited<ReturnType<typeof fetchNotebooks>>[number];
 
 export const fetchNotebooks = async () => {
   return await db.select().from(notebooks);

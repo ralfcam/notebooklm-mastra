@@ -18,15 +18,14 @@ export default async function NotebookLayout({
     "--sidebar-width-icon": "4rem",
   } as CSSProperties;
   const notebookId = (await params).notebookId;
-  const notebookName =
-    (await fetchNavbarName(notebookId))[0].name ?? "Untitled notebook";
+  const notebookName = (await fetchNavbarName(notebookId))[0].name;
 
   return (
     <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
+      <CustomSidebar notebookId={notebookId}></CustomSidebar>
       <div className="w-full">
         <Navbar notebookName={notebookName} notebookId={notebookId} />
-        <CustomSidebar notebookId={notebookId} />
-        <main className="grow">{children}</main>
+        <main>{children}</main>
       </div>
     </SidebarProvider>
   );

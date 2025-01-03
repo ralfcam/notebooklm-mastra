@@ -1,24 +1,12 @@
 "use client";
 
-import { createNotebookAction } from "@/actions/notebooks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useNewNotebook } from "@/hooks/use-new-notebook";
 import { Code, Download, FileText, Loader } from "lucide-react";
-import { useAction } from "next-safe-action/hooks";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 export function WelcomeCard() {
-  const router = useRouter();
-
-  const { execute, status } = useAction(createNotebookAction, {
-    onSuccess: ({ data }) => {
-      if (data) router.push(`/notebook/${data.notebookId}`);
-    },
-    onError: () => {
-      toast.error("Failed to create notebook. Something wen't wrong");
-    },
-  });
+  const { execute, status } = useNewNotebook();
 
   return (
     <div className="text-center max-w-4xl mx-auto">

@@ -14,12 +14,12 @@ export const generatePodcastAction = actionClient
   .metadata({ name: "generatePodcastAction" })
   .schema(inputSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const orchestrator = ctx.mastra.getAgent("orchestrator");
+    const { fullStream } = await ctx.mastra
+      .getAgent("orchestrator")
+      .generate(
+        `Validate that we have sources available for the notebook with the this notebookId ${parsedInput.triggerData.notebookId}. Follow all previous instructions and create a podcast.`,
+        { stream: true },
+      );
 
-    const res = await orchestrator.generate(
-      `I'd like you to validate that we have sources available for the notebook with the this notebookId ${parsedInput.triggerData.notebookId} and query the database to get to thoroughly understand the content. Then proceed to work on the podcast. Make sure to include the url in the final response.`,
-    );
-
-    console.dir(res, { depth: Infinity });
-    return res.text;
+    return { output: fullStream };
   });

@@ -12,19 +12,12 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ notebookName, notebookId }) => {
-  const { isMobile, open } = useSidebar();
-
-  const desktopOpen = !isMobile && open;
-  const desktopClosed = !isMobile && !open;
+  const { open } = useSidebar();
 
   return (
     <nav
       className={cn(
-        "border-b h-12 flex items-center gap-4 transition-all sticky top-0",
-        desktopOpen &&
-          "w-[calc(100vw-var(--sidebar-width))] ml-[var(--sidebar-width)]",
-        desktopClosed &&
-          "w-[calc(100vw-var(--sidebar-width-icon))] ml-[var(--sidebar-width-icon)]",
+        "border-b h-12 flex items-center gap-4 transition-all sticky top-0 w-full",
       )}
     >
       <SidebarTrigger>
