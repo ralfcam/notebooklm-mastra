@@ -1,0 +1,1 @@
+ALTER TABLE "notebooks" ADD COLUMN "user_id" text;

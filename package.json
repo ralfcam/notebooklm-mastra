@@ -15,6 +15,7 @@
     "db:migrate": "pnpm drizzle-kit migrate"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.9.6",
     "@mastra/core": "0.1.27-alpha.40",
     "@mastra/engine": "0.0.5-alpha.38",
     "@mastra/memory": "0.0.2-alpha.19",

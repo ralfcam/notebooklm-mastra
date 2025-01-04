@@ -10,7 +10,10 @@ export const createNotebookAction = actionClient
   })
   .schema(z.object({}).optional())
   .action(async ({ ctx }) => {
-    const notebook = await ctx.db.insert(notebooks).values({}).returning();
+    const notebook = await ctx.db
+      .insert(notebooks)
+      .values({ userId: ctx.user?.id })
+      .returning();
 
     return {
       notebookId: notebook[0].id,

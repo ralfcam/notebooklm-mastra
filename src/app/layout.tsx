@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -19,13 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${fontSans.variable} ${fontSans.className} antialiased`}
-      >
-        {children}
-        <Toaster richColors closeButton />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${fontSans.variable} ${fontSans.className} antialiased`}
+        >
+          {children}
+          <Toaster richColors closeButton />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -4,5 +4,6 @@ import { timestamps } from "./helpers";
 export const notebooks = pgTable("notebooks", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().default("Untitled Notebook").notNull(),
+  userId: text("user_id"),
   ...timestamps,
 });
