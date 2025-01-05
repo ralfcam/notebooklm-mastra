@@ -5,5 +5,8 @@ export const notebooks = pgTable("notebooks", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().default("Untitled Notebook").notNull(),
   userId: text("user_id"),
+  title: text(),
+  summary: text(),
+  emoji: text(),
   ...timestamps,
 });

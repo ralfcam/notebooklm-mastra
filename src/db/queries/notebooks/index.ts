@@ -21,3 +21,23 @@ export const fetchNavbarName = async (notebookId: string) => {
     .from(notebooks)
     .where(and(eq(notebooks.id, notebookId), eq(notebooks.userId, userId)));
 };
+
+export type NotebookSummary = Awaited<
+  ReturnType<typeof fetchNotebookSummaries>
+>[number];
+
+export const fetchNotebookSummaries = async (notebookId: string) => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  return await db
+    .select({
+      id: notebooks.id,
+      emoji: notebooks.emoji,
+      title: notebooks.title,
+      summary: notebooks.summary,
+    })
+    .from(notebooks)
+    .where(and(eq(notebooks.id, notebookId), eq(notebooks.userId, userId)))
+    .limit(1);
+};

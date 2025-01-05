@@ -50,7 +50,7 @@ const querySourceSummaryEmbeddingsInputSchema = z.object({
   notebookId: z.string(),
   query: string(),
   limit: z.number().default(5),
-  threshold: z.number().default(0.8),
+  threshold: z.number().default(0.5),
 });
 
 const querySourceSummaryEmbeddingsOutputSchema = z.object({

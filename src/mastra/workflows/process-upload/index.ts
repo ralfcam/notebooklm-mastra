@@ -6,7 +6,7 @@ import {
   storeEmbeddings,
 } from "@/mastra/tools";
 import { Workflow } from "@mastra/core";
-import { generateSourceSummary } from "./steps";
+import { generateNotebookSummary, generateSourceSummary } from "./steps";
 import { z } from "zod";
 
 export const processUpload = new Workflow({
@@ -38,7 +38,9 @@ export const processUpload = new Workflow({
       summary: { step: generateSourceSummary, path: "summary" },
     },
   })
-  .then(chunkText, {
+  .after(saveSource)
+  .step(generateNotebookSummary)
+  .step(chunkText, {
     variables: {
       keyTopics: { step: saveSource, path: "keyTopics" },
       notebookId: { step: saveSource, path: "notebookId" },
