@@ -282,8 +282,6 @@ export const generatePodcast = createTool({
 
         await new Promise((resolve) => setTimeout(resolve, c.pollIntervalMs));
       }
-
-      throw new Error("Max polling attempts reached");
     } catch (error) {
       throw error;
     }

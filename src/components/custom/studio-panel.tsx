@@ -17,6 +17,7 @@ interface StudioPanelProps {
 export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [res, setRes] = useState<TextStreamPart<any>[]>([]);
+  const [audioUrl, setAudioUrl] = useState("");
 
   const { execute, status } = useAction(generatePodcastAction, {
     onError: () => {
@@ -26,6 +27,13 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
       if (data) {
         for await (const event of data.output) {
           setRes((prev) => [...prev, event]);
+
+          if (
+            event.type === "tool-result" &&
+            event.toolName === "generatePodcast"
+          ) {
+            setAudioUrl(event.result.audioUrl);
+          }
         }
         toast.success("Generated podcast");
       }
@@ -40,9 +48,19 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
 
   return (
     <div className="space-y-4 w-full max-w-3xl">
-      <ScrollArea className="h-[30vh] w-full border rounded">
-        <StreamProgress events={res} />
-      </ScrollArea>
+      {!!res.length && (
+        <ScrollArea className="h-[30vh] w-full border rounded p-4 text-xs">
+          <StreamProgress events={res} />
+        </ScrollArea>
+      )}
+
+      {audioUrl && (
+        <div className="w-full border rounded p-4 bg-gray-50">
+          <audio controls className="w-full" src={audioUrl}>
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      )}
 
       <Button onClick={handleGenerate} className="min-w-36">
         {status === "idle" ? (
@@ -111,7 +129,7 @@ const StreamProgress: React.FC<StreamProgressProps> = ({ events }) => {
     switch (event.type) {
       case "text-delta":
         return (
-          <div key={index} className="whitespace-pre-wrap text-gray-800">
+          <div key={index} className="whitespace-normal text-gray-800">
             {event.textDelta}
           </div>
         );
@@ -120,18 +138,13 @@ const StreamProgress: React.FC<StreamProgressProps> = ({ events }) => {
         return (
           <Alert
             key={event.toolCallId}
-            className="border-l-4 border-l-blue-500 my-2"
+            className="border-l-4 border-l-blue-500"
           >
             <div className="flex items-center gap-2">
               <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
-              <AlertDescription className="font-medium">
+              <AlertDescription className="font-medium text-xs">
                 {event.toolName}
               </AlertDescription>
-            </div>
-            <div className="mt-2 text-sm text-gray-600">
-              {/* <pre className="bg-gray-50 p-2 rounded"> */}
-              {/*   {JSON.stringify(event.args, null, 2)} */}
-              {/* </pre> */}
             </div>
           </Alert>
         );
@@ -140,18 +153,13 @@ const StreamProgress: React.FC<StreamProgressProps> = ({ events }) => {
         return (
           <Alert
             key={event.toolCallId + "-result"}
-            className="border-l-4 border-l-green-500 my-2"
+            className="border-l-4 border-l-green-500"
           >
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <AlertDescription className="font-medium">
+              <AlertDescription className="font-medium text-xs">
                 {event.toolName} - Result
               </AlertDescription>
-            </div>
-            <div className="mt-2 text-sm text-gray-600">
-              {/* <pre className="bg-gray-50 p-2 rounded"> */}
-              {/*   {JSON.stringify(event.result, null, 2)} */}
-              {/* </pre> */}
             </div>
           </Alert>
         );
@@ -162,7 +170,7 @@ const StreamProgress: React.FC<StreamProgressProps> = ({ events }) => {
   };
 
   return (
-    <div className="space-y-1 w-full py-6 px-4">
+    <div className="space-y-3 w-full">
       {processedEvents.map((event, index) => renderEvent(event, index))}
       <div ref={bottomRef}></div>
     </div>
