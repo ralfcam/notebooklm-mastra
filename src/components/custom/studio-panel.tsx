@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { Alert, AlertDescription } from "../ui/alert";
 import { ScrollArea } from "../ui/scroll-area";
 import { TextStreamPart } from "ai";
+import { pollPodcastAudio } from "@/actions/poll-podcast-audio";
 
 interface StudioPanelProps {
   notebookId: string;
@@ -18,6 +19,20 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [res, setRes] = useState<TextStreamPart<any>[]>([]);
   const [audioUrl, setAudioUrl] = useState("");
+  const [pollUrl, setPollUrl] = useState("");
+
+  const { execute: executePolling, status: pollingStatus } = useAction(
+    pollPodcastAudio,
+    {
+      onError: () => toast.error("Error polling podcast"),
+      onSuccess: ({ data }) => {
+        if (data?.audioUrl) {
+          setAudioUrl(data.audioUrl);
+          toast.success("Podcast audio available");
+        }
+      },
+    },
+  );
 
   const { execute, status } = useAction(generatePodcastAction, {
     onError: () => {
@@ -30,15 +45,32 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
 
           if (
             event.type === "tool-result" &&
-            event.toolName === "generatePodcast"
+            event.toolName === "generatePodcast" &&
+            !!event.result.pollUrl
           ) {
-            setAudioUrl(event.result.audioUrl);
+            setPollUrl(event.result.pollUrl);
           }
         }
-        toast.success("Generated podcast");
+        toast.success("Submitted podcast creation job");
       }
     },
   });
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (pollUrl && !audioUrl) {
+      intervalId = setInterval(() => {
+        executePolling({ pollUrl });
+      }, 5000);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [pollUrl, audioUrl, executePolling]);
 
   const handleGenerate = () =>
     execute({
@@ -68,12 +100,14 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
             <Headphones />
             <span>Generate podcast</span>
           </>
-        ) : status === "executing" ? (
+        ) : status === "executing" ||
+          pollingStatus === "executing" ||
+          pollingStatus === "idle" ? (
           <Loader2 className="animate-spin" />
         ) : status === "hasSucceeded" ? (
           <>
             <CheckCircle2 />
-            <span>Generating podcast</span>
+            <span>Podcast Generated</span>
           </>
         ) : (
           <span>Failed podcast generation</span>

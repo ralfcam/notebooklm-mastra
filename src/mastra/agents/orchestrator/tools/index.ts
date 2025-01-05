@@ -190,8 +190,10 @@ export const generatePodcast = createTool({
     maxRetries: z.number().default(60),
   }),
   outputSchema: z.object({
-    audioUrl: z.string().url(),
-    jobId: z.string(),
+    pollUrl: z
+      .string()
+      .url()
+      .describe("The url to query to get the status of the job"),
   }),
   execute: async ({ context: c, mastra }) => {
     const logger = mastra?.logger;
@@ -212,18 +214,6 @@ export const generatePodcast = createTool({
         Authorization: `Bearer ${process.env.PLAYDIALOG_SECRET_KEY}`,
         "Content-Type": "application/json",
       };
-
-      logger.debug(
-        JSON.stringify({
-          model: "PlayDialog",
-          text: c.transcript,
-          voice: c.voice1,
-          voice2: c.voice2,
-          turnPrefix: c.host1Prefix,
-          turnPrefix2: c.host2Prefix,
-          outputFormat: c.outputFormat,
-        }),
-      );
 
       // Submit initial job
       const submitResponse = await fetch("https://api.play.ai/api/v1/tts/", {
@@ -246,42 +236,11 @@ export const generatePodcast = createTool({
       }
 
       const { id: jobId } = await submitResponse.json();
-      const statusUrl = `https://api.play.ai/api/v1/tts/${jobId}`;
+      const pollUrl = `https://api.play.ai/api/v1/tts/${jobId}`;
 
-      // Poll for completion
-      while (true) {
-        const statusResponse = await fetch(statusUrl, { headers });
-
-        if (!statusResponse.ok) {
-          logger.error(JSON.stringify(statusResponse));
-          throw new Error(
-            `Failed to check status: ${statusResponse.statusText}`,
-          );
-        }
-
-        const statusData = await statusResponse.json();
-        const status = statusData.output?.status;
-
-        if (status === "COMPLETED") {
-          const audioUrl = statusData.output?.url;
-          if (!audioUrl) {
-            logger.error("Completed status but no audio URL provided");
-            throw new Error("Completed status but no audio URL provided");
-          }
-
-          return {
-            audioUrl,
-            jobId,
-          };
-        }
-
-        if (status === "FAILED") {
-          logger.error(JSON.stringify(statusData, null, 2));
-          throw new Error("Job processing failed");
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, c.pollIntervalMs));
-      }
+      return {
+        pollUrl,
+      };
     } catch (error) {
       throw error;
     }
