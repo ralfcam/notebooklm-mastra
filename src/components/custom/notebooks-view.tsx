@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Notebook } from "@/db/queries/notebooks";
 import Link from "next/link";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface NotebooksViewProps {
   notebooks: Notebook[];
@@ -34,20 +35,22 @@ export const NotebooksView: React.FC<NotebooksViewProps> = ({ notebooks }) => {
             </>
           )}
         </Button>
-        <div className="grow flex flex-wrap content-start gap-8 w-full">
-          {notebooks.map((notebook) => (
-            <Link key={notebook.id} href={`/notebook/${notebook.id}`}>
-              <Card className="size-64">
-                <CardHeader>
-                  <CardTitle className="truncate">{notebook.name}</CardTitle>
-                  <CardDescription>
-                    {formatDate(new Date(notebook.createdAt))}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        <ScrollArea className="h-[40vh]">
+          <div className="grow flex flex-wrap content-start gap-8 w-full">
+            {notebooks.map((notebook) => (
+              <Link key={notebook.id} href={`/notebook/${notebook.id}`}>
+                <Card className="size-64">
+                  <CardHeader>
+                    <CardTitle className="truncate">{notebook.name}</CardTitle>
+                    <CardDescription>
+                      {formatDate(new Date(notebook.createdAt))}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );

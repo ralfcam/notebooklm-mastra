@@ -84,7 +84,7 @@ export const OptimisticNotebooks: React.FC<OptimisticNotebooksProps> = ({
           <SourceItem
             name={source.sourceName ?? ""}
             summary={source.sourceSummary ?? ""}
-            content={source.sourceChunks.map((c) => c.content).join("")}
+            content={source.sourceChunks?.map((c) => c.content).join("")}
             keyTopics={source.sourceTopics}
             disabled={source.sourceId === "optimistic"}
           />
