@@ -17,7 +17,7 @@ const memory = new PgMemory({
 
 const logger = createLogger({
   type: "CONSOLE",
-  level: process.env.NODE_ENV === "development" ? "DEBUG" : "INFO",
+  level: process.env.NODE_ENV === "development" ? "DEBUG" : "ERROR",
 });
 
 export const mastra = new Mastra({

@@ -5,4 +5,7 @@ const client = new Pool({
   connectionString: process.env.DB_URL!,
 });
 
-export const db = drizzle({ client, logger: true });
+export const db = drizzle({
+  client,
+  logger: process.env.NODE_ENV === "production" ? false : true,
+});
