@@ -22,7 +22,7 @@ export default async function NotebookLayout({
 
   return (
     <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
-      <CustomSidebar notebookId={notebookId}></CustomSidebar>
+      <CustomSidebar notebookId={notebookId} />
       <div className="w-full">
         <Navbar notebookName={notebookName} notebookId={notebookId} />
         <main>{children}</main>

@@ -25,6 +25,8 @@ export const actionClient = createSafeActionClient({
 
     const user = await currentUser();
 
+    if (!user) throw new Error("Unauthorized");
+
     return next({ ctx: { user } });
   })
   .use(({ next }) => next({ ctx: { db } })) // add db instance to client context

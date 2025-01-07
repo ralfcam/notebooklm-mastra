@@ -103,12 +103,10 @@ export function FileUploader(props: FileUploaderProps) {
     onUpload,
     progresses,
     accept = {
-      "image/*": [],
       "application/*": [],
-      ".txt": [],
     },
     maxSize = 1024 * 1024 * 2,
-    maxFileCount = 1,
+    maxFileCount = 5,
     multiple = false,
     disabled = false,
     className,
@@ -160,7 +158,7 @@ export function FileUploader(props: FileUploaderProps) {
           loading: `Uploading ${target}...`,
           success: () => {
             setFiles([]);
-            return `${target} uploaded`;
+            return `${target} processing...`;
           },
           error: `Failed to upload ${target}`,
         });
