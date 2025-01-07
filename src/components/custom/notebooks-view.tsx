@@ -12,6 +12,7 @@ import { useAction } from "next-safe-action/hooks";
 import { deleteNotebookAction } from "@/actions/delete-notebook";
 import { toast } from "sonner";
 import { useState } from "react";
+import { UploadSources } from "./uploads/upload-sources";
 
 interface NotebooksViewProps {
   notebooks: Notebook[];
@@ -47,16 +48,7 @@ export const NotebooksView: React.FC<NotebooksViewProps> = ({ notebooks }) => {
         <h2 className="text-2xl">My notebooks</h2>
       </div>
       <div className="space-y-8">
-        <Button className="rounded-full min-w-36 " onClick={() => execute({})}>
-          {status === "executing" ? (
-            <Loader className="animate-spin" />
-          ) : (
-            <>
-              <Plus />
-              <span>Create new</span>
-            </>
-          )}
-        </Button>
+        <UploadSources variant="default" />
         <ScrollArea className="h-[40vh]">
           <div className="grow flex flex-wrap content-start gap-8 w-full">
             {notebooks.map((notebook) => (

@@ -1,13 +1,36 @@
-import { index, pgTable, text, uuid, vector } from "drizzle-orm/pg-core";
+import {
+  index,
+  pgEnum,
+  pgTable,
+  text,
+  uuid,
+  vector,
+} from "drizzle-orm/pg-core";
 import { notebooks } from "./notebooks";
 import { timestamps } from "./helpers";
+
+export const parsingStatus = pgEnum("parsing_status", [
+  "PENDING",
+  "SUCCESS",
+  "ERROR",
+  "PARTIAL_SUCCESS",
+]);
+
+export const parsingJobs = pgTable("parsing_jobs", {
+  id: uuid().primaryKey().defaultRandom(),
+  jobId: uuid().notNull(),
+  sourceId: uuid("source_id")
+    .references(() => sources.id, { onDelete: "cascade" })
+    .notNull(),
+  status: parsingStatus("status").notNull(),
+});
 
 export const sources = pgTable(
   "sources",
   {
     id: uuid().primaryKey().defaultRandom(),
     name: text().notNull(),
-    summary: text().default("").notNull(),
+    summary: text().default(""),
     summaryEmbedding: vector("summary_embedding", { dimensions: 1536 }),
     notebookId: uuid("notebook_id")
       .references(() => notebooks.id, {

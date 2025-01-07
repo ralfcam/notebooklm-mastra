@@ -40,7 +40,24 @@ export const pollJobStatus = async (jobId: string) => {
       status: (typeof parsingStatus.enumValues)[number];
     };
   } else {
-    console.dir(response, { depth: Infinity });
     throw new Error(response.statusText);
   }
+};
+
+export const getJobResultsInMarkdown = async (jobId: string) => {
+  const response = await fetch(
+    `${BASE_URL}/parsing/job/${jobId}/result/markdown`,
+    {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        Accept: "application/json",
+      },
+    },
+  );
+
+  const res = await response.json();
+
+  console.log(res);
+
+  if (response.ok) return res;
 };

@@ -14,6 +14,8 @@ export const SidebarNotebooks: React.FC<SidebarNotebooksProps> = async ({
 }) => {
   const notebookSources = await fetchNotebookSources(notebookId);
 
+  console.log({ notebookSources });
+
   return (
     <SidebarMenu>
       <OptimisticNotebooks notebookSources={notebookSources} />
@@ -32,3 +34,15 @@ export const SidebarNotebooksSkeleton: React.FC = async () => {
     </SidebarMenu>
   );
 };
+
+/*
+ * Landing on the notebook page
+ * - Get notebook sources and their job ids
+ * - For each source:
+ *   - Check job status for each source
+ *   - If pending:
+ *     - Poll for job status for each source
+ *   - If success:
+ *     - handle summary + topics generation
+ *
+ */

@@ -16,9 +16,7 @@ export const CustomSidebar: React.FC<PropsWithChildren<CustomSidebarProps>> = ({
   return (
     <Sidebar collapsible="icon">
       <CustomSidebarHeader />
-
       <hr />
-
       <SidebarContent className="p-2">
         <Suspense fallback={<SidebarNotebooksSkeleton />}>
           <SidebarNotebooks notebookId={notebookId} />

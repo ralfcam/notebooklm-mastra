@@ -38,6 +38,9 @@ export const processUpload = new Workflow({
       summary: { step: generateSourceSummary, path: "summary" },
     },
   })
+  // parseAndChunk -> generateContentEmbeddings -> storeContentEmbeddings
+  // parseAndChunk -> generateSourceSummary -> storeSummary
+  // (after each storeSummary) -> generateNotebookSummary
   .after(saveSource)
   .step(generateNotebookSummary)
   .step(chunkText, {
