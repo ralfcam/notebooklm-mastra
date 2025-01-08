@@ -7,7 +7,7 @@ import { getJobResultsInMarkdown } from "@/lib/submit-parse-job";
 export const summarizeSourceAction = actionClient
   .metadata({ name: "summarizeSourceAction" })
   .schema(z.object({ sourceId: z.string().uuid(), jobId: z.string().uuid() }))
-  .action(async ({ ctx, parsedInput }) => {
+  .action(async ({ parsedInput }) => {
     //fetch documents from llamaparse
     const res = await getJobResultsInMarkdown(parsedInput.jobId);
 

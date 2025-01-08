@@ -58,7 +58,7 @@ const querySourceSummaryEmbeddingsOutputSchema = z.object({
     z.object({
       sourceId: z.string().uuid(),
       sourceTitle: z.string(),
-      sourceSummary: z.string(),
+      sourceSummary: z.string().nullable(),
       sourceTopics: z.array(z.string()),
       similarity: z.number(),
     }),

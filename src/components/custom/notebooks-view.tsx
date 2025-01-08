@@ -1,8 +1,8 @@
 "use client";
 
-import { useNewNotebook } from "@/hooks/use-new-notebook";
+// import { useNewNotebook } from "@/hooks/use-new-notebook";
 import { formatDate } from "@/lib/utils";
-import { Plus, Loader, Trash } from "lucide-react";
+import { Loader, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Notebook } from "@/db/queries/notebooks";
@@ -19,7 +19,7 @@ interface NotebooksViewProps {
 }
 
 export const NotebooksView: React.FC<NotebooksViewProps> = ({ notebooks }) => {
-  const { execute, status } = useNewNotebook();
+  // const { execute, status } = useNewNotebook();
 
   const [notebookBeingDeleted, setNotebookBeingDeleted] = useState<
     string | null
