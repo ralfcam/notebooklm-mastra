@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -22,7 +24,7 @@ type SourceItemProps = Awaited<ReturnType<typeof fetchNotebookSources>>[number];
 type SourceProcessingStatus =
   | "queued"
   | "parsed"
-  | "summarizing"
+  | "summarized"
   | "ready"
   | "failed";
 
@@ -35,8 +37,6 @@ export const SourceItem: React.FC<SourceItemProps> = ({
   sourceId,
 }) => {
   const parsingJob = parsingJobs[0];
-
-  console.log({ parsingJobs });
 
   const [sourceProcessingStatus, setSourceProcessingStatus] =
     useState<SourceProcessingStatus>(
@@ -74,7 +74,11 @@ export const SourceItem: React.FC<SourceItemProps> = ({
 
   const { execute: summarizeSource } = useAction(summarizeSourceAction, {
     onSuccess: ({ data }) => {
-      console.log({ data });
+      if (!data) return;
+
+      if (data.generateSourceSummary?.status === "success") {
+        setSourceProcessingStatus("summarized");
+      }
     },
   });
 

@@ -57,7 +57,19 @@ export const getJobResultsInMarkdown = async (jobId: string) => {
 
   const res = await response.json();
 
-  console.log(res);
-
-  if (response.ok) return res;
+  if (response.ok) {
+    return res as {
+      markdown: string;
+      job_metadata: {
+        credits_used: number;
+        job_credits_usage: number;
+        job_pages: number;
+        job_auto_mode_triggered_pages: number;
+        job_is_cache_hit: boolean;
+        credits_max: number;
+      };
+    };
+  } else {
+    throw new Error(response.statusText);
+  }
 };

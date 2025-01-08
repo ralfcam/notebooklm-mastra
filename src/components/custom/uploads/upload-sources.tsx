@@ -1,3 +1,5 @@
+"use client";
+
 import { submitSourcesForParsing } from "@/actions/submitSourcesForParsing";
 import { Button } from "@/components/ui/button";
 import {

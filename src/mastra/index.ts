@@ -1,7 +1,7 @@
 import { Mastra, createLogger } from "@mastra/core";
 import { PostgresEngine } from "@mastra/engine";
 import { knowledgeManager } from "./agents";
-import { processUpload } from "./workflows";
+import { processUpload, summarizeSource } from "./workflows";
 import { orchestrator } from "./agents/orchestrator";
 import { PgMemory } from "@mastra/memory";
 
@@ -22,7 +22,7 @@ const logger = createLogger({
 
 export const mastra = new Mastra({
   agents: { knowledgeManager, orchestrator },
-  workflows: { processUpload },
+  workflows: { processUpload, summarizeSource },
   memory,
   logger,
   //@ts-expect-error check note on PostgresEngine initialization above

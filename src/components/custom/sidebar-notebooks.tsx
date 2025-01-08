@@ -14,11 +14,12 @@ export const SidebarNotebooks: React.FC<SidebarNotebooksProps> = async ({
 }) => {
   const notebookSources = await fetchNotebookSources(notebookId);
 
-  console.log({ notebookSources });
-
   return (
     <SidebarMenu>
-      <OptimisticNotebooks notebookSources={notebookSources} />
+      <OptimisticNotebooks
+        notebookSources={notebookSources}
+        notebookId={notebookId}
+      />
     </SidebarMenu>
   );
 };
