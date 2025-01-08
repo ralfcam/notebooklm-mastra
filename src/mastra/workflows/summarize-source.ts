@@ -2,8 +2,10 @@ import { Step, Workflow } from "@mastra/core";
 import { z } from "zod";
 import { generateSourceSummaryPrompt } from "../prompts/generate-source-summary";
 import { db } from "@/db";
-import { sources, sourceTopics } from "@/db/schema/sources";
+import { sourceChunks, sources, sourceTopics } from "@/db/schema/sources";
 import { eq } from "drizzle-orm";
+import { embed, MDocument } from "@mastra/rag";
+import { EmbedManyResult } from "ai";
 
 export const summarizeSource = new Workflow({
   name: "summarizeSource",
@@ -45,10 +47,48 @@ export const summarizeSource = new Workflow({
           keyTopics: string[];
         };
 
-        db.update(sources).set({ summary }).where(eq(sources.id, c.sourceId));
-        db.insert(sourceTopics).values(
-          keyTopics.map((t) => ({ topic: t, sourceId: c.sourceId })),
+        db.insert(sourceTopics)
+          .values(keyTopics.map((t) => ({ topic: t, sourceId: c.sourceId })))
+          .execute();
+
+        const docs = await MDocument.fromText(c.markdown).chunk({
+          strategy: "markdown",
+          size: 512,
+          overlap: 50,
+        });
+
+        const embeddings = (await embed(docs, {
+          provider: "OPEN_AI",
+          model: "text-embedding-ada-002",
+          maxRetries: 5,
+        })) as EmbedManyResult<string>;
+
+        const chunkInserts = embeddings.values.reduce(
+          (pv, cv, idx) => {
+            return [
+              ...pv,
+              {
+                content: cv,
+                embedding: embeddings.embeddings[idx],
+                sourceId: c.sourceId,
+                createdAt: new Date(),
+              },
+            ];
+          },
+          [] as {
+            content: string;
+            sourceId: string;
+            embedding: number[];
+            createdAt: Date;
+          }[],
         );
+
+        db.update(sources)
+          .set({ summary, processingStatus: "summarized" })
+          .where(eq(sources.id, c.sourceId))
+          .execute();
+
+        db.insert(sourceChunks).values(chunkInserts).execute();
 
         return {
           summary,

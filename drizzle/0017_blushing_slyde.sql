@@ -1,0 +1,2 @@
+CREATE TYPE "public"."processing_status" AS ENUM('queued', 'parsed', 'summarized', 'ready', 'failed');--> statement-breakpoint
+ALTER TABLE "source_topics" ADD COLUMN "processingStatus" "processing_status" DEFAULT 'queued' NOT NULL;

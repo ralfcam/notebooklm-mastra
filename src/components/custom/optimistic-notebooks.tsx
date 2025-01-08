@@ -18,7 +18,7 @@ export const OptimisticNotebooks: React.FC<OptimisticNotebooksProps> = ({
       <hr />
       {notebookSources?.map((source) => (
         <SidebarMenuItem key={source.sourceId} className={cn("list-none")}>
-          <SourceItem {...source} />
+          <SourceItem {...source} notebookId={notebookId} />
         </SidebarMenuItem>
       ))}
     </div>

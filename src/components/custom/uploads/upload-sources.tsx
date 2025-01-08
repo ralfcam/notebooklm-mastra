@@ -1,6 +1,6 @@
 "use client";
 
-import { submitSourcesForParsing } from "@/actions/submitSourcesForParsing";
+import { submitSourcesForParsing } from "@/actions/sources/submit-sources-action";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

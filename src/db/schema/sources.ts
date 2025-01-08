@@ -16,9 +16,20 @@ export const parsingStatus = pgEnum("parsing_status", [
   "PARTIAL_SUCCESS",
 ]);
 
+export const processingStatus = pgEnum("processing_status", [
+  "queued",
+  "parsed",
+  "summarized",
+  "ready",
+  "failed",
+]);
+
+export type SourceProcessingStatus =
+  (typeof processingStatus.enumValues)[number];
+
 export const parsingJobs = pgTable("parsing_jobs", {
   id: uuid().primaryKey().defaultRandom(),
-  jobId: uuid().notNull(),
+  jobId: uuid("job_id").notNull(),
   sourceId: uuid("source_id")
     .references(() => sources.id, { onDelete: "cascade" })
     .notNull(),
@@ -37,6 +48,10 @@ export const sources = pgTable(
         onDelete: "cascade",
       })
       .notNull(),
+
+    processingStatus: processingStatus("processing_status")
+      .notNull()
+      .default("queued"),
     ...timestamps,
   },
   (t) => [

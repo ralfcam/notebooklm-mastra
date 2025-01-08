@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { actionClient } from "./safe-action";
+import { actionClient } from "../safe-action";
 import { submitParseJob } from "@/lib/submit-parse-job";
 import { parsingJobs, parsingStatus, sources } from "@/db/schema/sources";
 import { notebooks } from "@/db/schema/notebooks";
@@ -57,27 +57,24 @@ export const submitSourcesForParsing = actionClient
       notebookId = parsedInput.notebookId;
     }
 
-    Promise.all([
-      ctx.db
-        .insert(sources)
-        .values(
-          jobs.map((j) => ({ name: j.fileName, notebookId, id: j.sourceId })),
-        )
-        .returning({ sourceId: sources.id }),
-      ctx.db.insert(parsingJobs).values(
+    ctx.db
+      .insert(sources)
+      .values(
+        jobs.map((j) => ({ name: j.fileName, notebookId, id: j.sourceId })),
+      )
+      .execute();
+
+    ctx.db
+      .insert(parsingJobs)
+      .values(
         jobs.map((j) => ({
           sourceId: j.sourceId,
           status: j.status,
           jobId: j.jobId,
         })),
-      ),
-    ]);
+      )
+      .execute();
 
     if (!parsedInput.sidebar) redirect(`/notebook/${notebookId}`);
     else revalidatePath(`/notebook/${notebookId}`);
   });
-
-/*
- * See's loading status for sources on the sidebar and the notebook summaries
- * Once that's settled they see the enabled generate podcast button
- */

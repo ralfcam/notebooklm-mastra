@@ -11,92 +11,42 @@ import {
 import { Button } from "../ui/button";
 import { File } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { fetchNotebookSources } from "@/db/queries/sources";
-import { useEffect, useState } from "react";
-import { pollJobStatusAction } from "@/actions/pollJobStatusAction";
-import { useAction } from "next-safe-action/hooks";
 import { cn } from "@/lib/utils";
-// import { processUploadAction } from "@/actions/process-upload-action";
-import { summarizeSourceAction } from "@/actions/summarize-source-action";
+import { useProcessSource } from "@/hooks/source-processing-hooks";
 
-type SourceItemProps = Awaited<ReturnType<typeof fetchNotebookSources>>[number];
-type SourceProcessingStatus =
-  | "queued"
-  | "parsed"
-  | "summarized"
-  | "ready"
-  | "failed";
+type SourceItemProps = Awaited<
+  ReturnType<typeof fetchNotebookSources>
+>[number] & { notebookId: string };
 
 export const SourceItem: React.FC<SourceItemProps> = ({
   sourceName,
   sourceSummary,
   sourceTopics,
   parsingJobs,
-  sourceChunks,
+  processingStatus,
   sourceId,
+  notebookId,
 }) => {
   const parsingJob = parsingJobs[0];
 
-  const [sourceProcessingStatus, setSourceProcessingStatus] =
-    useState<SourceProcessingStatus>(
-      parsingJob.status === "PENDING"
-        ? "queued"
-        : parsingJob.status === "SUCCESS"
-          ? "parsed"
-          : "failed",
-    );
-
-  const { execute: pollJobStatus } = useAction(pollJobStatusAction, {
-    onSuccess: ({ data }) => {
-      if (!data) return;
-
-      if (data.status === "SUCCESS") {
-        setSourceProcessingStatus("parsed");
-      }
-    },
+  useProcessSource({
+    jobId: parsingJob.jobId,
+    notebookId,
+    processingStatus,
+    sourceId,
+    sourceName,
   });
-
-  useEffect(() => {
-    if (sourceProcessingStatus !== "queued") return;
-
-    const intervalId = setInterval(
-      () => pollJobStatus({ jobId: parsingJob.jobId }),
-      5000,
-    );
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [parsingJob.jobId, pollJobStatus, sourceProcessingStatus]);
-
-  const { execute: summarizeSource } = useAction(summarizeSourceAction, {
-    onSuccess: ({ data }) => {
-      if (!data) return;
-
-      if (data.generateSourceSummary?.status === "success") {
-        setSourceProcessingStatus("summarized");
-      }
-    },
-  });
-
-  useEffect(() => {
-    if (sourceProcessingStatus === "parsed") {
-      summarizeSource({ sourceId, jobId: parsingJob.jobId });
-    }
-  }, [parsingJob.jobId, sourceId, sourceProcessingStatus, summarizeSource]);
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          disabled={sourceProcessingStatus !== "ready"}
+          disabled={processingStatus !== "summarized"}
           variant="secondary"
           className={cn(
             "w-full justify-start",
-            sourceProcessingStatus === "parsed" && "animate-pulse",
+            processingStatus !== "summarized" && "animate-pulse",
           )}
         >
           <File />
@@ -104,14 +54,15 @@ export const SourceItem: React.FC<SourceItemProps> = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="">
-        <DialogHeader>
-          <DialogTitle className="underline">{sourceName}</DialogTitle>
-          <DialogDescription>
-            <span className="font-semibold">AI summary: </span>
-            {sourceSummary}
-          </DialogDescription>
+      <DialogContent>
+        <DialogHeader className="space-y-4">
+          <DialogTitle className="leading-normal tracking-normal">
+            {sourceName}
+          </DialogTitle>
+          <DialogDescription>{sourceSummary}</DialogDescription>
         </DialogHeader>
+
+        <hr />
 
         <div className="flex gap-2 flex-wrap">
           {sourceTopics?.map((topic) => (
@@ -119,17 +70,6 @@ export const SourceItem: React.FC<SourceItemProps> = ({
               {topic}
             </Badge>
           ))}
-        </div>
-
-        <div className="bg-secondary text-muted-foreground rounded">
-          <p className="font-semibold p-2 text-sm">Content</p>
-          <hr />
-          <ScrollArea className="max-w-md">
-            <ScrollArea className="p-2 h-96 text-sm">
-              {sourceChunks?.map((c) => c.content).join("\n")}
-            </ScrollArea>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,12 +1,19 @@
 "use server";
 
 import { z } from "zod";
-import { actionClient } from "./safe-action";
+import { actionClient } from "../safe-action";
 import { getJobResultsInMarkdown } from "@/lib/submit-parse-job";
+import { revalidatePath } from "next/cache";
 
 export const summarizeSourceAction = actionClient
   .metadata({ name: "summarizeSourceAction" })
-  .schema(z.object({ sourceId: z.string().uuid(), jobId: z.string().uuid() }))
+  .schema(
+    z.object({
+      sourceId: z.string().uuid(),
+      jobId: z.string().uuid(),
+      notebookId: z.string().uuid(),
+    }),
+  )
   .action(async ({ ctx, parsedInput }) => {
     try {
       const res = await getJobResultsInMarkdown(parsedInput.jobId);
@@ -23,6 +30,8 @@ export const summarizeSourceAction = actionClient
             sourceId: parsedInput.sourceId,
           },
         });
+
+      revalidatePath(`/notebook/${parsedInput.notebookId}`);
 
       return workflowResult.results;
     } catch (error) {
