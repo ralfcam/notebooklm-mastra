@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { notebooks } from "./notebooks";
 import { timestamps } from "./helpers";
+import { relations } from "drizzle-orm";
 
 export const parsingStatus = pgEnum("parsing_status", [
   "PENDING",
@@ -27,15 +28,6 @@ export const processingStatus = pgEnum("processing_status", [
 export type SourceProcessingStatus =
   (typeof processingStatus.enumValues)[number];
 
-export const parsingJobs = pgTable("parsing_jobs", {
-  id: uuid().primaryKey().defaultRandom(),
-  jobId: uuid("job_id").notNull(),
-  sourceId: uuid("source_id")
-    .references(() => sources.id, { onDelete: "cascade" })
-    .notNull(),
-  status: parsingStatus("status").notNull(),
-});
-
 export const sources = pgTable("sources", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
@@ -49,6 +41,33 @@ export const sources = pgTable("sources", {
     .default("queued"),
   ...timestamps,
 });
+
+export const sourcesRelations = relations(sources, (h) => ({
+  notebook: h.one(notebooks, {
+    fields: [sources.notebookId],
+    references: [notebooks.id],
+  }),
+  parsingJobs: h.many(parsingJobs),
+  sourceSummaries: h.many(sourceSummaries),
+  sourceTopics: h.many(sourceTopics),
+  sourceChunks: h.many(sourceChunks),
+}));
+
+export const parsingJobs = pgTable("parsing_jobs", {
+  id: uuid().primaryKey().defaultRandom(),
+  jobId: uuid("job_id").notNull(),
+  sourceId: uuid("source_id")
+    .references(() => sources.id, { onDelete: "cascade" })
+    .notNull(),
+  status: parsingStatus("status").notNull(),
+});
+
+export const parsingJobsRelations = relations(parsingJobs, (h) => ({
+  source: h.one(sources, {
+    fields: [parsingJobs.sourceId],
+    references: [sources.id],
+  }),
+}));
 
 export const sourceSummaries = pgTable(
   "source_summaries",
@@ -68,6 +87,13 @@ export const sourceSummaries = pgTable(
   ],
 );
 
+export const sourceSummariesRelations = relations(sourceSummaries, (h) => ({
+  source: h.one(sources, {
+    fields: [sourceSummaries.sourceId],
+    references: [sources.id],
+  }),
+}));
+
 export const sourceTopics = pgTable("source_topics", {
   id: uuid().primaryKey().defaultRandom(),
   topic: text("topic"),
@@ -78,6 +104,13 @@ export const sourceTopics = pgTable("source_topics", {
     .notNull(),
   ...timestamps,
 });
+
+export const sourceTopicsRelations = relations(sourceTopics, (h) => ({
+  source: h.one(sources, {
+    fields: [sourceTopics.sourceId],
+    references: [sources.id],
+  }),
+}));
 
 export const sourceChunks = pgTable(
   "source_chunks",
@@ -99,3 +132,10 @@ export const sourceChunks = pgTable(
     ),
   ],
 );
+
+export const sourceChunksRelations = relations(sourceChunks, (h) => ({
+  source: h.one(sources, {
+    fields: [sourceChunks.sourceId],
+    references: [sources.id],
+  }),
+}));
