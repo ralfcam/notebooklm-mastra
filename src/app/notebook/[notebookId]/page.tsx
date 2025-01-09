@@ -11,7 +11,8 @@ export default async function NotebookPage({ params }: NotebookPageProps) {
   const notebookId = (await params).notebookId;
   const sources = await fetchNotebookSources(notebookId);
   const sourcesSummarized = sources.every(
-    (s) => s.processingStatus === "summarized",
+    (s) =>
+      s.processingStatus === "summarized" || s.processingStatus === "ready",
   );
   const sourcesReady = sources.every((s) => s.processingStatus === "ready");
   const [notebookSummary] = await fetchNotebookSummaries(notebookId);

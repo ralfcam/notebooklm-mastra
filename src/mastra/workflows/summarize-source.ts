@@ -119,7 +119,8 @@ export const summarizeSource = new Workflow({
         db.insert(sourceSummaries).values(summaryInserts).execute();
         db.insert(sourceChunks).values(chunkInserts).execute();
 
-        db.update(sources)
+        await db
+          .update(sources)
           .set({ processingStatus: "summarized" })
           .where(eq(sources.id, c.sourceId))
           .execute();

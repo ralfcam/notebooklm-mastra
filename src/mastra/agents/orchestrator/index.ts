@@ -1,9 +1,13 @@
 import { Agent } from "@mastra/core";
 import { orchestratorInstructions } from "./prompts";
 import {
-  generatePodcast,
+  submitForAudioProduction,
+  generatePodcastOutline,
   querySourceSummaryAndChunks,
+  savePodcastDetails,
+  // updatePodcastStatus,
   validateSourcesAvailability,
+  generatePodcastScript,
 } from "./tools";
 
 export const orchestrator = new Agent({
@@ -12,11 +16,15 @@ export const orchestrator = new Agent({
   model: {
     provider: "ANTHROPIC",
     name: "claude-3-5-sonnet-20241022",
-    toolChoice: "auto",
+    toolChoice: "required",
   },
   tools: {
     validateSourcesAvailability,
     querySourceSummaryAndChunks,
-    generatePodcast,
+    // updatePodcastStatus,
+    savePodcastDetails,
+    generatePodcastOutline,
+    generatePodcastScript,
+    submitForAudioProduction,
   },
 });

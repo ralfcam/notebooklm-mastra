@@ -1,7 +1,12 @@
 import { db } from "@/db";
+import {
+  podcastStatus,
+  notebooks,
+  notebookPodcast,
+} from "@/db/schema/notebooks";
 import { createTool } from "@mastra/core";
 import { embed } from "@mastra/rag";
-import { cosineDistance } from "drizzle-orm";
+import { cosineDistance, eq } from "drizzle-orm";
 import { string, z } from "zod";
 
 const validateSourcesAvailabilityInputSchema = z.object({
@@ -141,10 +146,11 @@ export const querySourceSummaryAndChunks = createTool({
   },
 });
 
-export const generatePodcast = createTool({
-  id: "generatePodcast",
+export const submitForAudioProduction = createTool({
+  id: "submitForAudioProduction",
+  description: "Submit the show transcript for audio production",
   inputSchema: z.object({
-    transcript: z.string(),
+    transcript: z.string().describe("pass the script as is to this tool"),
     voice1: z
       .string()
       .default(
@@ -216,5 +222,151 @@ export const generatePodcast = createTool({
     } catch (error) {
       throw error;
     }
+  },
+});
+
+export const updatePodcastStatus = createTool({
+  id: "updatePodcastStatus",
+  description: "Update the stage of the podcast generation process",
+  inputSchema: z.object({
+    notebookId: z.string().uuid(),
+    podcastStatus: z.enum(podcastStatus.enumValues),
+  }),
+  execute: async ({ context: c }) => {
+    return await db
+      .update(notebooks)
+      .set({ podcastStatus: c.podcastStatus })
+      .where(eq(notebooks.id, c.notebookId))
+      .returning({ updatedStatus: notebooks.podcastStatus });
+  },
+});
+
+export const savePodcastDetails = createTool({
+  id: "savePodcastDetails",
+  description: "save podcast details to the database",
+  inputSchema: z.object({
+    notebookId: z.string().uuid(),
+    podcastScript: z.string().optional(),
+    audioUrl: z.string().url().optional(),
+  }),
+  execute: async ({ context: c }) => {
+    return await db
+      .insert(notebookPodcast)
+      .values({
+        notebookId: c.notebookId,
+        podcastScript: c.podcastScript,
+        audioUrl: c.audioUrl,
+      })
+      .returning({
+        notebookId: notebookPodcast.notebookId,
+        podcastScript: notebookPodcast.podcastScript,
+        audioUrl: notebookPodcast.audioUrl,
+      });
+  },
+});
+
+export const generatePodcastOutline = createTool({
+  id: "generatePodcastOutline",
+  description: "Generate a show outline for the podcast.",
+  inputSchema: z.object({
+    instructions: z
+      .string()
+      .describe(
+        "Key instructions to have in mind while generating a the show outline",
+      ),
+    keyInsights: z
+      .array(z.string())
+      .describe(
+        "A list of key insights to make sure to highlight and give air time in the podcast",
+      ),
+  }),
+  outputSchema: z.object({
+    outline: z.object({
+      title: z.string(),
+      segments: z.array(
+        z.object({
+          title: z.string(),
+          points: z.array(z.string()),
+        }),
+      ),
+    }),
+  }),
+  execute: async ({ context: c, mastra: m }) => {
+    const agent = m?.agents?.["orchestrator"];
+
+    if (!agent) throw new Error("agent not available");
+
+    const res = await agent.llm.generate(
+      [
+        {
+          role: "system",
+          content: `Here are the instructions. \n${c.instructions}\n The following are the key insights. ${c.keyInsights.join("\n")}`,
+        },
+        {
+          role: "user",
+          content:
+            "Given the instructions and key insights, generate a show outline for a podcast that will ensure all the relevant and important information is highlighted. Use the response from this tool in the next step",
+        },
+      ],
+      {
+        schema: z.object({
+          outline: z.object({
+            title: z.string(),
+            segments: z.array(
+              z.object({
+                title: z.string(),
+                points: z.array(z.string()),
+              }),
+            ),
+          }),
+        }),
+      },
+    );
+
+    return res.object;
+  },
+});
+
+export const generatePodcastScript = createTool({
+  id: "generatePodcastScript",
+  description: "Generate a podcast script based on the given outline",
+  inputSchema: z.object({
+    outline: z.object({
+      title: z.string(),
+      segments: z.array(
+        z.object({
+          title: z.string(),
+          points: z.array(z.string()),
+        }),
+      ),
+    }),
+  }),
+  outputSchema: z.object({
+    script: z.string().describe("The script of the show"),
+  }),
+  execute: async ({ context: c, mastra: m }) => {
+    const agent = m?.agents?.["orchestrator"];
+
+    if (!agent) throw new Error("agent not available");
+
+    const res = await agent.llm.generate(
+      [
+        {
+          role: "user",
+          content: `Here is the show outline: ${JSON.stringify(c.outline, null, 2)}.\nUse it to generate a podcast script that strictly adheres to the described format. Do not include non-verbal cues and directions. Return only a script prefixed with either Host 1: or Host 2:. Do not indicate what segement it belongs to. Just the transcript`,
+        },
+      ],
+      {
+        schema: z.object({
+          script: z
+            .string()
+            .describe(
+              "Just the transcript prefixed with either Host 1: or Host 2:",
+            ),
+        }),
+      },
+    );
+
+    return res.object;
   },
 });

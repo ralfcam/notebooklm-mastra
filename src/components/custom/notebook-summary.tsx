@@ -22,6 +22,8 @@ export const NotebookSummarySection: React.FC<NotebookSummaryProps> = ({
     onSuccess: () => toast.success("Notebook summary generated"),
   });
 
+  console.log({ sourcesSummarized });
+
   useEffect(() => {
     if (sourcesSummarized && !sourcesReady) {
       execute({ notebookId: notebookSummary.id });

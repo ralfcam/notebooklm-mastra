@@ -4,22 +4,121 @@ import { generatePodcastAction } from "@/actions/generate-podcast-action";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { CheckCircle2, Headphones, Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { Alert, AlertDescription } from "../ui/alert";
-import { ScrollArea } from "../ui/scroll-area";
+import {
+  CheckCircle2,
+  FileSearch,
+  FileText,
+  Headphones,
+  ListTodo,
+  Loader2,
+  Pencil,
+  Radio,
+  Save,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { TextStreamPart } from "ai";
 import { pollPodcastAudio } from "@/actions/poll-podcast-audio";
+import { submitAudioGenerationAction } from "@/actions/submit-audio-generation-action";
+import { cn } from "@/lib/utils";
 
 interface StudioPanelProps {
   notebookId: string;
 }
+
+const STEPS = [
+  {
+    id: "validateSourcesAvailability",
+    title: "Validate Sources",
+    description: "Checking source availability",
+    icon: FileSearch,
+  },
+  {
+    id: "querySourceSummaryAndChunks",
+    title: "Query Sources",
+    description: "Analyzing source content",
+    icon: FileText,
+  },
+  {
+    id: "generatePodcastOutline",
+    title: "Generate Outline",
+    description: "Creating podcast structure",
+    icon: ListTodo,
+  },
+  {
+    id: "generatePodcastScript",
+    title: "Generate Script",
+    description: "Writing podcast script",
+    icon: Pencil,
+  },
+  {
+    id: "savePodcastDetails",
+    title: "Save Details",
+    description: "Saving podcast information",
+    icon: Save,
+  },
+  {
+    id: "audioGeneration",
+    title: "Generate Audio",
+    description: "Converting to audio",
+    icon: Radio,
+  },
+  {
+    id: "complete",
+    title: "Ready for Playback",
+    description: "Your podcast is ready to play",
+    icon: Headphones,
+  },
+];
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [res, setRes] = useState<TextStreamPart<any>[]>([]);
   const [audioUrl, setAudioUrl] = useState("");
   const [pollUrl, setPollUrl] = useState("");
+  const [currentStepIndex, setCurrentStepIndex] = useState(-1);
+  const [completedSteps, setCompletedSteps] = useState(new Set());
+
+  useEffect(() => {
+    const processEvents = () => {
+      const newCompletedSteps = new Set(completedSteps);
+      let latestStepIndex = currentStepIndex;
+
+      res.forEach((event) => {
+        if (event.type === "tool-call") {
+          const stepIndex = STEPS.findIndex(
+            (step) => step.id === event.toolName,
+          );
+          if (stepIndex > -1) {
+            latestStepIndex = stepIndex;
+          }
+        } else if (event.type === "tool-result") {
+          const stepIndex = STEPS.findIndex(
+            (step) => step.id === event.toolName,
+          );
+          if (stepIndex > -1) {
+            newCompletedSteps.add(event.toolName);
+          }
+        }
+      });
+
+      if (pollUrl && !audioUrl) {
+        latestStepIndex = STEPS.findIndex(
+          (step) => step.id === "audioGeneration",
+        );
+      }
+      if (audioUrl) {
+        latestStepIndex = STEPS.findIndex((step) => step.id === "complete");
+        newCompletedSteps.add("audioGeneration");
+        newCompletedSteps.add("complete");
+      }
+
+      setCurrentStepIndex(latestStepIndex);
+      setCompletedSteps(newCompletedSteps);
+    };
+
+    processEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [res, pollUrl, audioUrl]);
 
   const { execute: executePolling, status: pollingStatus } = useAction(
     pollPodcastAudio,
@@ -34,6 +133,17 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
     },
   );
 
+  const { execute: submitForAudioProduction } = useAction(
+    submitAudioGenerationAction,
+    {
+      onSuccess: ({ data }) => {
+        if (data?.pollUrl) {
+          setPollUrl(data.pollUrl);
+        }
+      },
+    },
+  );
+
   const { execute, status } = useAction(generatePodcastAction, {
     onError: () => {
       toast.error("Error generating podcast");
@@ -42,16 +152,16 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
       if (data) {
         for await (const event of data.output) {
           setRes((prev) => [...prev, event]);
+          console.dir(event, { depth: Infinity });
 
           if (
             event.type === "tool-result" &&
-            event.toolName === "generatePodcast" &&
-            !!event.result.pollUrl
+            event.toolName === "savePodcastDetails" &&
+            !!event.result[0].podcastScript
           ) {
-            setPollUrl(event.result.pollUrl);
+            submitForAudioProduction({ script: event.result[0].podcastScript });
           }
         }
-        toast.success("Submitted podcast creation job");
       }
     },
   });
@@ -78,13 +188,84 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
       pathToRevalidate: `/notebook/${notebookId}`,
     });
 
+  const isProcessing =
+    status === "executing" ||
+    pollingStatus === "executing" ||
+    (!!pollUrl && !audioUrl);
+
   return (
-    <div className="space-y-4 w-full max-w-3xl">
-      {!!res.length && (
-        <ScrollArea className="h-[30vh] w-full border rounded p-4 text-xs">
-          <StreamProgress events={res} />
-        </ScrollArea>
-      )}
+    <div className="space-y-6 w-full max-w-3xl">
+      <div className="w-full">
+        <div className="flex items-start border rounded-3xl py-8">
+          {STEPS.map((step, index) => {
+            const isComplete = completedSteps.has(step.id);
+            const isCurrent = currentStepIndex === index;
+            const isPending = currentStepIndex < index;
+
+            return (
+              <div key={step.id} className="flex flex-col gap-2 relative grow">
+                <div className="flex items-center justify-center">
+                  <div
+                    className={cn(
+                      "h-0.5 grow",
+                      index > 0 && isComplete
+                        ? "bg-green-200"
+                        : index > 0
+                          ? "bg-gray-200"
+                          : "",
+                      "transition-colors duration-200",
+                    )}
+                  />
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center
+                    ${
+                      isCurrent
+                        ? "bg-blue-100"
+                        : isComplete
+                          ? "bg-green-100"
+                          : "bg-gray-100"
+                    }
+                    transition-colors duration-200`}
+                  >
+                    {isComplete ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <step.icon
+                        className={`w-5 h-5 
+                        ${isCurrent ? "text-blue-600 animate-pulse" : "text-gray-400"}`}
+                      />
+                    )}
+                  </div>
+                  <div
+                    className={cn(
+                      "h-0.5 grow",
+                      index < STEPS.length - 1 && isComplete
+                        ? "bg-green-200"
+                        : index < STEPS.length - 1
+                          ? "bg-gray-200"
+                          : "",
+                      "transition-colors duration-200",
+                    )}
+                  />
+                </div>
+                <div className="text-center">
+                  <h3
+                    className={`font-medium text-[10px] ${
+                      isCurrent
+                        ? "text-blue-600"
+                        : isComplete
+                          ? "text-green-600"
+                          : "text-gray-600"
+                    }`}
+                  >
+                    {step.title}
+                  </h3>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {audioUrl && (
         <div className="w-full border rounded p-4 bg-gray-50">
@@ -94,19 +275,24 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
         </div>
       )}
 
-      <Button onClick={handleGenerate} className="min-w-36">
+      <Button
+        onClick={handleGenerate}
+        className="min-w-36"
+        disabled={isProcessing}
+      >
         {status === "idle" ? (
           <>
-            <Headphones />
+            <Headphones className="mr-2" />
             <span>Generate podcast</span>
           </>
-        ) : status === "executing" ||
-          pollingStatus === "executing" ||
-          pollingStatus === "idle" ? (
-          <Loader2 className="animate-spin" />
+        ) : isProcessing ? (
+          <>
+            <Loader2 className="animate-spin mr-2" />
+            <span>Processing...</span>
+          </>
         ) : status === "hasSucceeded" ? (
           <>
-            <CheckCircle2 />
+            <CheckCircle2 className="mr-2" />
             <span>Podcast Generated</span>
           </>
         ) : (
@@ -116,99 +302,3 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
     </div>
   );
 };
-
-interface StreamProgressProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  events: TextStreamPart<any>[];
-}
-const StreamProgress: React.FC<StreamProgressProps> = ({ events }) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [events]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const processedEvents = events.reduce<TextStreamPart<any>[]>(
-    (acc, event) => {
-      if (event.type === "text-delta") {
-        const prevEvent = acc[acc.length - 1];
-
-        if (prevEvent?.type === "text-delta") {
-          prevEvent.textDelta += event.textDelta;
-          return acc;
-        }
-
-        return [...acc, { type: "text-delta", textDelta: event.textDelta }];
-      }
-
-      if (event.type === "tool-result") {
-        return acc.map((ev) => {
-          if (ev.type === "tool-call" && ev.toolCallId === event.toolCallId) {
-            return event;
-          } else {
-            return ev;
-          }
-        });
-      }
-
-      return [...acc, event];
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [] as unknown[] as TextStreamPart<any>[],
-  );
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderEvent = (event: TextStreamPart<any>, index: number) => {
-    switch (event.type) {
-      case "text-delta":
-        return (
-          <div key={index} className="whitespace-normal text-gray-800">
-            {event.textDelta}
-          </div>
-        );
-
-      case "tool-call":
-        return (
-          <Alert
-            key={event.toolCallId}
-            className="border-l-4 border-l-blue-500"
-          >
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
-              <AlertDescription className="font-medium text-xs">
-                {event.toolName}
-              </AlertDescription>
-            </div>
-          </Alert>
-        );
-
-      case "tool-result":
-        return (
-          <Alert
-            key={event.toolCallId + "-result"}
-            className="border-l-4 border-l-green-500"
-          >
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <AlertDescription className="font-medium text-xs">
-                {event.toolName} - Result
-              </AlertDescription>
-            </div>
-          </Alert>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className="space-y-3 w-full">
-      {processedEvents.map((event, index) => renderEvent(event, index))}
-      <div ref={bottomRef}></div>
-    </div>
-  );
-};
-
-export default StreamProgress;

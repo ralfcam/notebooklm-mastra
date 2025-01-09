@@ -148,6 +148,20 @@
       "when": 1736401429627,
       "tag": "0020_outgoing_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1736411132160,
+      "tag": "0021_chubby_silver_sable",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1736411181598,
+      "tag": "0022_volatile_thunderball",
+      "breakpoints": true
     }
   ]
 }

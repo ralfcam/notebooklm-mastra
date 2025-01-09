@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { File } from "lucide-react";
+import { File, Loader } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { fetchNotebookSources } from "@/db/queries/sources";
 import { cn } from "@/lib/utils";
@@ -48,6 +48,9 @@ export const SourceItem: React.FC<SourceItemProps> = ({
         >
           <File />
           <span className="truncate">{name}</span>
+          {!(
+            processingStatus === "summarized" || processingStatus === "ready"
+          ) && <Loader className="animate-spin" />}
         </Button>
       </DialogTrigger>
 
