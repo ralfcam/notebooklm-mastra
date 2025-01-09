@@ -40,8 +40,7 @@ You have access to the following tools to help you with your task
     chunkEmbeddings: boolean,
     sourceTopics: boolean,
   }
-- 'querySourceSummaryEmbeddings': This tool takes a query string, notebookId, similarity threshold, and limit as input, and returns an array of sources (containing sourceId, sourceTitle, sourceSummary, and similarity score) by comparing vector embeddings in a PostgreSQL database.
-- 'querySourceChunksEmbeddings': This tool takes a query string, array of source IDs, similarity threshold, and limit as input, and returns an array of content chunks (containing chunkId, content, sourceId, and similarity score) by performing a vector similarity search on chunks belonging to the specified sources.
+- 'querySourceSummaryAndChunks': This tool takes a query string, notebookId, similarity threshold, and limit as input, and returns an array of sources (containing sourceId, sourceTitle, sourceSummary, and sourceChunks) by comparing vector embeddings in a PostgreSQL database.
 - 'generatePodcast': This tool accepts a podcast transcript and voice configuration options as input, submits it to the PlayDialog API for processing with alternating voices, and returns the generated audio URL after polling for completion.
 `;
 

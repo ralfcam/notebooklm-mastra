@@ -32,6 +32,8 @@ export const pollJobStatusAction = actionClient
         .where(eq(sources.id, parsedInput.sourceId))
         .execute();
 
-      return revalidatePath(`/notebook/${parsedInput.notebookId}`);
+      revalidatePath(`/notebook/${parsedInput.notebookId}`);
+
+      return response;
     }
   });

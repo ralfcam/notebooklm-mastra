@@ -1,9 +1,6 @@
-import {
-  // NotebookSummarySection,
-  NotebookSummarySectionSkeleton,
-} from "@/components/custom/notebook-summary";
+import { NotebookSummarySection } from "@/components/custom/notebook-summary";
 import { StudioPanel } from "@/components/custom/studio-panel";
-// import { fetchNotebookSummaries } from "@/db/queries/notebooks";
+import { fetchNotebookSummaries } from "@/db/queries/notebooks";
 import { fetchNotebookSources } from "@/db/queries/sources";
 
 interface NotebookPageProps {
@@ -12,17 +9,22 @@ interface NotebookPageProps {
 
 export default async function NotebookPage({ params }: NotebookPageProps) {
   const notebookId = (await params).notebookId;
-
   const sources = await fetchNotebookSources(notebookId);
-  // const [notebookSummary] = await fetchNotebookSummaries(notebookId);
+  const sourcesSummarized = sources.every(
+    (s) => s.processingStatus === "summarized",
+  );
+  const sourcesReady = sources.every((s) => s.processingStatus === "ready");
+  const [notebookSummary] = await fetchNotebookSummaries(notebookId);
 
   return (
     <div className="w-full flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-8">
-      {/* Summary center */}
       {sources.length > 0 ? (
         <>
-          <NotebookSummarySectionSkeleton />
-          {/* <NotebookSummarySection notebookSummary={notebookSummary} /> */}
+          <NotebookSummarySection
+            notebookSummary={notebookSummary}
+            sourcesReady={sourcesReady}
+            sourcesSummarized={sourcesSummarized}
+          />
           <StudioPanel notebookId={notebookId} />
         </>
       ) : (

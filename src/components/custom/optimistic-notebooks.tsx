@@ -17,7 +17,16 @@ export const OptimisticNotebooks: React.FC<OptimisticNotebooksProps> = ({
       <UploadSources variant="sidebar" notebookId={notebookId} />
       <hr />
       {notebookSources?.map((source) => (
-        <SidebarMenuItem key={source.sourceId} className={cn("list-none")}>
+        <SidebarMenuItem
+          key={source.id}
+          className={cn(
+            "list-none",
+            !(
+              source.processingStatus === "ready" ||
+              source.processingStatus === "summarized"
+            ) && "animate-pulse",
+          )}
+        >
           <SourceItem {...source} notebookId={notebookId} />
         </SidebarMenuItem>
       ))}

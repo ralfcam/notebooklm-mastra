@@ -20,54 +20,53 @@ type SourceItemProps = Awaited<
 >[number] & { notebookId: string };
 
 export const SourceItem: React.FC<SourceItemProps> = ({
-  sourceName,
-  sourceSummary,
+  id,
+  name,
+  sourceSummaries,
   sourceTopics,
   parsingJobs,
   processingStatus,
-  sourceId,
   notebookId,
 }) => {
-  const parsingJob = parsingJobs[0];
-
   useProcessSource({
-    jobId: parsingJob.jobId,
+    jobId: parsingJobs?.[0].jobId,
     notebookId,
     processingStatus,
-    sourceId,
-    sourceName,
+    sourceId: id,
+    sourceName: name,
   });
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          disabled={processingStatus !== "summarized"}
+          disabled={
+            !(processingStatus === "summarized" || processingStatus === "ready")
+          }
           variant="secondary"
-          className={cn(
-            "w-full justify-start",
-            processingStatus !== "summarized" && "animate-pulse",
-          )}
+          className={cn("w-full justify-start")}
         >
           <File />
-          <span className="truncate">{sourceName}</span>
+          <span className="truncate">{name}</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader className="space-y-4">
           <DialogTitle className="leading-normal tracking-normal">
-            {sourceName}
+            {name}
           </DialogTitle>
-          <DialogDescription>{sourceSummary}</DialogDescription>
+          <DialogDescription>
+            {sourceSummaries.map((s) => s.summary).join("")}
+          </DialogDescription>
         </DialogHeader>
 
         <hr />
 
         <div className="flex gap-2 flex-wrap">
           {sourceTopics?.map((topic) => (
-            <Badge variant="default" key={topic}>
-              {topic}
+            <Badge variant="default" key={topic.id}>
+              {topic.topic}
             </Badge>
           ))}
         </div>

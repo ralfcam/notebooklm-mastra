@@ -2,8 +2,7 @@ import { Agent } from "@mastra/core";
 import { orchestratorInstructions } from "./prompts";
 import {
   generatePodcast,
-  querySourceChunksEmbeddings,
-  querySourceSummaryEmbeddings,
+  querySourceSummaryAndChunks,
   validateSourcesAvailability,
 } from "./tools";
 
@@ -17,8 +16,7 @@ export const orchestrator = new Agent({
   },
   tools: {
     validateSourcesAvailability,
-    querySourceSummaryEmbeddings,
-    querySourceChunksEmbeddings,
+    querySourceSummaryAndChunks,
     generatePodcast,
   },
 });

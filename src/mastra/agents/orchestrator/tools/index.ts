@@ -1,9 +1,7 @@
 import { db } from "@/db";
-import { sourceChunks, sources, sourceTopics } from "@/db/schema/sources";
 import { createTool } from "@mastra/core";
 import { embed } from "@mastra/rag";
-import { cosineDistance, count, desc, gt, inArray, sql } from "drizzle-orm";
-import { eq, and } from "drizzle-orm";
+import { cosineDistance } from "drizzle-orm";
 import { string, z } from "zod";
 
 const validateSourcesAvailabilityInputSchema = z.object({
@@ -23,25 +21,44 @@ export const validateSourcesAvailability = createTool({
   inputSchema: validateSourcesAvailabilityInputSchema,
   outputSchema: validateSourcesAvailabilityOutputSchema,
   execute: async ({ context }) => {
-    const sourcesRes = await db
-      .select({
-        sourceSummaries: count(sources.summary),
-        summaryEmbeddings: count(sources.summaryEmbedding),
-        chunks: count(sourceChunks.content),
-        chunkEmbeddings: count(sourceChunks.embedding),
-        sourceTopics: count(sourceTopics.topic),
-      })
-      .from(sources)
-      .leftJoin(sourceChunks, eq(sourceChunks.sourceId, sources.id))
-      .leftJoin(sourceTopics, eq(sourceTopics.sourceId, sources.id))
-      .where(eq(sources.notebookId, context.notebookId));
+    const res = await db.query.sources.findMany({
+      where: (t, h) => h.eq(t.id, context.notebookId),
+      columns: {
+        name: true,
+      },
+      with: {
+        sourceSummaries: {
+          columns: {
+            summary: true,
+            embedding: true,
+          },
+        },
+        sourceChunks: {
+          columns: {
+            content: true,
+            embedding: true,
+          },
+        },
+        sourceTopics: {
+          columns: {
+            topic: true,
+          },
+        },
+      },
+    });
 
     return {
-      sourceSummaries: sourcesRes[0].sourceSummaries !== 0,
-      summaryEmbeddings: sourcesRes[0].summaryEmbeddings !== 0,
-      chunks: sourcesRes[0].chunks !== 0,
-      chunkEmbeddings: sourcesRes[0].chunkEmbeddings !== 0,
-      sourceTopics: sourcesRes[0].sourceTopics !== 0,
+      sourceSummaries: res.every((s) =>
+        s.sourceSummaries.every((ss) => !!ss.summary),
+      ),
+      summaryEmbeddings: res.every((s) =>
+        s.sourceSummaries.every((ss) => !!ss.embedding?.length),
+      ),
+      chunks: res.every((s) => s.sourceChunks.every((sc) => !!sc.content)),
+      chunkEmbeddings: res.every((s) =>
+        s.sourceChunks.every((sc) => !!sc.embedding?.length),
+      ),
+      sourceTopics: res.every((s) => s.sourceTopics.every((st) => st.topic)),
     };
   },
 });
@@ -56,17 +73,17 @@ const querySourceSummaryEmbeddingsInputSchema = z.object({
 const querySourceSummaryEmbeddingsOutputSchema = z.object({
   results: z.array(
     z.object({
-      sourceId: z.string().uuid(),
-      sourceTitle: z.string(),
-      sourceSummary: z.string().nullable(),
-      sourceTopics: z.array(z.string()),
-      similarity: z.number(),
+      id: z.string(),
+      name: z.string(),
+      sourceSummaries: z.array(z.object({ summary: z.string().nullable() })),
+      sourceChunks: z.array(z.object({ content: z.string().nullable() })),
+      sourceTopics: z.array(z.object({ topic: z.string().nullable() })),
     }),
   ),
 });
 
-export const querySourceSummaryEmbeddings = createTool({
-  id: "querySourceSummaryEmbeddings",
+export const querySourceSummaryAndChunks = createTool({
+  id: "querySourceSummaryAndChunks",
   inputSchema: querySourceSummaryEmbeddingsInputSchema,
   outputSchema: querySourceSummaryEmbeddingsOutputSchema,
   execute: async ({ context: c }) => {
@@ -78,87 +95,42 @@ export const querySourceSummaryEmbeddings = createTool({
       });
 
       if ("embedding" in queryVector) {
-        const similarity = sql<number>`1 - (${cosineDistance(sources.summaryEmbedding, queryVector.embedding)})`;
-        const keyTopics = sql<
-          string[]
-        >`array_agg(distinct source_topics.topic) filter (where source_topics.topic is not null)`;
-
         return {
-          results: await db
-            .select({
-              sourceId: sources.id,
-              sourceTitle: sources.name,
-              sourceSummary: sources.summary,
-              sourceTopics: keyTopics,
-              similarity,
-            })
-            .from(sources)
-            .leftJoin(sourceTopics, eq(sourceTopics.sourceId, sources.id))
-            .groupBy(sources.id, sources.name, sources.summary)
-            .where(
-              and(
-                eq(sources.notebookId, c.notebookId),
-                gt(similarity, c.threshold),
-              ),
-            )
-            .orderBy((t) => desc(t.similarity))
-            .limit(c.limit),
-        };
-      } else {
-        throw new Error("Expected queryVector to be single result");
-      }
-    } catch (error) {
-      throw error;
-    }
-  },
-});
-
-export const querySourceChunksEmbeddings = createTool({
-  id: "querySourceChunksEmbeddings",
-  inputSchema: z.object({
-    query: z.string(),
-    sourceIds: z.array(z.string().uuid()),
-    threshold: z.number().min(0).max(1),
-    limit: z.number().min(1),
-  }),
-  outputSchema: z.object({
-    results: z.array(
-      z.object({
-        chunkId: z.string().uuid(),
-        content: z.string(),
-        sourceId: z.string().uuid(),
-        similarity: z.number(),
-      }),
-    ),
-  }),
-  execute: async ({ context: c }) => {
-    try {
-      const queryVector = await embed(c.query, {
-        provider: "OPEN_AI",
-        model: "text-embedding-ada-002",
-        maxRetries: 5,
-      });
-
-      if ("embedding" in queryVector) {
-        const similarity = sql<number>`1 - (${cosineDistance(sourceChunks.embedding, queryVector.embedding)})`;
-
-        return {
-          results: await db
-            .select({
-              chunkId: sourceChunks.id,
-              content: sourceChunks.content,
-              sourceId: sourceChunks.sourceId,
-              similarity,
-            })
-            .from(sourceChunks)
-            .where(
-              and(
-                inArray(sourceChunks.sourceId, c.sourceIds),
-                gt(similarity, c.threshold),
-              ),
-            )
-            .orderBy((t) => desc(t.similarity))
-            .limit(c.limit),
+          results: await db.query.sources.findMany({
+            where: (t, h) => h.eq(t.notebookId, c.notebookId),
+            columns: {
+              id: true,
+              name: true,
+            },
+            with: {
+              sourceSummaries: {
+                columns: {
+                  summary: true,
+                },
+                where: (t, h) =>
+                  h.gte(
+                    h.sql<number>`1 - (${cosineDistance(t.embedding, queryVector.embedding)})`,
+                    c.threshold,
+                  ),
+              },
+              sourceChunks: {
+                columns: {
+                  content: true,
+                },
+                where: (t, h) =>
+                  h.gte(
+                    h.sql<number>`1 - (${cosineDistance(t.embedding, queryVector.embedding)})`,
+                    c.threshold,
+                  ),
+              },
+              sourceTopics: {
+                columns: {
+                  topic: true,
+                },
+              },
+            },
+            limit: c.limit,
+          }),
         };
       } else {
         throw new Error("Expected queryVector to be single result");

@@ -2,7 +2,12 @@ import { Step, Workflow } from "@mastra/core";
 import { z } from "zod";
 import { generateSourceSummaryPrompt } from "../prompts/generate-source-summary";
 import { db } from "@/db";
-import { sourceChunks, sources, sourceTopics } from "@/db/schema/sources";
+import {
+  sourceChunks,
+  sources,
+  sourceSummaries,
+  sourceTopics,
+} from "@/db/schema/sources";
 import { eq } from "drizzle-orm";
 import { embed, MDocument } from "@mastra/rag";
 import { EmbedManyResult } from "ai";
@@ -47,29 +52,51 @@ export const summarizeSource = new Workflow({
           keyTopics: string[];
         };
 
-        db.insert(sourceTopics)
-          .values(keyTopics.map((t) => ({ topic: t, sourceId: c.sourceId })))
-          .execute();
-
-        const docs = await MDocument.fromText(c.markdown).chunk({
+        const summaryDocs = await MDocument.fromText(summary).chunk({
           strategy: "markdown",
           size: 512,
           overlap: 50,
         });
 
-        const embeddings = (await embed(docs, {
+        const summaryEmbeddings = (await embed(summaryDocs, {
           provider: "OPEN_AI",
           model: "text-embedding-ada-002",
           maxRetries: 5,
         })) as EmbedManyResult<string>;
 
-        const chunkInserts = embeddings.values.reduce(
+        const summaryInserts = summaryEmbeddings.values.reduce(
+          (pv, cv, idx) => {
+            return [
+              ...pv,
+              {
+                summary: cv,
+                embedding: summaryEmbeddings.embeddings[idx],
+                sourceId: c.sourceId,
+              },
+            ];
+          },
+          [] as { summary: string; embedding: number[]; sourceId: string }[],
+        );
+
+        const contentDocs = await MDocument.fromText(c.markdown).chunk({
+          strategy: "markdown",
+          size: 512,
+          overlap: 50,
+        });
+
+        const contentEmbeddings = (await embed(contentDocs, {
+          provider: "OPEN_AI",
+          model: "text-embedding-ada-002",
+          maxRetries: 5,
+        })) as EmbedManyResult<string>;
+
+        const chunkInserts = contentEmbeddings.values.reduce(
           (pv, cv, idx) => {
             return [
               ...pv,
               {
                 content: cv,
-                embedding: embeddings.embeddings[idx],
+                embedding: contentEmbeddings.embeddings[idx],
                 sourceId: c.sourceId,
                 createdAt: new Date(),
               },
@@ -83,12 +110,19 @@ export const summarizeSource = new Workflow({
           }[],
         );
 
+        const topicInserts = keyTopics.map((topic) => ({
+          topic,
+          sourceId: c.sourceId,
+        }));
+
+        db.insert(sourceTopics).values(topicInserts).execute();
+        db.insert(sourceSummaries).values(summaryInserts).execute();
+        db.insert(sourceChunks).values(chunkInserts).execute();
+
         db.update(sources)
-          .set({ summary, processingStatus: "summarized" })
+          .set({ processingStatus: "summarized" })
           .where(eq(sources.id, c.sourceId))
           .execute();
-
-        db.insert(sourceChunks).values(chunkInserts).execute();
 
         return {
           summary,

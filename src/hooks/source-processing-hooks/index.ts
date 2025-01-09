@@ -19,7 +19,9 @@ export const usePollForParsingJobStatus = ({
   sourceName: string;
 }) => {
   const { execute: pollJobStatus } = useAction(pollJobStatusAction, {
-    onSuccess: () => toast.success(`${sourceName} parsed successfully`),
+    onSuccess: ({ data }) =>
+      data?.status === "SUCCESS" &&
+      toast.success(`${sourceName} parsed successfully`),
   });
 
   useEffect(() => {

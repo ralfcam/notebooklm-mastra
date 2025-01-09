@@ -16,10 +16,7 @@ import {
   saveSource,
   storeEmbeddings,
 } from "../tools";
-import {
-  querySourceChunksEmbeddings,
-  querySourceSummaryEmbeddings,
-} from "./orchestrator/tools";
+import { querySourceSummaryAndChunks } from "./orchestrator/tools";
 
 export const podcastGenerator = new Agent({
   name: "podcastGenerator",
@@ -53,7 +50,6 @@ export const knowledgeManager = new Agent({
     saveSource,
     generateEmbeddings,
     storeEmbeddings,
-    querySourceSummaryEmbeddings,
-    querySourceChunksEmbeddings,
+    querySourceSummaryAndChunks,
   },
 });
