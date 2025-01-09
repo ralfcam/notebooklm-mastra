@@ -141,6 +141,13 @@
       "when": 1736354328915,
       "tag": "0019_sudden_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1736401429627,
+      "tag": "0020_outgoing_thing",
+      "breakpoints": true
     }
   ]
 }

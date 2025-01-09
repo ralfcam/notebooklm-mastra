@@ -36,28 +36,34 @@ export const parsingJobs = pgTable("parsing_jobs", {
   status: parsingStatus("status").notNull(),
 });
 
-export const sources = pgTable(
-  "sources",
-  {
-    id: uuid().primaryKey().defaultRandom(),
-    name: text().notNull(),
-    summary: text().default(""),
-    summaryEmbedding: vector("summary_embedding", { dimensions: 1536 }),
-    notebookId: uuid("notebook_id")
-      .references(() => notebooks.id, {
-        onDelete: "cascade",
-      })
-      .notNull(),
+export const sources = pgTable("sources", {
+  id: uuid().primaryKey().defaultRandom(),
+  name: text().notNull(),
+  notebookId: uuid("notebook_id")
+    .references(() => notebooks.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  processingStatus: processingStatus("processing_status")
+    .notNull()
+    .default("queued"),
+  ...timestamps,
+});
 
-    processingStatus: processingStatus("processing_status")
-      .notNull()
-      .default("queued"),
-    ...timestamps,
+export const sourceSummaries = pgTable(
+  "source_summaries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    summary: text("summary"),
+    embedding: vector("summary_embedding", { dimensions: 1536 }),
+    sourceId: uuid("source_id").references(() => sources.id, {
+      onDelete: "cascade",
+    }),
   },
   (t) => [
     index("summary_embedding_index").using(
       "ivfflat",
-      t.summaryEmbedding.op("vector_cosine_ops"),
+      t.embedding.op("vector_cosine_ops"),
     ),
   ],
 );
