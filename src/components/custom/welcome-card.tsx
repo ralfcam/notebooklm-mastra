@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Code, FileText, Upload } from "lucide-react";
 import { UploadSources } from "./uploads/upload-sources";

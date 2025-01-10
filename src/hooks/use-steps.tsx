@@ -64,10 +64,10 @@ export const useSteps = ({
   setCurrentStepIndex,
   setCompletedSteps,
 }: {
-  audioUrl: string | null;
+  audioUrl: string | undefined;
   completedSteps: Set<string>;
   currentStepIndex: number;
-  pollUrl: string | null;
+  pollUrl: string | undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   res: TextStreamPart<any>[];
   setCurrentStepIndex: Dispatch<SetStateAction<number>>;

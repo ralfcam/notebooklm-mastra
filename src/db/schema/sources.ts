@@ -21,8 +21,6 @@ export const processingStatus = pgEnum("processing_status", [
   "queued",
   "parsed",
   "summarized",
-  "ready",
-  "failed",
 ]);
 
 export type SourceProcessingStatus =

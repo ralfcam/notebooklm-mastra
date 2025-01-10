@@ -10,6 +10,13 @@ export const podcastStatus = pgEnum("podcast_status", [
   "polling_audio",
   "ready",
 ]);
+
+export const notebookStatus = pgEnum("notebook_status", [
+  "awaiting_source_summaries",
+  "summarizing",
+  "ready",
+]);
+
 export const notebooks = pgTable("notebooks", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().default("Untitled Notebook").notNull(),
@@ -18,6 +25,9 @@ export const notebooks = pgTable("notebooks", {
   summary: text(),
   emoji: text(),
   podcastStatus: podcastStatus("podcast_status").default("not_started"),
+  notebookStatus: notebookStatus("notebook_status").default(
+    "awaiting_source_summaries",
+  ),
   ...timestamps,
 });
 

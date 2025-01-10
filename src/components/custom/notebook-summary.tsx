@@ -9,36 +9,32 @@ import { toast } from "sonner";
 
 interface NotebookSummaryProps {
   notebookSummary: NotebookSummary;
-  sourcesReady: boolean;
   sourcesSummarized: boolean;
 }
 
 export const NotebookSummarySection: React.FC<NotebookSummaryProps> = ({
   notebookSummary,
-  sourcesReady,
   sourcesSummarized,
 }) => {
   const { execute } = useAction(generateNotebookSummaries, {
     onSuccess: () => toast.success("Notebook summary generated"),
   });
 
-  console.log({ sourcesSummarized });
-
   useEffect(() => {
-    if (sourcesSummarized && !sourcesReady) {
+    if (sourcesSummarized) {
       execute({ notebookId: notebookSummary.id });
     }
-  }, [execute, notebookSummary.id, sourcesReady, sourcesSummarized]);
+  }, [execute, notebookSummary.id, sourcesSummarized]);
 
-  if (sourcesReady) {
-    return (
-      <div className="w-full max-w-3xl flex flex-col justify-center gap-3">
-        <div className="text-4xl">{notebookSummary?.emoji}</div>
-        <h1 className="text-3xl font-semibold">{notebookSummary?.title}</h1>
-        <p className="text-sm">{notebookSummary?.summary}</p>
-      </div>
-    );
-  }
+  // if (sourcesReady) {
+  //   return (
+  //     <div className="w-full max-w-3xl flex flex-col justify-center gap-3">
+  //       <div className="text-4xl">{notebookSummary?.emoji}</div>
+  //       <h1 className="text-3xl font-semibold">{notebookSummary?.title}</h1>
+  //       <p className="text-sm">{notebookSummary?.summary}</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="w-full max-w-3xl flex flex-col justify-center gap-3">

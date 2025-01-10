@@ -162,6 +162,13 @@
       "when": 1736411181598,
       "tag": "0022_volatile_thunderball",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1736501635318,
+      "tag": "0023_brief_the_fallen",
+      "breakpoints": true
     }
   ]
 }

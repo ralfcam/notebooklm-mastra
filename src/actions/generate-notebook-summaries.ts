@@ -5,7 +5,6 @@ import { actionClient } from "./safe-action";
 import { db } from "@/db";
 import { notebooks } from "@/db/schema/notebooks";
 import { revalidatePath } from "next/cache";
-import { sources } from "@/db/schema/sources";
 
 export const generateNotebookSummaries = actionClient
   .metadata({
@@ -67,7 +66,6 @@ export const generateNotebookSummaries = actionClient
     const parsedResult = schema.parse(res.object);
 
     await db.update(notebooks).set(parsedResult);
-    await db.update(sources).set({ processingStatus: "ready" });
 
     revalidatePath(`/notebook/${parsedInput.notebookId}`);
   });

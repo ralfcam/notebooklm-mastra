@@ -40,17 +40,15 @@ export const SourceItem: React.FC<SourceItemProps> = ({
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          disabled={
-            !(processingStatus === "summarized" || processingStatus === "ready")
-          }
+          disabled={!(processingStatus === "summarized")}
           variant="secondary"
           className={cn("w-full justify-start")}
         >
           <File />
           <span className="truncate">{name}</span>
-          {!(
-            processingStatus === "summarized" || processingStatus === "ready"
-          ) && <Loader className="animate-spin" />}
+          {!(processingStatus === "summarized") && (
+            <Loader className="animate-spin" />
+          )}
         </Button>
       </DialogTrigger>
 

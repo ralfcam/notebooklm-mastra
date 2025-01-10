@@ -12,8 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Loader, Plus } from "lucide-react";
-import { HookActionStatus, useAction } from "next-safe-action/hooks";
-import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import { type HookActionStatus, useAction } from "next-safe-action/hooks";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import { FileUploader } from "../file-uploader";
 
@@ -27,7 +32,7 @@ export const UploadSources: React.FC<UploadSourcesProps> = (props) => {
   const [open, setOpen] = useState(false);
 
   const { execute, status } = useAction(submitSourcesForParsing, {
-    onSuccess: () => toast.success("Successfully uploaded"),
+    onSuccess: () => toast.success("Sources submitted for parsing"),
     onError: () => toast.error("Upload failed"),
   });
 
@@ -72,7 +77,7 @@ export const UploadSources: React.FC<UploadSourcesProps> = (props) => {
   );
 };
 
-export const UploadSourcesHomeTrigger: React.FC<{
+const UploadSourcesHomeTrigger: React.FC<{
   onOpenChange: Dispatch<SetStateAction<boolean>>;
   status: HookActionStatus;
   variant: "default" | "welcome";
@@ -97,7 +102,7 @@ export const UploadSourcesHomeTrigger: React.FC<{
   );
 };
 
-export const UploadSourcesSidebarTrigger: React.FC<{
+const UploadSourcesSidebarTrigger: React.FC<{
   onOpenChange: Dispatch<SetStateAction<boolean>>;
 }> = ({ onOpenChange }) => {
   const { open } = useSidebar();

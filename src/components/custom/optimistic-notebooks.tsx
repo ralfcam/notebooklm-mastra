@@ -21,10 +21,7 @@ export const OptimisticNotebooks: React.FC<OptimisticNotebooksProps> = ({
           key={source.id}
           className={cn(
             "list-none",
-            !(
-              source.processingStatus === "ready" ||
-              source.processingStatus === "summarized"
-            ) && "animate-pulse",
+            !(source.processingStatus === "summarized") && "animate-pulse",
           )}
         >
           <SourceItem {...source} notebookId={notebookId} />

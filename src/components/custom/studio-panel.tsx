@@ -12,6 +12,7 @@ import { submitAudioGenerationAction } from "@/actions/submit-audio-generation-a
 import { cn } from "@/lib/utils";
 import { savePodcastAction } from "@/actions/save-podcast-action";
 import { STEPS, useSteps } from "@/hooks/use-steps";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface StudioPanelProps {
   notebookId: string;
@@ -21,8 +22,8 @@ interface StudioPanelProps {
 export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [res, setRes] = useState<TextStreamPart<any>[]>([]);
-  const [audioUrl, setAudioUrl] = useState("");
-  const [pollUrl, setPollUrl] = useState("");
+  const [audioUrl, setAudioUrl] = useState<string>();
+  const [pollUrl, setPollUrl] = useState<string>();
   const [currentStepIndex, setCurrentStepIndex] = useState(-1);
   const [completedSteps, setCompletedSteps] = useState(new Set<string>());
 
@@ -113,28 +114,35 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
 
   return (
     <div className="space-y-6 w-full max-w-3xl">
-      <div className="w-full">
-        <div className="flex items-start border rounded py-8">
-          {STEPS.map((step, index) => {
-            const isComplete = completedSteps.has(step.id);
-            const isCurrent = currentStepIndex === index;
+      <Card className="w-full max-w-3xl">
+        <CardHeader>
+          <CardTitle>Podcast player</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-start">
+            {STEPS.map((step, index) => {
+              const isComplete = completedSteps.has(step.id);
+              const isCurrent = currentStepIndex === index;
 
-            return (
-              <div key={step.id} className="flex flex-col gap-2 relative grow">
-                <div className="flex items-center justify-center">
-                  <div
-                    className={cn(
-                      "h-0.5 grow",
-                      index > 0 && isComplete
-                        ? "bg-green-200"
-                        : index > 0
-                          ? "bg-gray-200"
-                          : "",
-                      "transition-colors duration-200",
-                    )}
-                  />
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center
+              return (
+                <div
+                  key={step.id}
+                  className="flex flex-col gap-2 relative grow"
+                >
+                  <div className="flex items-center justify-center">
+                    <div
+                      className={cn(
+                        "h-0.5 grow",
+                        index > 0 && isComplete
+                          ? "bg-green-200"
+                          : index > 0
+                            ? "bg-gray-200"
+                            : "",
+                        "transition-colors duration-200",
+                      )}
+                    />
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center
                     ${
                       isComplete
                         ? "bg-green-100"
@@ -143,79 +151,76 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
                           : "bg-gray-100"
                     }
                     transition-colors duration-200`}
-                  >
-                    {isComplete ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <step.icon
-                        className={`w-5 h-5 
+                    >
+                      {isComplete ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <step.icon
+                          className={`w-5 h-5 
                         ${isCurrent ? "text-blue-600 animate-pulse" : "text-gray-400"}`}
-                      />
-                    )}
+                        />
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        "h-0.5 grow",
+                        index < STEPS.length - 1 && isComplete
+                          ? "bg-green-200"
+                          : index < STEPS.length - 1
+                            ? "bg-gray-200"
+                            : "",
+                        "transition-colors duration-200",
+                      )}
+                    />
                   </div>
-                  <div
-                    className={cn(
-                      "h-0.5 grow",
-                      index < STEPS.length - 1 && isComplete
-                        ? "bg-green-200"
-                        : index < STEPS.length - 1
-                          ? "bg-gray-200"
-                          : "",
-                      "transition-colors duration-200",
-                    )}
-                  />
+                  <div className="text-center">
+                    <h3
+                      className={`font-medium text-[10px] ${
+                        isComplete
+                          ? "text-green-600"
+                          : isCurrent
+                            ? "text-blue-600"
+                            : "text-gray-600"
+                      }`}
+                    >
+                      {step.title}
+                    </h3>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <h3
-                    className={`font-medium text-[10px] ${
-                      isComplete
-                        ? "text-green-600"
-                        : isCurrent
-                          ? "text-blue-600"
-                          : "text-gray-600"
-                    }`}
-                  >
-                    {step.title}
-                  </h3>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+              );
+            })}
+          </div>
 
-      <Button
-        onClick={handleGenerate}
-        className="min-w-36"
-        disabled={isProcessing}
-      >
-        {status === "idle" ? (
-          <>
-            <Headphones className="mr-2" />
-            <span>Generate podcast</span>
-          </>
-        ) : status === "hasSucceeded" ? (
-          <>
-            <CheckCircle2 className="mr-2" />
-            <span>Podcast Generated</span>
-          </>
-        ) : isProcessing ? (
-          <>
-            <Loader2 className="animate-spin mr-2" />
-            <span>Processing...</span>
-          </>
-        ) : (
-          <span>Failed podcast generation</span>
-        )}
-      </Button>
-
-      {audioUrl && (
-        <div className="w-full border rounded p-4 bg-gray-50">
-          <audio controls className="w-full" src={audioUrl}>
+          <audio controls={!!audioUrl} className="w-full" src={audioUrl}>
             Your browser does not support the audio element.
           </audio>
-        </div>
-      )}
+
+          <Button
+            onClick={handleGenerate}
+            className="w-full"
+            disabled={isProcessing}
+          >
+            {status === "idle" ? (
+              <>
+                <Headphones className="mr-2" />
+                <span>Generate podcast</span>
+              </>
+            ) : status === "hasSucceeded" ? (
+              <>
+                <CheckCircle2 className="mr-2" />
+                <span>Podcast Generated</span>
+              </>
+            ) : isProcessing ? (
+              <>
+                <Loader2 className="animate-spin mr-2" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <span>Failed podcast generation</span>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };
