@@ -3,14 +3,12 @@ import { summarizeSourceAction } from "@/actions/sources/summarize-source-action
 import { SourceProcessingStatus } from "@/db/schema/sources";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect } from "react";
-import { toast } from "sonner";
 
 export const usePollForParsingJobStatus = ({
   jobId,
   notebookId,
   processingStatus,
   sourceId,
-  sourceName,
 }: {
   jobId: string;
   notebookId: string;
@@ -18,11 +16,7 @@ export const usePollForParsingJobStatus = ({
   sourceId: string;
   sourceName: string;
 }) => {
-  const { execute: pollJobStatus } = useAction(pollJobStatusAction, {
-    onSuccess: ({ data }) =>
-      data?.status === "SUCCESS" &&
-      toast.success(`${sourceName} parsed successfully`),
-  });
+  const { execute: pollJobStatus } = useAction(pollJobStatusAction);
 
   useEffect(() => {
     if (processingStatus !== "queued") return;
@@ -45,7 +39,6 @@ export const useSummarizeSource = ({
   notebookId,
   processingStatus,
   sourceId,
-  sourceName,
 }: {
   jobId: string;
   notebookId: string;
@@ -53,9 +46,7 @@ export const useSummarizeSource = ({
   sourceId: string;
   sourceName: string;
 }) => {
-  const { execute: summarizeSource } = useAction(summarizeSourceAction, {
-    onSuccess: () => toast.success(`${sourceName} summarized successfully`),
-  });
+  const { execute: summarizeSource } = useAction(summarizeSourceAction, {});
 
   useEffect(() => {
     if (processingStatus === "parsed") {
