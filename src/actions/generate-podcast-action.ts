@@ -14,12 +14,11 @@ export const generatePodcastAction = actionClient
   .metadata({ name: "generatePodcastAction" })
   .schema(inputSchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { fullStream } = await ctx.mastra
+    const output = await ctx.mastra
       .getAgent("orchestrator")
-      .generate(
+      .stream(
         `Validate that we have sources available for the notebook with the this notebookId ${parsedInput.triggerData.notebookId}. Follow all previous instructions and create a podcast.`,
-        { stream: true },
       );
 
-    return { output: fullStream };
+    return { output };
   });

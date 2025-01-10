@@ -40,7 +40,7 @@ export const summarizeSource = new Workflow({
             { role: "user", content: c.markdown },
           ],
           {
-            schema: z.object({
+            output: z.object({
               summary: z.string(),
               keyTopics: z.array(z.string()),
             }),

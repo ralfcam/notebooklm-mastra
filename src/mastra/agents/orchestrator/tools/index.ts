@@ -309,7 +309,7 @@ export const generatePodcastOutline = createTool({
         },
       ],
       {
-        schema: z.object({
+        output: z.object({
           outline: z.object({
             title: z.string(),
             segments: z.array(
@@ -357,7 +357,7 @@ export const generatePodcastScript = createTool({
         },
       ],
       {
-        schema: z.object({
+        output: z.object({
           script: z
             .string()
             .describe(

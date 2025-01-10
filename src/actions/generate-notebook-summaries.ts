@@ -66,9 +66,7 @@ export const generateNotebookSummaries = actionClient
           content: `Here are all the summaries for this notebook.\n\n ${summaries.map((s) => s.sourceSummaries.map((ss) => ss.summary))}`,
         },
       ],
-      {
-        schema,
-      },
+      { output: schema },
     );
 
     const parsedResult = schema.parse(res.object);
