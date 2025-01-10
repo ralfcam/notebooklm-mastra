@@ -4,71 +4,19 @@ import { generatePodcastAction } from "@/actions/generate-podcast-action";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import {
-  CheckCircle2,
-  FileSearch,
-  FileText,
-  Headphones,
-  ListTodo,
-  Loader2,
-  Pencil,
-  Radio,
-  Save,
-} from "lucide-react";
+import { CheckCircle2, Headphones, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextStreamPart } from "ai";
 import { pollPodcastAudio } from "@/actions/poll-podcast-audio";
 import { submitAudioGenerationAction } from "@/actions/submit-audio-generation-action";
 import { cn } from "@/lib/utils";
+import { savePodcastAction } from "@/actions/save-podcast-action";
+import { STEPS, useSteps } from "@/hooks/use-steps";
 
 interface StudioPanelProps {
   notebookId: string;
+  audioUrl?: string;
 }
-
-const STEPS = [
-  {
-    id: "validateSourcesAvailability",
-    title: "Validate Sources",
-    description: "Checking source availability",
-    icon: FileSearch,
-  },
-  {
-    id: "querySourceSummaryAndChunks",
-    title: "Query Sources",
-    description: "Analyzing source content",
-    icon: FileText,
-  },
-  {
-    id: "generatePodcastOutline",
-    title: "Generate Outline",
-    description: "Creating podcast structure",
-    icon: ListTodo,
-  },
-  {
-    id: "generatePodcastScript",
-    title: "Generate Script",
-    description: "Writing podcast script",
-    icon: Pencil,
-  },
-  {
-    id: "savePodcastDetails",
-    title: "Save Details",
-    description: "Saving podcast information",
-    icon: Save,
-  },
-  {
-    id: "audioGeneration",
-    title: "Generate Audio",
-    description: "Converting to audio",
-    icon: Radio,
-  },
-  {
-    id: "complete",
-    title: "Ready for Playback",
-    description: "Your podcast is ready to play",
-    icon: Headphones,
-  },
-];
 
 export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,49 +24,19 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
   const [audioUrl, setAudioUrl] = useState("");
   const [pollUrl, setPollUrl] = useState("");
   const [currentStepIndex, setCurrentStepIndex] = useState(-1);
-  const [completedSteps, setCompletedSteps] = useState(new Set());
+  const [completedSteps, setCompletedSteps] = useState(new Set<string>());
 
-  useEffect(() => {
-    const processEvents = () => {
-      const newCompletedSteps = new Set(completedSteps);
-      let latestStepIndex = currentStepIndex;
+  const { execute: savePodcastUrl } = useAction(savePodcastAction);
 
-      res.forEach((event) => {
-        if (event.type === "tool-call") {
-          const stepIndex = STEPS.findIndex(
-            (step) => step.id === event.toolName,
-          );
-          if (stepIndex > -1) {
-            latestStepIndex = stepIndex;
-          }
-        } else if (event.type === "tool-result") {
-          const stepIndex = STEPS.findIndex(
-            (step) => step.id === event.toolName,
-          );
-          if (stepIndex > -1) {
-            newCompletedSteps.add(event.toolName);
-          }
-        }
-      });
-
-      if (pollUrl && !audioUrl) {
-        latestStepIndex = STEPS.findIndex(
-          (step) => step.id === "audioGeneration",
-        );
-      }
-      if (audioUrl) {
-        latestStepIndex = STEPS.findIndex((step) => step.id === "complete");
-        newCompletedSteps.add("audioGeneration");
-        newCompletedSteps.add("complete");
-      }
-
-      setCurrentStepIndex(latestStepIndex);
-      setCompletedSteps(newCompletedSteps);
-    };
-
-    processEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [res, pollUrl, audioUrl]);
+  useSteps({
+    audioUrl,
+    completedSteps,
+    currentStepIndex,
+    pollUrl,
+    res,
+    setCompletedSteps,
+    setCurrentStepIndex,
+  });
 
   const { execute: executePolling, status: pollingStatus } = useAction(
     pollPodcastAudio,
@@ -127,6 +45,7 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
       onSuccess: ({ data }) => {
         if (data?.audioUrl) {
           setAudioUrl(data.audioUrl);
+          savePodcastUrl({ notebookId, audioUrl: data.audioUrl });
           toast.success("Podcast audio available");
         }
       },
@@ -152,7 +71,6 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
       if (data) {
         for await (const event of data.output) {
           setRes((prev) => [...prev, event]);
-          console.dir(event, { depth: Infinity });
 
           if (
             event.type === "tool-result" &&
@@ -191,16 +109,15 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
   const isProcessing =
     status === "executing" ||
     pollingStatus === "executing" ||
-    (!!pollUrl && !audioUrl);
+    !(status === "idle" && !audioUrl);
 
   return (
     <div className="space-y-6 w-full max-w-3xl">
       <div className="w-full">
-        <div className="flex items-start border rounded-3xl py-8">
+        <div className="flex items-start border rounded py-8">
           {STEPS.map((step, index) => {
             const isComplete = completedSteps.has(step.id);
             const isCurrent = currentStepIndex === index;
-            const isPending = currentStepIndex < index;
 
             return (
               <div key={step.id} className="flex flex-col gap-2 relative grow">
@@ -219,10 +136,10 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center
                     ${
-                      isCurrent
-                        ? "bg-blue-100"
-                        : isComplete
-                          ? "bg-green-100"
+                      isComplete
+                        ? "bg-green-100"
+                        : isCurrent
+                          ? "bg-blue-100"
                           : "bg-gray-100"
                     }
                     transition-colors duration-200`}
@@ -251,10 +168,10 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
                 <div className="text-center">
                   <h3
                     className={`font-medium text-[10px] ${
-                      isCurrent
-                        ? "text-blue-600"
-                        : isComplete
-                          ? "text-green-600"
+                      isComplete
+                        ? "text-green-600"
+                        : isCurrent
+                          ? "text-blue-600"
                           : "text-gray-600"
                     }`}
                   >
@@ -267,14 +184,6 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
         </div>
       </div>
 
-      {audioUrl && (
-        <div className="w-full border rounded p-4 bg-gray-50">
-          <audio controls className="w-full" src={audioUrl}>
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-      )}
-
       <Button
         onClick={handleGenerate}
         className="min-w-36"
@@ -285,20 +194,28 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ notebookId }) => {
             <Headphones className="mr-2" />
             <span>Generate podcast</span>
           </>
-        ) : isProcessing ? (
-          <>
-            <Loader2 className="animate-spin mr-2" />
-            <span>Processing...</span>
-          </>
         ) : status === "hasSucceeded" ? (
           <>
             <CheckCircle2 className="mr-2" />
             <span>Podcast Generated</span>
           </>
+        ) : isProcessing ? (
+          <>
+            <Loader2 className="animate-spin mr-2" />
+            <span>Processing...</span>
+          </>
         ) : (
           <span>Failed podcast generation</span>
         )}
       </Button>
+
+      {audioUrl && (
+        <div className="w-full border rounded p-4 bg-gray-50">
+          <audio controls className="w-full" src={audioUrl}>
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      )}
     </div>
   );
 };
