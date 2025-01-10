@@ -1,6 +1,5 @@
 "use client";
 
-// import { useNewNotebook } from "@/hooks/use-new-notebook";
 import { formatDate } from "@/lib/utils";
 import { Loader, Trash } from "lucide-react";
 import { Button } from "../ui/button";
@@ -19,8 +18,6 @@ interface NotebooksViewProps {
 }
 
 export const NotebooksView: React.FC<NotebooksViewProps> = ({ notebooks }) => {
-  // const { execute, status } = useNewNotebook();
-
   const [notebookBeingDeleted, setNotebookBeingDeleted] = useState<
     string | null
   >(null);
@@ -43,7 +40,7 @@ export const NotebooksView: React.FC<NotebooksViewProps> = ({ notebooks }) => {
     <div className="bg-background w-full rounded-3xl p-12 space-y-8">
       <div className="space-y-6 border-b pb-4">
         <h1 className="text-6xl font-bold bg-gradient-to-r from-blue-500 to-teal-500 bg-clip-text text-transparent">
-          Welcome to Mastra&apos;s NotebookLM
+          Welcome to NotebookLM
         </h1>
         <h2 className="text-2xl">My notebooks</h2>
       </div>

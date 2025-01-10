@@ -67,7 +67,7 @@ export const generateNotebookSummaries = actionClient
     const parsedResult = schema.parse(res.object);
 
     await db.update(notebooks).set(parsedResult);
-    db.update(sources).set({ processingStatus: "ready" }).execute();
+    await db.update(sources).set({ processingStatus: "ready" });
 
     revalidatePath(`/notebook/${parsedInput.notebookId}`);
   });
