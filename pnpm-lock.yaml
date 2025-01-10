@@ -106,9 +106,6 @@ importers:
       '@eslint/eslintrc':
         specifier: ^3
         version: 3.2.0
-      '@huggingface/transformers':
-        specifier: ^3.2.4
-        version: 3.2.4
       '@types/node':
         specifier: ^20
         version: 20.17.10

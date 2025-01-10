@@ -48,7 +48,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@huggingface/transformers": "^3.2.4",
     "@types/node": "^20",
     "@types/pg": "^8.11.10",
     "@types/react": "^19",
