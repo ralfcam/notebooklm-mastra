@@ -2,9 +2,7 @@ import type { NextConfig } from "next";
 import withLlamaIndex from "llamaindex/next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   webpack: (config) => {
-    // See https://webpack.js.org/configuration/resolve/#resolvealias
     config.resolve.alias = {
       ...config.resolve.alias,
       canvas: false,
@@ -18,6 +16,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "5mb",
     },
   },
+  serverExternalPackages: ["sharp", "canvas", "onnxruntime-node"],
 };
 
 export default withLlamaIndex(nextConfig);

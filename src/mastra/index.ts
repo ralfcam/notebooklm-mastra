@@ -4,7 +4,6 @@ import { summarizeSource } from "./workflows";
 import { orchestrator } from "./agents/orchestrator";
 import { PgMemory } from "@mastra/memory";
 
-//NOTE: "Property #private missing in type PostgresEngine but required in MastraEngine"
 const engine = new PostgresEngine({
   url: process.env.DB_URL!,
 });
@@ -24,6 +23,5 @@ export const mastra = new Mastra({
   workflows: { summarizeSource },
   memory,
   logger,
-  //@ts-expect-error check note on PostgresEngine initialization above
   engine,
 });

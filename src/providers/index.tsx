@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, PropsWithChildren, useContext, useEffect } from "react";
-import { useSessionStorage } from "@uidotdev/usehooks";
 import { useRouter } from "next/navigation";
+import { useSessionStorage } from "@/hooks/use-session-storage";
+import { ClientOnly } from "@/components/custom/client-only";
 
 export const SessionContext = createContext<{ sessionId: string | null }>({
   sessionId: null,
@@ -42,9 +43,11 @@ const SessionProvider: React.FC<PropsWithChildren> = ({ children }) => {
   if (!sessionId) return null;
 
   return (
-    <SessionContext.Provider value={{ sessionId }}>
-      {children}
-    </SessionContext.Provider>
+    <ClientOnly>
+      <SessionContext.Provider value={{ sessionId }}>
+        {children}
+      </SessionContext.Provider>
+    </ClientOnly>
   );
 };
 
