@@ -8,14 +8,16 @@ import { CustomSidebarHeader } from "./custom-sidebar-header";
 
 interface CustomSidebarProps {
   notebookId: string;
+  sessionId: string;
 }
 
 export const CustomSidebar: React.FC<PropsWithChildren<CustomSidebarProps>> = ({
   notebookId,
+  sessionId,
 }) => {
   return (
     <Sidebar collapsible="icon">
-      <CustomSidebarHeader />
+      <CustomSidebarHeader sessionId={sessionId} />
       <hr />
       <SidebarContent className="p-2">
         <Suspense fallback={<SidebarNotebooksSkeleton />}>

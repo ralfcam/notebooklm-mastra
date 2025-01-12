@@ -15,9 +15,13 @@ import { UploadSources } from "./uploads/upload-sources";
 
 interface NotebooksViewProps {
   notebooks: Notebook[];
+  sessionId: string;
 }
 
-export const NotebooksView: React.FC<NotebooksViewProps> = ({ notebooks }) => {
+export const NotebooksView: React.FC<NotebooksViewProps> = ({
+  notebooks,
+  sessionId,
+}) => {
   const [notebookBeingDeleted, setNotebookBeingDeleted] = useState<
     string | null
   >(null);
@@ -50,7 +54,7 @@ export const NotebooksView: React.FC<NotebooksViewProps> = ({ notebooks }) => {
           <div className="grow flex flex-wrap content-start gap-8 w-full">
             {notebooks.map((notebook) => (
               <div key={notebook.id} className="relative group">
-                <Link href={`/notebook/${notebook.id}`}>
+                <Link href={`/notebook/${notebook.id}?sessionId=${sessionId}`}>
                   <Card className="size-64">
                     <CardHeader>
                       <CardTitle className="truncate">

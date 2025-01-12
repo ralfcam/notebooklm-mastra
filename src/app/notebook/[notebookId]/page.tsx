@@ -43,7 +43,7 @@ export default async function NotebookPage({
 
   return (
     <SidebarProvider className="w-auto" style={{ ...sidebarWidths }}>
-      <CustomSidebar notebookId={notebookId} />
+      <CustomSidebar notebookId={notebookId} sessionId={sessionId} />
       <div className="w-full">
         <Navbar notebookName={notebookName} notebookId={notebookId} />
         <main>

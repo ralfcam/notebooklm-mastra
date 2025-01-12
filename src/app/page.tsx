@@ -27,7 +27,7 @@ export default async function Home({
         {notebooks.length === 0 ? (
           <WelcomeCard />
         ) : (
-          <NotebooksView notebooks={notebooks} />
+          <NotebooksView notebooks={notebooks} sessionId={sessionId} />
         )}
       </div>
     </main>

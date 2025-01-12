@@ -75,25 +75,21 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
       if (data) {
         const reader = data.output.getReader();
 
-        console.log({ reader });
-
         while (true) {
           const { done, value } = await reader.read();
 
           if (done) break;
 
-          console.log({ value });
-        }
-
-        for await (const event of data.output) {
-          setRes((prev) => [...prev, event]);
+          setRes((prev) => [...prev, value.part]);
 
           if (
-            event.type === "tool-result" &&
-            event.toolName === "savePodcastDetails" &&
-            !!event.result[0].podcastScript
+            value.part.type === "tool-result" &&
+            value.part.toolName === "savePodcastDetails" &&
+            !!value.part.result[0]?.podcastScript
           ) {
-            submitForAudioProduction({ script: event.result[0].podcastScript });
+            submitForAudioProduction({
+              script: value.part.result[0].podcastScript,
+            });
           }
         }
       }

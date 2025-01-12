@@ -10,7 +10,7 @@ import {
 } from "../ui/sidebar";
 import Link from "next/link";
 
-export const CustomSidebarHeader = () => {
+export const CustomSidebarHeader = ({ sessionId }: { sessionId: string }) => {
   const { open } = useSidebar();
 
   return (
@@ -22,7 +22,10 @@ export const CustomSidebarHeader = () => {
             className={open ? "w-9" : "w-full"}
             size="icon"
           >
-            <Link href={"/"} className="flex items-center justify-center">
+            <Link
+              href={`/?sessionId=${sessionId}`}
+              className="flex items-center justify-center"
+            >
               <Home className="" />
             </Link>
           </Button>

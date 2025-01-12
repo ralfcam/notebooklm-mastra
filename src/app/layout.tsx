@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { SessionProvider } from "@/providers/index";
+import SessionProvider from "@/providers";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -21,14 +21,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <SessionProvider>
-        <body
-          className={`${fontSans.variable} ${fontSans.className} antialiased`}
-        >
+      <body
+        className={`${fontSans.variable} ${fontSans.className} antialiased`}
+      >
+        <SessionProvider>
           {children}
           <Toaster richColors closeButton />
-        </body>
-      </SessionProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }

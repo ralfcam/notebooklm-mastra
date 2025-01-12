@@ -75,6 +75,7 @@ export const submitSourcesForParsing = actionClient
       })),
     );
 
-    if (!parsedInput.sidebar) redirect(`/notebook/${notebookId}`);
+    if (!parsedInput.sidebar)
+      redirect(`/notebook/${notebookId}?sessionId=${parsedInput.sessionId}`);
     else revalidatePath(`/notebook/${notebookId}`, "layout");
   });

@@ -18,7 +18,7 @@ export const useSession = () => {
   return session;
 };
 
-export const SessionProvider: React.FC<PropsWithChildren> = ({ children }) => {
+const SessionProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const [sessionId, setSessionId] = useSessionStorage<string | null>(
     "notebooklm:sessionId",
@@ -47,3 +47,5 @@ export const SessionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     </SessionContext.Provider>
   );
 };
+
+export default SessionProvider;
