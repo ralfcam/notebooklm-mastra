@@ -8,11 +8,11 @@ export const createNotebookAction = actionClient
   .metadata({
     name: "createNotebookAction",
   })
-  .schema(z.object({}).optional())
-  .action(async ({ ctx }) => {
+  .schema(z.object({ sessionId: z.string() }))
+  .action(async ({ ctx, parsedInput }) => {
     const notebook = await ctx.db
       .insert(notebooks)
-      .values({ userId: ctx.user?.id })
+      .values({ userId: parsedInput.sessionId })
       .returning();
 
     return {

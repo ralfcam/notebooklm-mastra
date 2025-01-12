@@ -2,10 +2,16 @@ import { NotebooksView } from "@/components/custom/notebooks-view";
 import { WelcomeCard } from "@/components/custom/welcome-card";
 import { fetchNotebooks } from "@/db/queries/notebooks";
 
-export const dynamic = "force-dynamic";
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ sessionId?: string }>;
+}) {
+  const sessionId = (await searchParams).sessionId;
 
-export default async function Home() {
-  const notebooks = await fetchNotebooks();
+  if (!sessionId) return null;
+
+  const notebooks = await fetchNotebooks(sessionId);
 
   return (
     <main className="min-h-screen relative">

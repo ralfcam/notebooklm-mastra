@@ -21,6 +21,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { FileUploader } from "../file-uploader";
+import { useSearchParams } from "next/navigation";
 
 type UploadSourcesProps =
   | {
@@ -30,6 +31,9 @@ type UploadSourcesProps =
 
 export const UploadSources: React.FC<UploadSourcesProps> = (props) => {
   const [open, setOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  const sessionId = searchParams.get("sessionId");
 
   const { execute, status } = useAction(submitSourcesForParsing, {
     onError: () => toast.error("Upload failed"),
@@ -37,17 +41,19 @@ export const UploadSources: React.FC<UploadSourcesProps> = (props) => {
 
   const handleUpload = useCallback(
     async (files: File[]) => {
+      if (!sessionId) return;
+
       if (files.length === 0) throw new Error("Upload at least one file");
 
       if (props.variant === "sidebar") {
         execute({ files, sidebar: true, notebookId: props.notebookId });
       } else {
-        execute({ files, sidebar: false });
+        execute({ files, sidebar: false, sessionId });
       }
 
       setOpen(false);
     },
-    [execute, props],
+    [execute, props, sessionId],
   );
 
   return (

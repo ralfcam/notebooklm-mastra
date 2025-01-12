@@ -20,5 +20,7 @@ export const generatePodcastAction = actionClient
         `Validate that we have sources available for the notebook with the this notebookId ${parsedInput.triggerData.notebookId}. Follow all previous instructions and create a podcast.`,
       );
 
-    return { output };
+    console.log({ output });
+
+    return { output: output.textStream };
   });

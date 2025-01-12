@@ -73,6 +73,18 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({
     },
     onSuccess: async ({ data }) => {
       if (data) {
+        const reader = data.output.getReader();
+
+        console.log({ reader });
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) break;
+
+          console.log({ value });
+        }
+
         for await (const event of data.output) {
           setRes((prev) => [...prev, event]);
 

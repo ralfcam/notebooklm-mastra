@@ -19,6 +19,7 @@ const schema = z
     z.object({
       files: z.array(z.instanceof(File)),
       sidebar: z.literal(false),
+      sessionId: z.string().uuid(),
     }),
   );
 
@@ -49,7 +50,7 @@ export const submitSourcesForParsing = actionClient
     if (!parsedInput.sidebar) {
       const insertedNotebooks = await ctx.db
         .insert(notebooks)
-        .values({ name: "Untitled Notebook", userId: ctx.user.id })
+        .values({ name: "Untitled Notebook", userId: parsedInput.sessionId })
         .returning({ notebookId: notebooks.id });
 
       notebookId = insertedNotebooks[0].notebookId;
