@@ -2,14 +2,14 @@ import { Mastra, createLogger } from "@mastra/core";
 import { PostgresEngine } from "@mastra/engine";
 import { summarizeSource } from "./workflows";
 import { orchestrator } from "./agents/orchestrator";
-import { PgMemory } from "@mastra/memory";
+import { PostgresMemory } from "@mastra/memory";
 
 const engine = new PostgresEngine({
   url: process.env.DB_URL!,
 });
 
 //NOTE: Seems like the method shown in docs has changed. PgMemory vs PostgresMemory, pool vs connectionString
-const memory = new PgMemory({
+const memory = new PostgresMemory({
   connectionString: process.env.DB_URL!,
 });
 
