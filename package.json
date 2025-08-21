@@ -22,6 +22,7 @@
     "@mastra/engine": "^0.0.5-alpha.49",
     "@mastra/memory": "^0.0.2-alpha.35",
     "@mastra/rag": "^0.0.2-alpha.39",
+    "@opentelemetry/exporter-jaeger": "^2.0.1",
     "@opentelemetry/winston-transport": "^0.14.1",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-progress": "^1.1.1",
